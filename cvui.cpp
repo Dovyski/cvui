@@ -13,6 +13,28 @@
 namespace cvui
 {
 
+// This is an internal namespace with all functions
+// that actually render each one of the UI components
+namespace render {
+	const int IDLE = 0;
+	const int OVER = 1;
+	const int PRESSED = 2;
+
+	void button(int theState, cv::Mat& theWhere, cv::Rect& theShape) {
+		// Outline
+		cv::rectangle(theWhere, theShape, cv::Scalar(0x33, 0x33, 0x33));
+
+		// Border
+		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
+		cv::rectangle(theWhere, theShape, cv::Scalar(0x52, 0x52, 0x52));
+
+		// Inside
+		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
+		cv::rectangle(theWhere, theShape, cv::Scalar(0x42, 0x42, 0x42), cv::FILLED);		
+	}
+}
+
+// Variables to keep track of mouse events and stuff
 static bool mouseJustReleased = false;
 static bool mousePressed = false;
 static cv::Point mouse;
@@ -33,7 +55,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
 			cv::rectangle(theWhere, aRect, cv::Scalar(255, 0, 0), cv::FILLED);
 		}
 	} else {
-		cv::rectangle(theWhere, aRect, cv::Scalar(190, 0, 0), cv::FILLED);
+		render::button(render::IDLE, theWhere, aRect);
 	}
 
 	text(theWhere, theX + 5, theY + 10, theLabel, 0.4);
@@ -67,7 +89,7 @@ bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel,
 
 void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale) {
 	cv::Point aPos(theX, theY);
-	cv::putText(theWhere, theText, aPos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, cv::Scalar(0, 0, 0), 1, cv::LINE_AA);
+	cv::putText(theWhere, theText, aPos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
 }
 
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue) {

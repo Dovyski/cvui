@@ -10,7 +10,7 @@
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat aFrame = cv::Mat(800, 600, CV_8UC3, cv::Scalar(255, 255, 255));
+	cv::Mat aFrame = cv::Mat(800, 600, CV_8UC3);
 	bool aCheckbox = false;
 	int aCount = 0;
 
@@ -19,7 +19,7 @@ int main(int argc, const char *argv[])
 
 	while (true) {
 		// Fill the frame with white
-		aFrame = cv::Scalar(255, 255, 255);
+		aFrame = cv::Scalar(49, 52, 49);
 
 		// Check if ESC key was pressed
 		if (cv::waitKey(10) == 27) {
