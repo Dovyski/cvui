@@ -28,7 +28,7 @@ int main(int argc, const char *argv[])
 
 		cvui::text(aFrame, 50, 50, "Hey there!", 0.4);
 
-		if (cvui::button(aFrame, 50, 50, "Button")) {
+		if (cvui::button(aFrame, 50, 50, "Button very large")) {
 			std::cout << "Button clicked!" << std::endl;
 		}
 

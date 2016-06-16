@@ -20,7 +20,7 @@ namespace render {
 	const int OVER = 1;
 	const int PRESSED = 2;
 
-	void button(int theState, cv::Mat& theWhere, cv::Rect& theShape) {
+	void button(int theState, cv::Mat& theWhere, cv::Rect& theShape, const cv::String& theLabel) {
 		// Outline
 		cv::rectangle(theWhere, theShape, cv::Scalar(0x33, 0x33, 0x33));
 
@@ -31,6 +31,11 @@ namespace render {
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
 		cv::rectangle(theWhere, theShape, cv::Scalar(0x42, 0x42, 0x42), cv::FILLED);		
+	}
+
+	void buttonLabel(int theState, cv::Mat& theWhere, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize) {
+		cv::Point aPos(theRect.x + 10, theRect.y + theTextSize.height + 4);
+		cv::putText(theWhere, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
 	}
 }
 
@@ -45,7 +50,14 @@ void init(const cv::String& theWindowName) {
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
-	cv::Rect aRect(theX, theY, theLabel.length() * 10, 20);
+	// Calculate the space that the label will fill
+	int aBaseline = 0;
+	cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
+	
+	// Make the button bit enough to house the label
+	cv::Rect aRect(theX, theY, aTextSize.width + 20, aTextSize.height + 15);
+	
+	// Check the state of the button (idle, pressed, etc.)
 	bool aMouseIsOver = aRect.contains(mouse);
 
 	if (aMouseIsOver) {
@@ -55,11 +67,13 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
 			cv::rectangle(theWhere, aRect, cv::Scalar(255, 0, 0), cv::FILLED);
 		}
 	} else {
-		render::button(render::IDLE, theWhere, aRect);
+		render::button(render::IDLE, theWhere, aRect, theLabel);
 	}
 
-	text(theWhere, theX + 5, theY + 10, theLabel, 0.4);
+	// Render the label
+	render::buttonLabel(render::IDLE, theWhere, aRect, theLabel, aTextSize);
 
+	// Return if the button was clicked or not
 	return aMouseIsOver && mouseJustReleased;
 }
 
