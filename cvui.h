@@ -35,6 +35,10 @@ int counter(cv::Mat& theWhere, int theX, int theY, int &theValue);
 // Display a window.
 int window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeigh, const cv::String& theTitle);
 
+// You need to call this function after you are done adding/manipulating
+// UI elements in order for them to react to mouse interactions.
+void update();
+
 // Internally used to handle mouse events
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 

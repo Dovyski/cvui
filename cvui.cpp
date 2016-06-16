@@ -12,13 +12,24 @@
 
 namespace cvui
 {
+
+static bool mouseJustReleased = false;
+static bool mousePressed = true;
+static cv::Point mouse;
 	
 void init(const cv::String& theWindowName) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
+	cv::Rect aRect(theX, theY, theLabel.length() * 10, 20);
+	bool aContainsMouse = aRect.contains(mouse),
+		 aWasClicked = mouseJustReleased && aContainsMouse;
 
+	cv::rectangle(theWhere, aRect, aContainsMouse && mousePressed ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0), cv::FILLED);
+	text(theWhere, theX, theY, theLabel, 0.4);
+
+	return aWasClicked;
 }
 
 void checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState) {
@@ -38,21 +49,20 @@ int window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeigh, co
 
 }
 
+void update() {
+	mouseJustReleased = false;
+}
+
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
-	if (theEvent == cv::EVENT_LBUTTONDOWN)	{
-		std::cout << "Left button of the mouse is clicked - position (" << theX << ", " << theY << ")" << std::endl;
+	mouse.x = theX;
+	mouse.y = theY;
 
-	}
-	else if (theEvent == cv::EVENT_RBUTTONDOWN) {
-		std::cout << "Right button of the mouse is clicked - position (" << theX << ", " << theY << ")" << std::endl;
+	if (theEvent == cv::EVENT_LBUTTONDOWN || theEvent == cv::EVENT_RBUTTONDOWN)	{
+		mousePressed = true;
 
-	}
-	else if (theEvent == cv::EVENT_MBUTTONDOWN) {
-		std::cout << "Middle button of the mouse is clicked - position (" << theX << ", " << theY << ")" << std::endl;
-
-	}
-	else if (theEvent == cv::EVENT_MOUSEMOVE) {
-		std::cout << "Mouse move over the window - position (" << theX << ", " << theY << ")" << std::endl;
+	} else if (theEvent == cv::EVENT_LBUTTONUP || theEvent == cv::EVENT_RBUTTONUP)	{
+		mouseJustReleased = true;
+		mousePressed = false;
 	}
 }
 
