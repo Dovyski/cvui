@@ -40,8 +40,28 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
 	return aMouseIsOver && mouseJustReleased;
 }
 
-void checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState) {
+bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState) {
+	cv::Rect aRect(theX, theY, 20, 20);
+	cv::Rect aHitArea(theX, theY, aRect.width + theLabel.length() * 8, 20);
+	bool aMouseIsOver = aHitArea.contains(mouse);
 
+	if (aMouseIsOver) {
+		cv::rectangle(theWhere, aRect, cv::Scalar(255, 0, 0), cv::FILLED);
+
+		if (mouseJustReleased) {
+			*theState = !(*theState);
+		}
+	} else {
+		cv::rectangle(theWhere, aRect, cv::Scalar(190, 0, 0), cv::FILLED);
+	}
+
+	if (*theState) {
+		text(theWhere, theX + 5, theY + 15, "X", 0.5);
+	}
+
+	text(theWhere, theX + 25, theY + 15, theLabel, 0.4);
+
+	return *theState;
 }
 
 void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale) {
