@@ -30,7 +30,7 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 
 // Display a counter that the user can increase/descrease by clicking
 // the up and down arrows.
-int counter(cv::Mat& theWhere, int theX, int theY, int &theValue);
+int counter(cv::Mat& theWhere, int theX, int theY, int *theValue);
 
 // Display an overlay (a block with a title and a transparent body).
 void overlay(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle);

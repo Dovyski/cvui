@@ -12,12 +12,13 @@ int main(int argc, const char *argv[])
 {
 	cv::Mat aFrame = cv::Mat(800, 600, CV_8UC3, cv::Scalar(255, 255, 255));
 	bool aCheckbox = false;
+	int aCount = 0;
 
 	cv::namedWindow(WINDOW_NAME);
 	cvui::init(WINDOW_NAME);
 
 	while (true) {
-		// Fill the frame with white color
+		// Fill the frame with white
 		aFrame = cv::Scalar(255, 255, 255);
 
 		// Check if ESC key was pressed
@@ -28,11 +29,12 @@ int main(int argc, const char *argv[])
 		cvui::text(aFrame, 50, 50, "Hey there!", 0.4);
 
 		if (cvui::button(aFrame, 50, 50, "Button")) {
-			std::cout << "Button clicked! \n";
+			std::cout << "Button clicked!" << std::endl;
 		}
 
 		cvui::checkbox(aFrame, 50, 100, "My checkbox", &aCheckbox);
 		cvui::overlay(aFrame, 50, 150, 100, 90, "Overlay");
+		cvui::counter(aFrame, 50, 300, &aCount);
 
 		cvui::update();
 

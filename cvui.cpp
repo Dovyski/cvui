@@ -16,6 +16,7 @@ namespace cvui
 static bool mouseJustReleased = false;
 static bool mousePressed = false;
 static cv::Point mouse;
+static char buffer[200];
 	
 void init(const cv::String& theWindowName) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
@@ -69,8 +70,22 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 	cv::putText(theWhere, theText, aPos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, cv::Scalar(0, 0, 0), 1, cv::LINE_AA);
 }
 
-int counter(cv::Mat& theWhere, int theX, int theY, int &theValue) {
+int counter(cv::Mat& theWhere, int theX, int theY, int *theValue) {
+	cv::Rect aContent(theX + 30, theY, 60, 20);
+
+	if (cvui::button(theWhere, theX, theY, " - ")) {
+		(*theValue)--;
+	}
 	
+	sprintf_s(buffer, "%d", *theValue);
+	cv::rectangle(theWhere, aContent, cv::Scalar(220, 220, 220), cv::FILLED);
+	text(theWhere, aContent.x + 20, aContent.y + 15, buffer, 0.4);
+
+	if (cvui::button(theWhere, aContent.x + aContent.width, theY, " + ")) {
+		(*theValue)++;
+	}
+
+	return *theValue;
 }
 
 void overlay(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
