@@ -70,11 +70,22 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 }
 
 int counter(cv::Mat& theWhere, int theX, int theY, int &theValue) {
-
+	
 }
 
-int window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeigh, const cv::String& theTitle) {
+void overlay(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
+	double aAlpha = 0.3;
+	cv::Rect aTitleBar(theX, theY, theWidth, 20);
+	cv::Mat aOverlay;
 
+	// Render the title
+	cv::rectangle(theWhere, aTitleBar, cv::Scalar(80, 80, 80), cv::FILLED);
+	text(theWhere, aTitleBar.x + 5, aTitleBar.y + 15, theTitle, 0.4);
+
+	// Render the body
+	theWhere.copyTo(aOverlay);
+	cv::rectangle(aOverlay, cv::Rect(theX, theY, theWidth, theHeight), cv::Scalar(255, 0, 0, 0.5), cv::FILLED);
+	cv::addWeighted(aOverlay, aAlpha, theWhere, 1.0 - aAlpha, 0.0, theWhere);
 }
 
 void update() {

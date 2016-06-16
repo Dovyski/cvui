@@ -32,6 +32,7 @@ int main(int argc, const char *argv[])
 		}
 
 		cvui::checkbox(aFrame, 50, 100, "My checkbox", &aCheckbox);
+		cvui::overlay(aFrame, 50, 150, 100, 90, "Overlay");
 
 		cvui::update();
 
