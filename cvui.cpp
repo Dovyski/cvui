@@ -14,7 +14,7 @@ namespace cvui
 {
 
 static bool mouseJustReleased = false;
-static bool mousePressed = true;
+static bool mousePressed = false;
 static cv::Point mouse;
 	
 void init(const cv::String& theWindowName) {
@@ -23,13 +23,21 @@ void init(const cv::String& theWindowName) {
 
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
 	cv::Rect aRect(theX, theY, theLabel.length() * 10, 20);
-	bool aContainsMouse = aRect.contains(mouse),
-		 aWasClicked = mouseJustReleased && aContainsMouse;
+	bool aMouseIsOver = aRect.contains(mouse);
 
-	cv::rectangle(theWhere, aRect, aContainsMouse && mousePressed ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0), cv::FILLED);
-	text(theWhere, theX, theY, theLabel, 0.4);
+	if (aMouseIsOver) {
+		if (mousePressed) {
+			cv::rectangle(theWhere, aRect, cv::Scalar(0, 0, 255), cv::FILLED);
+		} else {
+			cv::rectangle(theWhere, aRect, cv::Scalar(255, 0, 0), cv::FILLED);
+		}
+	} else {
+		cv::rectangle(theWhere, aRect, cv::Scalar(190, 0, 0), cv::FILLED);
+	}
 
-	return aWasClicked;
+	text(theWhere, theX + 5, theY + 10, theLabel, 0.4);
+
+	return aMouseIsOver && mouseJustReleased;
 }
 
 void checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState) {
