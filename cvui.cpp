@@ -67,6 +67,40 @@ namespace render {
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
 		cv::rectangle(theWhere, theShape, cv::Scalar(0xFF, 0xBF, 0x75), cv::FILLED);
 	}
+
+	void window(cv::Mat& theWhere, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle) {
+		bool aTransparecy = false;
+		double aAlpha = 0.3;
+		cv::Mat aOverlay;
+
+		// Render the title bar.
+		// First the border
+		cv::rectangle(theWhere, theTitleBar, cv::Scalar(0x4A, 0x4A, 0x4A));
+		// then the inside
+		theTitleBar.x++; theTitleBar.y++; theTitleBar.width -= 2; theTitleBar.height -= 2;
+		cv::rectangle(theWhere, theTitleBar, cv::Scalar(0x21, 0x21, 0x21), cv::FILLED);
+
+		// Render title text.
+		cv::Point aPos(theTitleBar.x + 5, theTitleBar.y + 12);
+		cv::putText(theWhere, theTitle, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+
+		// Render the body.
+		// First the border.
+		cv::rectangle(theWhere, theContent, cv::Scalar(0x4A, 0x4A, 0x4A));
+
+		// Then the filling.
+		theContent.x++; theContent.y++; theContent.width -= 2; theContent.height -= 2;
+		cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), cv::FILLED);
+
+		if (aTransparecy) {
+			theWhere.copyTo(aOverlay);
+			cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), cv::FILLED);
+			cv::addWeighted(aOverlay, aAlpha, theWhere, 1.0 - aAlpha, 0.0, theWhere);
+
+		} else {
+			cv::rectangle(theWhere, theContent, cv::Scalar(0x31, 0x31, 0x31), cv::FILLED);
+		}
+	}
 }
 
 // Variables to keep track of mouse events and stuff
@@ -156,19 +190,11 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue) {
 	return *theValue;
 }
 
-void overlay(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
-	double aAlpha = 0.3;
+void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
 	cv::Rect aTitleBar(theX, theY, theWidth, 20);
-	cv::Mat aOverlay;
+	cv::Rect aContent(theX, theY + aTitleBar.height, theWidth, theHeight - aTitleBar.height);
 
-	// Render the title
-	cv::rectangle(theWhere, aTitleBar, cv::Scalar(80, 80, 80), cv::FILLED);
-	text(theWhere, aTitleBar.x + 5, aTitleBar.y + 15, theTitle, 0.4);
-
-	// Render the body
-	theWhere.copyTo(aOverlay);
-	cv::rectangle(aOverlay, cv::Rect(theX, theY, theWidth, theHeight), cv::Scalar(255, 0, 0, 0.5), cv::FILLED);
-	cv::addWeighted(aOverlay, aAlpha, theWhere, 1.0 - aAlpha, 0.0, theWhere);
+	render::window(theWhere, aTitleBar, aContent, theTitle);
 }
 
 void update() {

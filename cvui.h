@@ -33,7 +33,7 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue);
 
 // Display an overlay (a block with a title and a transparent body).
-void overlay(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle);
+void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle);
 
 // You need to call this function after you are done adding/manipulating
 // UI elements in order for them to react to mouse interactions.

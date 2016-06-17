@@ -32,8 +32,7 @@ int main(int argc, const char *argv[])
 			std::cout << "Button clicked!" << std::endl;
 		}
 
-		cvui::checkbox(aFrame, 50, 100, "My checkbox", &aCheckbox);
-		cvui::overlay(aFrame, 50, 150, 100, 90, "Overlay");
+		cvui::checkbox(aFrame, 50, 100, "My Window");
 		cvui::counter(aFrame, 50, 300, &aCount);
 
 		cvui::update();
