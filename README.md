@@ -48,6 +48,7 @@ int main(int argc, const char *argv[])
 		cvui::update();
 
 		cv::imshow(WINDOW_NAME, frame);
+		cv::waitKey(30);
 	}
 
 	return 0;
