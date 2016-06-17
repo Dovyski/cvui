@@ -177,9 +177,15 @@ bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel,
 	return *theState;
 }
 
-void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale) {
+void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor) {
+	int aRed, aGreen, aBlue;
+
+	aRed = (theColor >> 16) & 0xff;
+	aGreen = (theColor >> 8) & 0xff;
+	aBlue = theColor & 0xff;
+	
 	cv::Point aPos(theX, theY);
-	cv::putText(theWhere, theText, aPos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+	cv::putText(theWhere, theText, aPos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, cv::Scalar(aBlue, aGreen, aRed), 1, cv::LINE_AA);
 }
 
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue) {

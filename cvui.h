@@ -27,7 +27,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState);
 
 // Display a piece of text.
-void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale);
+void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale = 0.4, unsigned int theColor = 0xCECECE);
 
 // Display a counter that the user can increase/descrease by clicking
 // the up and down arrows.
