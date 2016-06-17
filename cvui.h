@@ -11,7 +11,6 @@
 #define _CVUI_H_
 
 #include "opencv2/core/core.hpp"
-#include <string>
 
 namespace cvui
 {
@@ -21,7 +20,11 @@ namespace cvui
 void init(const cv::String& theWindowName);
 
 // Display a button. Returns true everytime the user clicks the button.
+// The button size will be automatically adjusted to properly house the label content.
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel);
+
+// Display a button. Returns true everytime the user clicks the button.
+// The button size will be defined by the width and height parameters, no matter the label.
 bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel);
 
 // Display a checkbox. You can use the state parameter to monitor if the
@@ -35,10 +38,10 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 // the up and down arrows.
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue);
 
-// Display an overlay (a block with a title and a transparent body).
+// Display a window (a block with a title and a body).
 void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle);
 
-// You need to call this function after you are done adding/manipulating
+// You need to call this function *AFTER* you are done adding/manipulating
 // UI elements in order for them to react to mouse interactions.
 void update();
 
