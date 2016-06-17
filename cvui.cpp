@@ -30,12 +30,12 @@ namespace render {
 
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theWhere, theShape, cv::Scalar(0x42, 0x42, 0x42), cv::FILLED);		
+		cv::rectangle(theWhere, theShape, theState == IDLE ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), cv::FILLED);
 	}
 
 	void buttonLabel(int theState, cv::Mat& theWhere, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize) {
 		cv::Point aPos(theRect.x + 10, theRect.y + theTextSize.height + 4);
-		cv::putText(theWhere, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+		cv::putText(theWhere, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, theState == PRESSED ? 0.39 : 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
 	}
 }
 
@@ -62,18 +62,18 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
 
 	if (aMouseIsOver) {
 		if (mousePressed) {
-			cv::rectangle(theWhere, aRect, cv::Scalar(0, 0, 255), cv::FILLED);
+			render::button(render::PRESSED, theWhere, aRect, theLabel);
+			render::buttonLabel(render::PRESSED, theWhere, aRect, theLabel, aTextSize);
 		} else {
-			cv::rectangle(theWhere, aRect, cv::Scalar(255, 0, 0), cv::FILLED);
+			render::button(render::OVER, theWhere, aRect, theLabel);
+			render::buttonLabel(render::OVER, theWhere, aRect, theLabel, aTextSize);
 		}
 	} else {
 		render::button(render::IDLE, theWhere, aRect, theLabel);
+		render::buttonLabel(render::IDLE, theWhere, aRect, theLabel, aTextSize);
 	}
 
-	// Render the label
-	render::buttonLabel(render::IDLE, theWhere, aRect, theLabel, aTextSize);
-
-	// Return if the button was clicked or not
+	// Tell if the button was clicked or not
 	return aMouseIsOver && mouseJustReleased;
 }
 
