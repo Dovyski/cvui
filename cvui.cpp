@@ -63,6 +63,11 @@ namespace render {
 		cv::rectangle(theWhere, theShape, cv::Scalar(0x29, 0x29, 0x29), cv::FILLED);
 	}
 
+	void checkboxLabel(cv::Mat& theWhere, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize) {
+		cv::Point aPos(theRect.x + theRect.width + 8, theRect.y + theRect.height / 2 + theTextSize.height / 2 + 2);
+		cv::putText(theWhere, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+	}
+
 	void checkboxCheck(cv::Mat& theWhere, cv::Rect& theShape) {
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
 		cv::rectangle(theWhere, theShape, cv::Scalar(0xFF, 0xBF, 0x75), cv::FILLED);
@@ -104,10 +109,10 @@ namespace render {
 }
 
 // Variables to keep track of mouse events and stuff
-static bool mouseJustReleased = false;
-static bool mousePressed = false;
-static cv::Point mouse;
-static char buffer[200];
+static bool gMouseJustReleased = false;
+static bool gMousePressed = false;
+static cv::Point gMouse;
+static char gBuffer[200];
 	
 void init(const cv::String& theWindowName) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
@@ -131,10 +136,10 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 	cv::Rect aRect(theX, theY, theWidth, theHeight);
 
 	// Check the state of the button (idle, pressed, etc.)
-	bool aMouseIsOver = aRect.contains(mouse);
+	bool aMouseIsOver = aRect.contains(gMouse);
 
 	if (aMouseIsOver) {
-		if (mousePressed) {
+		if (gMousePressed) {
 			render::button(render::PRESSED, theWhere, aRect, theLabel);
 			render::buttonLabel(render::PRESSED, theWhere, aRect, theLabel, aTextSize);
 		} else {
@@ -147,7 +152,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 	}
 
 	// Tell if the button was clicked or not
-	return aMouseIsOver && mouseJustReleased;
+	return aMouseIsOver && gMouseJustReleased;
 }
 
 bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState) {
@@ -155,20 +160,19 @@ bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel,
 	cv::Rect aRect(theX, theY, 15, 15);
 	cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
 	cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width, aRect.height);
-	bool aMouseIsOver = aHitArea.contains(mouse);
+	bool aMouseIsOver = aHitArea.contains(gMouse);
 
 	if (aMouseIsOver) {
 		render::checkbox(render::OVER, theWhere, aRect);
 
-		if (mouseJustReleased) {
+		if (gMouseJustReleased) {
 			*theState = !(*theState);
 		}
 	} else {
 		render::checkbox(render::IDLE, theWhere, aRect);
 	}
 
-	cv::Point aPos(theX + aRect.width + 8, theY + aRect.height / 2 + aTextSize.height / 2 + 2);
-	cv::putText(theWhere, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+	render::checkboxLabel(theWhere, aRect, theLabel, aTextSize);
 
 	if (*theState) {
 		render::checkboxCheck(theWhere, aRect);
@@ -195,8 +199,8 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue) {
 		(*theValue)--;
 	}
 	
-	sprintf_s(buffer, "%d", *theValue);
-	render::counter(theWhere, aContentArea, buffer);
+	sprintf_s(gBuffer, "%d", *theValue);
+	render::counter(theWhere, aContentArea, gBuffer);
 
 	if (cvui::button(theWhere, aContentArea.x + aContentArea.width, theY, 22, 22, "+")) {
 		(*theValue)++;
@@ -213,19 +217,19 @@ void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 }
 
 void update() {
-	mouseJustReleased = false;
+	gMouseJustReleased = false;
 }
 
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
-	mouse.x = theX;
-	mouse.y = theY;
+	gMouse.x = theX;
+	gMouse.y = theY;
 
 	if (theEvent == cv::EVENT_LBUTTONDOWN || theEvent == cv::EVENT_RBUTTONDOWN)	{
-		mousePressed = true;
+		gMousePressed = true;
 
 	} else if (theEvent == cv::EVENT_LBUTTONUP || theEvent == cv::EVENT_RBUTTONUP)	{
-		mouseJustReleased = true;
-		mousePressed = false;
+		gMouseJustReleased = true;
+		gMousePressed = false;
 	}
 }
 
