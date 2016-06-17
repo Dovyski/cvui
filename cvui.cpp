@@ -37,6 +37,18 @@ namespace render {
 		cv::Point aPos(theRect.x + 10, theRect.y + theTextSize.height + 4);
 		cv::putText(theWhere, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, theState == PRESSED ? 0.39 : 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
 	}
+
+	void counter(cv::Mat& theWhere, cv::Rect& theShape, const cv::String& theValue) {
+		int aBaseline = 0;
+
+		cv::rectangle(theWhere, theShape, cv::Scalar(0x29, 0x29, 0x29), cv::FILLED); // fill
+		cv::rectangle(theWhere, theShape, cv::Scalar(0x45, 0x45, 0x45)); // border
+
+		cv::Size aTextSize = getTextSize(theValue, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
+
+		cv::Point aPos(theShape.x + theShape.width / 2 - aTextSize.width / 2, theShape.y + aTextSize.height / 2 + theShape.height / 2);
+		cv::putText(theWhere, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+	}
 }
 
 // Variables to keep track of mouse events and stuff
@@ -107,17 +119,16 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 }
 
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue) {
-	cv::Rect aContent(theX + 30, theY, 60, 20);
+	cv::Rect aShape(theX + 30, theY + 1, 50, 22);
 
-	if (cvui::button(theWhere, theX, theY, " - ")) {
+	if (cvui::button(theWhere, theX, theY, "-")) {
 		(*theValue)--;
 	}
 	
 	sprintf_s(buffer, "%d", *theValue);
-	cv::rectangle(theWhere, aContent, cv::Scalar(220, 220, 220), cv::FILLED);
-	text(theWhere, aContent.x + 20, aContent.y + 15, buffer, 0.4);
+	render::counter(theWhere, aShape, buffer);
 
-	if (cvui::button(theWhere, aContent.x + aContent.width, theY, " + ")) {
+	if (cvui::button(theWhere, aShape.x + aShape.width - 1, theY, "+")) {
 		(*theValue)++;
 	}
 
