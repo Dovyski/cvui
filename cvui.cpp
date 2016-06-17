@@ -20,6 +20,16 @@ namespace render {
 	const int OVER = 1;
 	const int PRESSED = 2;
 
+	void text(cv::Mat& theWhere, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor) {
+		int aRed, aGreen, aBlue;
+
+		aRed = (theColor >> 16) & 0xff;
+		aGreen = (theColor >> 8) & 0xff;
+		aBlue = theColor & 0xff;
+
+		cv::putText(theWhere, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, cv::Scalar(aBlue, aGreen, aRed), 1, cv::LINE_AA);
+	}
+
 	void button(int theState, cv::Mat& theWhere, cv::Rect& theShape, const cv::String& theLabel) {
 		// Outline
 		cv::rectangle(theWhere, theShape, cv::Scalar(0x29, 0x29, 0x29));
@@ -63,9 +73,9 @@ namespace render {
 		cv::rectangle(theWhere, theShape, cv::Scalar(0x29, 0x29, 0x29), cv::FILLED);
 	}
 
-	void checkboxLabel(cv::Mat& theWhere, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize) {
+	void checkboxLabel(cv::Mat& theWhere, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor) {
 		cv::Point aPos(theRect.x + theRect.width + 8, theRect.y + theRect.height / 2 + theTextSize.height / 2 + 2);
-		cv::putText(theWhere, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+		text(theWhere, theLabel, aPos, 0.4, theColor);
 	}
 
 	void checkboxCheck(cv::Mat& theWhere, cv::Rect& theShape) {
@@ -155,7 +165,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 	return aMouseIsOver && gMouseJustReleased;
 }
 
-bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState) {
+bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
 	int aBaseline = 0;
 	cv::Rect aRect(theX, theY, 15, 15);
 	cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
@@ -172,7 +182,7 @@ bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel,
 		render::checkbox(render::IDLE, theWhere, aRect);
 	}
 
-	render::checkboxLabel(theWhere, aRect, theLabel, aTextSize);
+	render::checkboxLabel(theWhere, aRect, theLabel, aTextSize, theColor);
 
 	if (*theState) {
 		render::checkboxCheck(theWhere, aRect);
@@ -182,14 +192,8 @@ bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel,
 }
 
 void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor) {
-	int aRed, aGreen, aBlue;
-
-	aRed = (theColor >> 16) & 0xff;
-	aGreen = (theColor >> 8) & 0xff;
-	aBlue = theColor & 0xff;
-	
 	cv::Point aPos(theX, theY);
-	cv::putText(theWhere, theText, aPos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, cv::Scalar(aBlue, aGreen, aRed), 1, cv::LINE_AA);
+	render::text(theWhere, theText, aPos, theFontScale, theColor);
 }
 
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue) {

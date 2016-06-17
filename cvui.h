@@ -24,7 +24,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 
 // Display a checkbox. You can use the state parameter to monitor if the
 // checkbox is checked or not.
-bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState);
+bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor = 0xCECECE);
 
 // Display a piece of text.
 void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale = 0.4, unsigned int theColor = 0xCECECE);
