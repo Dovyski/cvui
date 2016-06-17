@@ -49,6 +49,24 @@ namespace render {
 		cv::Point aPos(theShape.x + theShape.width / 2 - aTextSize.width / 2, theShape.y + aTextSize.height / 2 + theShape.height / 2);
 		cv::putText(theWhere, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
 	}
+
+	void checkbox(int theState, cv::Mat& theWhere, cv::Rect& theShape) {
+		// Outline
+		cv::rectangle(theWhere, theShape, theState == IDLE ? cv::Scalar(0x63, 0x63, 0x63) : cv::Scalar(0x80, 0x80, 0x80));
+
+		// Border
+		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
+		cv::rectangle(theWhere, theShape, cv::Scalar(0x17, 0x17, 0x17));
+
+		// Inside
+		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
+		cv::rectangle(theWhere, theShape, cv::Scalar(0x29, 0x29, 0x29), cv::FILLED);
+	}
+
+	void checkboxCheck(cv::Mat& theWhere, cv::Rect& theShape) {
+		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
+		cv::rectangle(theWhere, theShape, cv::Scalar(0xFF, 0xBF, 0x75), cv::FILLED);
+	}
 }
 
 // Variables to keep track of mouse events and stuff
@@ -90,25 +108,28 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
 }
 
 bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState) {
-	cv::Rect aRect(theX, theY, 20, 20);
-	cv::Rect aHitArea(theX, theY, aRect.width + theLabel.length() * 8, 20);
+	int aBaseline = 0;
+	cv::Rect aRect(theX, theY, 15, 15);
+	cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
+	cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width, aRect.height);
 	bool aMouseIsOver = aHitArea.contains(mouse);
 
 	if (aMouseIsOver) {
-		cv::rectangle(theWhere, aRect, cv::Scalar(255, 0, 0), cv::FILLED);
+		render::checkbox(render::OVER, theWhere, aRect);
 
 		if (mouseJustReleased) {
 			*theState = !(*theState);
 		}
 	} else {
-		cv::rectangle(theWhere, aRect, cv::Scalar(190, 0, 0), cv::FILLED);
+		render::checkbox(render::IDLE, theWhere, aRect);
 	}
+
+	cv::Point aPos(theX + aRect.width + 8, theY + aRect.height / 2 + aTextSize.height / 2 + 2);
+	cv::putText(theWhere, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
 
 	if (*theState) {
-		text(theWhere, theX + 5, theY + 15, "X", 0.5);
+		render::checkboxCheck(theWhere, aRect);
 	}
-
-	text(theWhere, theX + 25, theY + 15, theLabel, 0.4);
 
 	return *theState;
 }
