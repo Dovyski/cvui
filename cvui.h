@@ -20,6 +20,7 @@ void init(const cv::String& theWindowName);
 
 // Display a button. Returns true everytime the user clicks the button.
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel);
+bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel);
 
 // Display a checkbox. You can use the state parameter to monitor if the
 // checkbox is checked or not.

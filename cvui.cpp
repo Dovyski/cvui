@@ -22,11 +22,11 @@ namespace render {
 
 	void button(int theState, cv::Mat& theWhere, cv::Rect& theShape, const cv::String& theLabel) {
 		// Outline
-		cv::rectangle(theWhere, theShape, cv::Scalar(0x33, 0x33, 0x33));
+		cv::rectangle(theWhere, theShape, cv::Scalar(0x29, 0x29, 0x29));
 
 		// Border
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theWhere, theShape, cv::Scalar(0x52, 0x52, 0x52));
+		cv::rectangle(theWhere, theShape, cv::Scalar(0x4A, 0x4A, 0x4A));
 
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
@@ -34,7 +34,7 @@ namespace render {
 	}
 
 	void buttonLabel(int theState, cv::Mat& theWhere, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize) {
-		cv::Point aPos(theRect.x + 10, theRect.y + theTextSize.height + 4);
+		cv::Point aPos(theRect.x + theRect.width / 2 - theTextSize.width / 2, theRect.y + theRect.height / 2 + theTextSize.height / 2);
 		cv::putText(theWhere, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, theState == PRESSED ? 0.39 : 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
 	}
 
@@ -117,10 +117,19 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
 	// Calculate the space that the label will fill
 	int aBaseline = 0;
 	cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
-	
+
+	// Create a button based on the size of the text
+	return button(theWhere, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel);
+}
+
+bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel) {
+	// Calculate the space that the label will fill
+	int aBaseline = 0;
+	cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
+
 	// Make the button bit enough to house the label
-	cv::Rect aRect(theX, theY, aTextSize.width + 20, aTextSize.height + 15);
-	
+	cv::Rect aRect(theX, theY, theWidth, theHeight);
+
 	// Check the state of the button (idle, pressed, etc.)
 	bool aMouseIsOver = aRect.contains(mouse);
 
@@ -174,16 +183,16 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 }
 
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue) {
-	cv::Rect aShape(theX + 30, theY + 1, 50, 22);
+	cv::Rect aContentArea(theX + 22, theY + 1, 48, 21);
 
-	if (cvui::button(theWhere, theX, theY, "-")) {
+	if (cvui::button(theWhere, theX, theY, 22, 22, "-")) {
 		(*theValue)--;
 	}
 	
 	sprintf_s(buffer, "%d", *theValue);
-	render::counter(theWhere, aShape, buffer);
+	render::counter(theWhere, aContentArea, buffer);
 
-	if (cvui::button(theWhere, aShape.x + aShape.width - 1, theY, "+")) {
+	if (cvui::button(theWhere, aContentArea.x + aContentArea.width, theY, 22, 22, "+")) {
 		(*theValue)++;
 	}
 
