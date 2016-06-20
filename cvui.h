@@ -36,7 +36,11 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 
 // Display a counter that the user can increase/descrease by clicking
 // the up and down arrows.
-int counter(cv::Mat& theWhere, int theX, int theY, int *theValue);
+int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 1, const char *theFormat = "%d");
+
+// Display a counter that the user can increase/descrease by clicking
+// the up and down arrows.
+double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
 
 // Display a window (a block with a title and a body).
 void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle);

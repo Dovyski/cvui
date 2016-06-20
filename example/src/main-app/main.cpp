@@ -21,6 +21,7 @@ int main(int argc, const char *argv[])
 	bool checked = false;
 	bool checked2 = true;
 	int count = 0;
+	double countFloat = 0;
 
 	// Init a OpenCV window and tell cvui to use it.
 	// If cv::namedWindow() is not used, mouse events will
@@ -63,6 +64,12 @@ int main(int argc, const char *argv[])
 		// the 4th parameter of the function to point it to the variable
 		// to be changed.
 		cvui::counter(frame, 200, 100, &count);
+
+		// Counter can be used with doubles too. You can also specify
+		// the counter's step (how much it should change
+		// its value after each button press), as well as the format
+		// used to print the value.
+		cvui::counter(frame, 320, 100, &countFloat, 0.1, "%.1f");
 		
 		// Checkboxes also accept a pointer to a variable that controls
 		// the state of the checkbox (checked or not). cvui::checkbox() will

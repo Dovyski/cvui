@@ -198,18 +198,35 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 	render::text(theWhere, theText, aPos, theFontScale, theColor);
 }
 
-int counter(cv::Mat& theWhere, int theX, int theY, int *theValue) {
+int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep, const char *theFormat) {
 	cv::Rect aContentArea(theX + 22, theY + 1, 48, 21);
 
 	if (cvui::button(theWhere, theX, theY, 22, 22, "-")) {
-		(*theValue)--;
+		*theValue -= theStep;
 	}
 	
-	sprintf_s(gBuffer, "%d", *theValue);
+	sprintf_s(gBuffer, theFormat, *theValue);
 	render::counter(theWhere, aContentArea, gBuffer);
 
 	if (cvui::button(theWhere, aContentArea.x + aContentArea.width, theY, 22, 22, "+")) {
-		(*theValue)++;
+		*theValue += theStep;
+	}
+
+	return *theValue;
+}
+
+double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep, const char *theFormat) {
+	cv::Rect aContentArea(theX + 22, theY + 1, 48, 21);
+
+	if (cvui::button(theWhere, theX, theY, 22, 22, "-")) {
+		*theValue -= theStep;
+	}
+
+	sprintf_s(gBuffer, theFormat, *theValue);
+	render::counter(theWhere, aContentArea, gBuffer);
+
+	if (cvui::button(theWhere, aContentArea.x + aContentArea.width, theY, 22, 22, "+")) {
+		*theValue += theStep;
 	}
 
 	return *theValue;
