@@ -49,15 +49,12 @@ void group(cv::Mat& frame, int x, int y, int width, int height) {
 	cvui::window(frame, pos.x, pos.y, w - padding, h, "Normalized power");
 	cvui::rect(frame, pos.x + 2, pos.y + 22, w - padding - 5, h - padding - 20, 0xff0000);
 	pos.x += w;
-	
-	//cvui::text(frame, 50, 30, "Hey there!");
-	//cvui::text(frame, 200, 30, "Use hex 0xRRGGBB colors easily", 0.4, 0xff0000);
 }
 
 
 int main(int argc, const char *argv[])
 {
-	int height = 220;
+	int height = 220, spacing = 10;
 	cv::Mat frame = cv::Mat(height * 3, 1300, CV_8UC3);
 
 	// Init a OpenCV window and tell cvui to use it.
@@ -75,7 +72,10 @@ int main(int argc, const char *argv[])
 			break;
 		}
 
-		group(frame, 0, 0, frame.cols, height - 10);
+		// Render three groups of components.
+		group(frame, 0, 0, frame.cols, height - spacing);
+		group(frame, 0, height, frame.cols, height - spacing);
+		group(frame, 0, height * 2, frame.cols, height - spacing);
 		
 		// This function must be called *AFTER* all UI components. It does
 		// all the behind the scenes magic to handle mouse clicks, etc.
