@@ -118,6 +118,16 @@ namespace render {
 			cv::rectangle(theWhere, theContent, cv::Scalar(0x31, 0x31, 0x31), cv::FILLED);
 		}
 	}
+
+	void rect(cv::Mat& theWhere, cv::Rect& thePos, unsigned int theColor) {
+		int aRed, aGreen, aBlue;
+
+		aRed = (theColor >> 16) & 0xff;
+		aGreen = (theColor >> 8) & 0xff;
+		aBlue = theColor & 0xff;
+
+		cv::rectangle(theWhere, thePos, cv::Scalar(aBlue, aGreen, aRed), cv::FILLED, cv::LINE_AA);
+	}
 }
 
 // Variables to keep track of mouse events and stuff
@@ -237,6 +247,11 @@ void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 	cv::Rect aContent(theX, theY + aTitleBar.height, theWidth, theHeight - aTitleBar.height);
 
 	render::window(theWhere, aTitleBar, aContent, theTitle);
+}
+
+void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
+	cv::Rect aRect(theX, theY, theWidth, theHeight);
+	render::rect(theWhere, aRect, theColor);
 }
 
 void update() {

@@ -45,6 +45,9 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
 // Display a window (a block with a title and a body).
 void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle);
 
+// Display a filled rectangle
+void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theColor);
+
 // You need to call this function *AFTER* you are done adding/manipulating
 // UI elements in order for them to react to mouse interactions.
 void update();
