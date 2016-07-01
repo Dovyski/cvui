@@ -134,7 +134,7 @@ namespace render {
 static bool gMouseJustReleased = false;
 static bool gMousePressed = false;
 static cv::Point gMouse;
-static char gBuffer[200];
+static char gBuffer[1024];
 	
 void init(const cv::String& theWindowName) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
@@ -206,6 +206,17 @@ bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel,
 void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor) {
 	cv::Point aPos(theX, theY);
 	render::text(theWhere, theText, aPos, theFontScale, theColor);
+}
+
+void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...) {
+	cv::Point aPos(theX, theY);
+	va_list aArgs;
+
+	va_start(aArgs, theFmt);
+	vsprintf_s(gBuffer, theFmt, aArgs);
+	va_end(aArgs);
+
+	render::text(theWhere, gBuffer, aPos, theFontScale, theColor);
 }
 
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep, const char *theFormat) {

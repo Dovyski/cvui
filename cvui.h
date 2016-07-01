@@ -11,6 +11,7 @@
 #define _CVUI_H_
 
 #include "opencv2/core/core.hpp"
+#include <stdarg.h>
 
 namespace cvui
 {
@@ -33,6 +34,9 @@ bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel,
 
 // Display a piece of text.
 void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale = 0.4, unsigned int theColor = 0xCECECE);
+
+// Display a piece of text that can be formated using printf style.
+void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...);
 
 // Display a counter that the user can increase/descrease by clicking
 // the up and down arrows.
