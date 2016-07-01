@@ -1,7 +1,7 @@
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
 
- Version: 1.0.0
+ Version: 1.1.0-DEV
 
  Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
  Licensed under the MIT license.
@@ -58,6 +58,9 @@ void update();
 
 // Internally used to handle mouse events
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
+
+// Lib version
+static const char *VERSION = "1.1.0-DEV";
 
 } // namespace cvui
 
