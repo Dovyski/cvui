@@ -52,6 +52,10 @@ void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 // Display a filled rectangle
 void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theColor);
 
+// TODO: add docs
+void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
+void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight);
+
 // You need to call this function *AFTER* you are done adding/manipulating
 // UI elements in order for them to react to mouse interactions.
 void update();

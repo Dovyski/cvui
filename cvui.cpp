@@ -15,6 +15,35 @@
 namespace cvui
 {
 
+// This is an internal namespace with all code
+// that is shared among components/functions
+namespace internal {
+	// Find the min and max values of a vector
+	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax) {
+		std::vector<double>::size_type aSize = theValues.size(), i;
+		double aMin = theValues[0], aMax = theValues[0];
+
+		for (i = 0; i < aSize; i++) {
+			if (theValues[i] < aMin) {
+				aMin = theValues[i];
+			}
+
+			if (theValues[i] > aMax) {
+				aMax = theValues[i];
+			}
+		}
+
+		*theMin = aMin;
+		*theMax = aMax;
+	}
+
+	void separateChannels(int *theRed, int *theGreen, int *theBlue, unsigned int theColor) {
+		*theRed = (theColor >> 16) & 0xff;
+		*theGreen = (theColor >> 8) & 0xff;
+		*theBlue = theColor & 0xff;
+	}
+}
+
 // This is an internal namespace with all functions
 // that actually render each one of the UI components
 namespace render {
@@ -127,6 +156,31 @@ namespace render {
 		aBlue = theColor & 0xff;
 
 		cv::rectangle(theWhere, thePos, cv::Scalar(aBlue, aGreen, aRed), cv::FILLED, cv::LINE_AA);
+	}
+
+	void sparkline(cv::Mat& theWhere, std::vector<double> theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor) {
+		std::vector<double>::size_type aSize = theValues.size(), i;
+		double aGap, aPosX, aScale = 0, x, y;
+		int aRed, aGreen, aBlue ;
+
+		internal::separateChannels(&aRed, &aGreen, &aBlue, theColor);
+
+		aScale = theMax - theMin;
+		aGap = (double)theRect.width / aSize;
+		aPosX = theRect.x;
+
+		for (i = 0; i <= aSize - 2; i++) {
+			x = aPosX;
+			y = (theValues[i] - theMin) / aScale * -(theRect.height - 5) + theRect.y + theRect.height - 5;
+			cv::Point aPoint1((int)x, (int)y);
+
+			x = aPosX + aGap;
+			y = (theValues[i + 1] - theMin) / aScale * -(theRect.height - 5) + theRect.y + theRect.height - 5;
+			cv::Point aPoint2((int)x, (int)y);
+
+			cv::line(theWhere, aPoint1, aPoint2, cv::Scalar(aBlue, aGreen, aRed));
+			aPosX += aGap;
+		}
 	}
 }
 
@@ -263,6 +317,27 @@ void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
 	cv::Rect aRect(theX, theY, theWidth, theHeight);
 	render::rect(theWhere, aRect, theColor);
+}
+
+void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
+	double aMin, aMax;
+	cv::Rect aRect(theX, theY, theWidth, theHeight);
+
+	internal::findMinMax(theValues, &aMin, &aMax);
+	render::sparkline(theWhere, theValues, aRect, aMin, aMax, theColor);
+}
+
+void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight) {
+	double aMin, aMax, aScale = 0;
+
+	internal::findMinMax(theValues, &aMin, &aMax);
+	aScale = aMax - aMin;
+
+	sparkline(theWhere, theValues, theX, theY, theWidth, theHeight);
+
+	cvui::printf(theWhere, theX + 2, theY + 8, 0.25, 0x717171, "%.1f", aMax);
+	cvui::printf(theWhere, theX + 2, theY + theHeight / 2, 0.25, 0x717171, "%.1f", aScale / 2 + aMin);
+	cvui::printf(theWhere, theX + 2, theY + theHeight - 5, 0.25, 0x717171, "%.1f", aMin);
 }
 
 void update() {
