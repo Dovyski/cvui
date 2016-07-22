@@ -6,8 +6,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "main-app", "src\main-app\ma
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "complex-layout", "src\complext-layout\complex-layout.vcxproj", "{F9FBF3EB-B254-4D8E-94E2-3D29BD091395}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "charts", "src\charts\charts.vcxproj", "{56A8A653-DBBD-4AD4-85FD-E2C91BEDC4D4}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sparkline", "src\sparkline\sparkline.vcxproj", "{DFF04027-B1BD-481E-B51C-E5188B143E97}"
 EndProject
 Global
@@ -24,10 +22,6 @@ Global
 		{F9FBF3EB-B254-4D8E-94E2-3D29BD091395}.Debug|x64.Build.0 = Debug|x64
 		{F9FBF3EB-B254-4D8E-94E2-3D29BD091395}.Release|x64.ActiveCfg = Release|x64
 		{F9FBF3EB-B254-4D8E-94E2-3D29BD091395}.Release|x64.Build.0 = Release|x64
-		{56A8A653-DBBD-4AD4-85FD-E2C91BEDC4D4}.Debug|x64.ActiveCfg = Debug|x64
-		{56A8A653-DBBD-4AD4-85FD-E2C91BEDC4D4}.Debug|x64.Build.0 = Debug|x64
-		{56A8A653-DBBD-4AD4-85FD-E2C91BEDC4D4}.Release|x64.ActiveCfg = Release|x64
-		{56A8A653-DBBD-4AD4-85FD-E2C91BEDC4D4}.Release|x64.Build.0 = Release|x64
 		{DFF04027-B1BD-481E-B51C-E5188B143E97}.Debug|x64.ActiveCfg = Debug|x64
 		{DFF04027-B1BD-481E-B51C-E5188B143E97}.Debug|x64.Build.0 = Debug|x64
 		{DFF04027-B1BD-481E-B51C-E5188B143E97}.Release|x64.ActiveCfg = Release|x64

@@ -35,7 +35,7 @@ std::vector<double> load(std::string thePath) {
 
 int main(int argc, const char *argv[])
 {
-	std::vector<double> points = load("./data/sparkline.csv");
+	std::vector<double> points = load("sparkline.csv");
 
 	cv::Mat frame = cv::Mat(600, 800, CV_8UC3);
 

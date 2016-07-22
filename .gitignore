@@ -31,9 +31,8 @@
 *.sdf
 *.opensdf
 *.suo
-example/obj/*
 example/build/*
 
 #Save those, please
-!example/obj/README.txt
 !example/build/README.txt
+!example/build/data/*
