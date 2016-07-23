@@ -62,6 +62,10 @@ void endRow();
 // Display a piece of text within beginRow() and endRow();
 void text(const cv::String& theText, double theFontScale = 0.4, unsigned int theColor = 0xCECECE);
 
+// Display a button. Returns true everytime the user clicks the button.
+// The button size will be defined by the width and height parameters, no matter the label.
+bool button(int theWidth, int theHeight, const cv::String& theLabel);
+
 // You need to call this function *AFTER* you are done adding/manipulating
 // UI elements in order for them to react to mouse interactions.
 void update();
@@ -71,6 +75,34 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 
 // Lib version
 static const char *VERSION = "1.1.0-DEV";
+
+// TODO: add docs
+const int TYPE_ROW = 0;
+
+// TODO: add docs
+typedef struct {
+	cv::Mat where;
+	cv::Rect rect;
+	int type;
+} cvui_block_t;
+
+// TODO: add docs
+namespace render {
+	const int IDLE = 0;
+	const int OVER = 1;
+	const int PRESSED = 2;
+
+	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor);
+	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel);
+	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize);
+	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue);
+	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
+	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor);
+	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape);
+	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle);
+	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theColor);
+	void sparkline(cvui_block_t& theBlock, std::vector<double> theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
+}
 
 } // namespace cvui
 
