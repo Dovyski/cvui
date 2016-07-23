@@ -15,7 +15,6 @@
 
 namespace cvui
 {
-
 // Initializes the library. You must inform the maximum width and
 // height of the window where the lib will render the UI components.
 void init(const cv::String& theWindowName);
@@ -55,6 +54,13 @@ void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, un
 // TODO: add docs
 void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
 void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight);
+
+// TODO: add docs
+void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight);
+void endRow();
+
+// Display a piece of text within beginRow() and endRow();
+void text(const cv::String& theText, double theFontScale = 0.4, unsigned int theColor = 0xCECECE);
 
 // You need to call this function *AFTER* you are done adding/manipulating
 // UI elements in order for them to react to mouse interactions.

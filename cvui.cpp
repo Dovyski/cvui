@@ -8,6 +8,7 @@
 */
 
 #include <iostream>
+
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "cvui.h"
@@ -184,11 +185,22 @@ namespace render {
 	}
 }
 
+const int TYPE_ROW = 0;
+
+typedef struct {
+	cv::Mat where;
+	cv::Rect rect;
+	int type;
+} cvui_block_t;
+
 // Variables to keep track of mouse events and stuff
 static bool gMouseJustReleased = false;
 static bool gMousePressed = false;
 static cv::Point gMouse;
 static char gBuffer[1024];
+
+static cvui_block_t gStack[100]; // TODO: make it dynamic?
+static int gStackCount = -1;
 	
 void init(const cv::String& theWindowName) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
@@ -338,6 +350,33 @@ void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, 
 	cvui::printf(theWhere, theX + 2, theY + 8, 0.25, 0x717171, "%.1f", aMax);
 	cvui::printf(theWhere, theX + 2, theY + theHeight / 2, 0.25, 0x717171, "%.1f", aScale / 2 + aMin);
 	cvui::printf(theWhere, theX + 2, theY + theHeight - 5, 0.25, 0x717171, "%.1f", aMin);
+}
+
+void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight) {
+	// TODO: move this to internal namespace?
+	cvui_block_t& aBlock = gStack[++gStackCount];
+	
+	aBlock.where = theWhere;
+	aBlock.rect.x = theX;
+	aBlock.rect.y = theY;
+	aBlock.rect.width = theWidth;
+	aBlock.rect.height = theHeight;
+	aBlock.type = TYPE_ROW;
+}
+
+void endRow() {
+	// TODO: check for empty stack before getting things out of it.
+	gStackCount--;
+}
+
+void text(const cv::String& theText, double theFontScale, unsigned int theColor) {
+	cvui_block_t& aBlock = gStack[gStackCount];
+
+	cv::Point aPos(aBlock.rect.x, aBlock.rect.y);
+	render::text(aBlock.where, theText, aPos, theFontScale, theColor);
+
+	// TODO: calculate the real width of the text
+	aBlock.rect.x += 50;
 }
 
 void update() {
