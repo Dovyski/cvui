@@ -66,6 +66,10 @@ void text(const cv::String& theText, double theFontScale = 0.4, unsigned int the
 // The button size will be defined by the width and height parameters, no matter the label.
 bool button(int theWidth, int theHeight, const cv::String& theLabel);
 
+// Display a button. Returns true everytime the user clicks the button.
+// The button size will be automatically adjusted to properly house the label content.
+bool button(const cv::String& theLabel);
+
 // You need to call this function *AFTER* you are done adding/manipulating
 // UI elements in order for them to react to mouse interactions.
 void update();

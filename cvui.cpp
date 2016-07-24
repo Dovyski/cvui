@@ -63,8 +63,7 @@ namespace internal {
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel) {
 		// Calculate the space that the label will fill
-		int aBaseline = 0;
-		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
+		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 
 		// Make the button bit enough to house the label
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
@@ -87,14 +86,18 @@ namespace internal {
 			render::buttonLabel(theBlock, render::IDLE, aRect, theLabel, aTextSize);
 		}
 
+		// Update the layout flow according to button size
+		aTextSize.width = theWidth;
+		aTextSize.height = theHeight;
+		updateLayoutFlow(theBlock, aTextSize);
+
 		// Tell if the button was clicked or not
 		return aMouseIsOver && gMouseJustReleased;
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel) {
 		// Calculate the space that the label will fill
-		int aBaseline = 0;
-		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
+		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 
 		// Create a button based on the size of the text
 		return internal::button(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel);
@@ -236,9 +239,6 @@ namespace render {
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
 		cv::rectangle(theBlock.where, theShape, theState == IDLE ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), cv::FILLED);
-
-		// TODO: calculate the real width of the text
-		theBlock.rect.x += 50;
 	}
 
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize) {
