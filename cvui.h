@@ -74,6 +74,9 @@ bool button(const cv::String& theLabel);
 // checkbox is checked or not.
 bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor = 0xCECECE);
 
+// Display a piece of text that can be formated using printf style.
+void printf(double theFontScale, unsigned int theColor, char *theFmt, ...);
+
 // Display a counter that the user can increase/descrease by clicking
 // the up and down arrows.
 int counter(int *theValue, int theStep = 1, const char *theFormat = "%d");

@@ -146,17 +146,6 @@ namespace internal {
 		}
 	}
 
-	void printf(cvui_block_t& theBlock, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...) {
-		cv::Point aPos(theX, theY);
-		va_list aArgs;
-
-		va_start(aArgs, theFmt);
-		vsprintf_s(gBuffer, theFmt, aArgs);
-		va_end(aArgs);
-
-		render::text(theBlock, gBuffer, aPos, theFontScale, theColor);
-	}
-
 	int counter(cvui_block_t& theBlock, int theX, int theY, int *theValue, int theStep, const char *theFormat) {
 		cv::Rect aContentArea(theX + 22, theY + 1, 48, 21);
 
@@ -239,9 +228,14 @@ namespace internal {
 
 		sparkline(theBlock, theValues, theX, theY, theWidth, theHeight, 0x00FF00);
 
-		internal::printf(theBlock, theX + 2, theY + 8, 0.25, 0x717171, "%.1f", aMax);
-		internal::printf(theBlock, theX + 2, theY + theHeight / 2, 0.25, 0x717171, "%.1f", aScale / 2 + aMin);
-		internal::printf(theBlock, theX + 2, theY + theHeight - 5, 0.25, 0x717171, "%.1f", aMin);
+		sprintf_s(gBuffer, "%.1f", aMax);
+		internal::text(theBlock, theX + 2, theY + 8, gBuffer, 0.25, 0x717171, false);
+
+		sprintf_s(gBuffer, "%.1f", aScale / 2 + aMin);
+		internal::text(theBlock, theX + 2, theY + theHeight / 2, gBuffer, 0.25, 0x717171, false);
+
+		sprintf_s(gBuffer, "%.1f", aMin);
+		internal::text(theBlock, theX + 2, theY + theHeight - 5, gBuffer, 0.25, 0x717171, false);
 
 		// Update the layout flow
 		cv::Size aSize(theWidth, theHeight);
@@ -413,7 +407,7 @@ void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned
 
 	va_start(aArgs, theFmt);
 	vsprintf_s(gBuffer, theFmt, aArgs);
-	va_end(aArgs);
+	va_end(aArgs);	
 
 	gScreen.where = theWhere;
 	internal::text(gScreen, theX, theY, gBuffer, theFontScale, theColor, true);
@@ -488,6 +482,14 @@ void text(const cv::String& theText, double theFontScale, unsigned int theColor)
 }
 
 void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
+	cvui_block_t& aBlock = gStack[gStackCount];
+	va_list aArgs;
+
+	va_start(aArgs, theFmt);
+	vsprintf_s(gBuffer, theFmt, aArgs);
+	va_end(aArgs);
+
+	internal::text(aBlock, aBlock.rect.x, aBlock.rect.y, gBuffer, theFontScale, theColor, true);
 }
 
 int counter(int *theValue, int theStep, const char *theFormat) {
