@@ -74,6 +74,24 @@ bool button(const cv::String& theLabel);
 // checkbox is checked or not.
 bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor = 0xCECECE);
 
+// Display a counter that the user can increase/descrease by clicking
+// the up and down arrows.
+int counter(int *theValue, int theStep = 1, const char *theFormat = "%d");
+
+// Display a counter that the user can increase/descrease by clicking
+// the up and down arrows.
+double counter(double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
+
+// Display a window (a block with a title and a body).
+void window(int theWidth, int theHeight, const cv::String& theTitle);
+
+// Display a filled rectangle
+void rect(int theWidth, int theHeight, unsigned int theColor);
+
+// TODO: add docs
+void sparkline(std::vector<double> theValues, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
+void sparklineChart(std::vector<double> theValues, int theWidth, int theHeight);
+
 // You need to call this function *AFTER* you are done adding/manipulating
 // UI elements in order for them to react to mouse interactions.
 void update();

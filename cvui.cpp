@@ -193,11 +193,19 @@ namespace internal {
 		cv::Rect aContent(theX, theY + aTitleBar.height, theWidth, theHeight - aTitleBar.height);
 
 		render::window(theBlock, aTitleBar, aContent, theTitle);
+
+		// Update the layout flow
+		cv::Size aSize(theWidth, theHeight);
+		updateLayoutFlow(theBlock, aSize);
 	}
 
 	void rect(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
 		render::rect(theBlock, aRect, theColor);
+
+		// Update the layout flow
+		cv::Size aSize(aRect.width, aRect.height);
+		updateLayoutFlow(theBlock, aSize);
 	}
 
 	void sparkline(cvui_block_t& theBlock, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
@@ -206,6 +214,10 @@ namespace internal {
 
 		internal::findMinMax(theValues, &aMin, &aMax);
 		render::sparkline(theBlock, theValues, aRect, aMin, aMax, theColor);
+
+		// Update the layout flow
+		cv::Size aSize(theWidth, theHeight);
+		updateLayoutFlow(theBlock, aSize);
 	}
 
 	void sparklineChart(cvui_block_t& theBlock, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight) {
@@ -219,6 +231,10 @@ namespace internal {
 		internal::printf(theBlock, theX + 2, theY + 8, 0.25, 0x717171, "%.1f", aMax);
 		internal::printf(theBlock, theX + 2, theY + theHeight / 2, 0.25, 0x717171, "%.1f", aScale / 2 + aMin);
 		internal::printf(theBlock, theX + 2, theY + theHeight - 5, 0.25, 0x717171, "%.1f", aMin);
+
+		// Update the layout flow
+		cv::Size aSize(theWidth, theHeight);
+		updateLayoutFlow(theBlock, aSize);
 	}
 }
 
@@ -483,12 +499,12 @@ void rect(int theWidth, int theHeight, unsigned int theColor) {
 	internal::rect(aBlock, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theColor);
 }
 
-void sparkline(std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
+void sparkline(std::vector<double> theValues, int theWidth, int theHeight, unsigned int theColor) {
 	cvui_block_t& aBlock = gStack[gStackCount];
 	internal::sparkline(aBlock, theValues, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theColor);
 }
 
-void sparklineChart(std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight) {
+void sparklineChart(std::vector<double> theValues, int theWidth, int theHeight) {
 	cvui_block_t& aBlock = gStack[gStackCount];
 	internal::sparkline(aBlock, theValues, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, 0x00FF00);
 }
