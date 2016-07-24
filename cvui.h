@@ -37,6 +37,10 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 // Display a piece of text that can be formated using printf style.
 void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...);
 
+// Display a piece of text that can be formated using printf style.
+// Size and color of the text are based on the lib's default values.
+void printf(cv::Mat& theWhere, int theX, int theY, char *theFmt, ...);
+
 // Display a counter that the user can increase/descrease by clicking
 // the up and down arrows.
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 1, const char *theFormat = "%d");
@@ -76,6 +80,10 @@ bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor 
 
 // Display a piece of text that can be formated using printf style.
 void printf(double theFontScale, unsigned int theColor, char *theFmt, ...);
+
+// Display a piece of text that can be formated using printf style.
+// Size and color of the text are based on the lib's default values.
+void printf(char *theFmt, ...);
 
 // Display a counter that the user can increase/descrease by clicking
 // the up and down arrows.

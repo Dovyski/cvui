@@ -413,6 +413,17 @@ void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned
 	internal::text(gScreen, theX, theY, gBuffer, theFontScale, theColor, true);
 }
 
+void printf(cv::Mat& theWhere, int theX, int theY, char *theFmt, ...) {
+	va_list aArgs;
+
+	va_start(aArgs, theFmt);
+	vsprintf_s(gBuffer, theFmt, aArgs);
+	va_end(aArgs);
+
+	gScreen.where = theWhere;
+	internal::text(gScreen, theX, theY, gBuffer, 0.4, 0xCECECE, true);
+}
+
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep, const char *theFormat) {
 	gScreen.where = theWhere;
 	return internal::counter(gScreen, theX, theY, theValue, theStep, theFormat);
@@ -490,6 +501,17 @@ void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
 	va_end(aArgs);
 
 	internal::text(aBlock, aBlock.rect.x, aBlock.rect.y, gBuffer, theFontScale, theColor, true);
+}
+
+void printf(char *theFmt, ...) {
+	cvui_block_t& aBlock = gStack[gStackCount];
+	va_list aArgs;
+
+	va_start(aArgs, theFmt);
+	vsprintf_s(gBuffer, theFmt, aArgs);
+	va_end(aArgs);
+
+	internal::text(aBlock, aBlock.rect.x, aBlock.rect.y, gBuffer, 0.4, 0xCECECE, true);
 }
 
 int counter(int *theValue, int theStep, const char *theFormat) {
