@@ -109,7 +109,7 @@ namespace internal {
 		int aBaseline = 0;
 		cv::Rect aRect(theX, theY, 15, 15);
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
-		cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width + 8, aRect.height);
+		cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width + 6, aRect.height);
 		bool aMouseIsOver = aHitArea.contains(gMouse);
 
 		if (aMouseIsOver) {
@@ -137,7 +137,9 @@ namespace internal {
 	}
 
 	void text(cvui_block_t& theBlock, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor, bool theUpdateLayout) {
-		cv::Point aPos(theX, theY);
+		cv::Size aTextSize = cv::getTextSize(theText, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
+		cv::Point aPos(theX, theY + aTextSize.height);
+
 		render::text(theBlock, theText, aPos, theFontScale, theColor);
 
 		if (theUpdateLayout) {
@@ -147,7 +149,7 @@ namespace internal {
 	}
 
 	int counter(cvui_block_t& theBlock, int theX, int theY, int *theValue, int theStep, const char *theFormat) {
-		cv::Rect aContentArea(theX + 22, theY + 1, 48, 21);
+		cv::Rect aContentArea(theX + 22, theY, 48, 22);
 
 		if (internal::button(theBlock, theX, theY, 22, 22, "-", false)) {
 			*theValue -= theStep;
@@ -168,7 +170,7 @@ namespace internal {
 	}
 
 	double counter(cvui_block_t& theBlock, int theX, int theY, double *theValue, double theStep, const char *theFormat) {
-		cv::Rect aContentArea(theX + 22, theY + 1, 48, 21);
+		cv::Rect aContentArea(theX + 22, theY, 48, 22);
 
 		if (internal::button(theBlock, theX, theY, 22, 22, "-", false)) {
 			*theValue -= theStep;
@@ -272,12 +274,10 @@ namespace render {
 	}
 
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue) {
-		int aBaseline = 0;
-
 		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29), cv::FILLED); // fill
 		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x45, 0x45, 0x45)); // border
 
-		cv::Size aTextSize = getTextSize(theValue, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
+		cv::Size aTextSize = getTextSize(theValue, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 
 		cv::Point aPos(theShape.x + theShape.width / 2 - aTextSize.width / 2, theShape.y + aTextSize.height / 2 + theShape.height / 2);
 		cv::putText(theBlock.where, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
@@ -297,7 +297,7 @@ namespace render {
 	}
 
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor) {
-		cv::Point aPos(theRect.x + theRect.width + 8, theRect.y + theRect.height / 2 + theTextSize.height / 2 + 2);
+		cv::Point aPos(theRect.x + theRect.width + 6, theRect.y + theTextSize.height + theRect.height / 2 - theTextSize.height / 2 - 1);
 		text(theBlock, theLabel, aPos, 0.4, theColor);
 	}
 
