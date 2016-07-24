@@ -107,7 +107,7 @@ namespace internal {
 		int aBaseline = 0;
 		cv::Rect aRect(theX, theY, 15, 15);
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
-		cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width, aRect.height);
+		cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width + 8, aRect.height);
 		bool aMouseIsOver = aHitArea.contains(gMouse);
 
 		if (aMouseIsOver) {
@@ -126,6 +126,10 @@ namespace internal {
 		if (*theState) {
 			render::checkboxCheck(theBlock, aRect);
 		}
+
+		// Update the layout flow
+		cv::Size aSize(aHitArea.width, aHitArea.height);
+		updateLayoutFlow(theBlock, aSize);
 
 		return *theState;
 	}

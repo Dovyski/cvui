@@ -70,6 +70,10 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel);
 // The button size will be automatically adjusted to properly house the label content.
 bool button(const cv::String& theLabel);
 
+// Display a checkbox. You can use the state parameter to monitor if the
+// checkbox is checked or not.
+bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor = 0xCECECE);
+
 // You need to call this function *AFTER* you are done adding/manipulating
 // UI elements in order for them to react to mouse interactions.
 void update();
