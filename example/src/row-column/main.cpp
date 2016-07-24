@@ -30,18 +30,18 @@ int main(int argc, const char *argv[])
 		// Fill the frame with a nice color
 		frame = cv::Scalar(49, 52, 49);
 
-		cvui::beginRow(frame, 10, 20, 100, 50);
+		cvui::beginRow(frame, 10, 20, 100, 50, 10);
 			cvui::text("Hi again.");
-			cvui::text("Its me");
-			cvui::text(", a Mario!");
-			cvui::button(100, 50, "Test");
-			cvui::button(50, 50, "hi");
+			cvui::text("Its me,");
+			cvui::text("a Mario!");
+			//cvui::button(100, 50, "Test");
+			//cvui::button(50, 50, "hi");
 		cvui::endRow();
 
 		cvui::beginRow(frame, 10, 50, 100, 50);
 			cvui::text("2Hi again.");
-			cvui::text("2Its me");
-			cvui::text("2, a Mario!");
+			cvui::text("2Its me,");
+			cvui::text("2a Mario!");
 		cvui::endRow();
 
 		cvui::text(frame, 50, 150, "Outside the row!", 0.4, 0x00FF00);

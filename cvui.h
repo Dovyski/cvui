@@ -56,7 +56,7 @@ void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int t
 void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight);
 
 // TODO: add docs
-void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight);
+void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding = 0);
 void endRow();
 
 // Display a piece of text within beginRow() and endRow();
@@ -83,6 +83,7 @@ const int TYPE_ROW = 0;
 typedef struct {
 	cv::Mat where;
 	cv::Rect rect;
+	int padding;
 	int type;
 } cvui_block_t;
 

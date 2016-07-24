@@ -55,6 +55,12 @@ namespace internal {
 		*theBlue = theColor & 0xff;
 	}
 
+	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize) {
+		if (theBlock.type == TYPE_ROW) {
+			theBlock.rect.x += theSize.width + theBlock.padding;
+		}
+	}
+
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel) {
 		// Calculate the space that the label will fill
 		int aBaseline = 0;
@@ -124,6 +130,10 @@ namespace internal {
 	void text(cvui_block_t& theBlock, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor) {
 		cv::Point aPos(theX, theY);
 		render::text(theBlock, theText, aPos, theFontScale, theColor);
+
+		int aBaseline;
+		cv::Size aTextSize = cv::getTextSize(theText, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, &aBaseline);
+		updateLayoutFlow(theBlock, aTextSize);
 	}
 
 	void printf(cvui_block_t& theBlock, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...) {
@@ -213,9 +223,6 @@ namespace render {
 
 		internal::separateChannels(&aRed, &aGreen, &aBlue, theColor);
 		cv::putText(theBlock.where, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, cv::Scalar(aBlue, aGreen, aRed), 1, cv::LINE_AA);
-
-		// TODO: calculate the real width of the text
-		theBlock.rect.x += 50;
 	}
 
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel) {
@@ -411,7 +418,7 @@ void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, 
 	internal::sparkline(gScreen, theValues, theX, theY, theWidth, theHeight, 0x00FF00);
 }
 
-void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight) {
+void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding) {
 	// TODO: move this to internal namespace?
 	cvui_block_t& aBlock = gStack[++gStackCount];
 	
@@ -420,6 +427,7 @@ void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight
 	aBlock.rect.y = theY;
 	aBlock.rect.width = theWidth;
 	aBlock.rect.height = theHeight;
+	aBlock.padding = thePadding;
 	aBlock.type = TYPE_ROW;
 }
 
@@ -488,6 +496,7 @@ void update() {
 	gScreen.rect.y = 0;
 	gScreen.rect.width = 0;
 	gScreen.rect.height = 0;
+	gScreen.padding = 0;
 }
 
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
