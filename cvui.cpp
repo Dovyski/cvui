@@ -61,7 +61,7 @@ namespace internal {
 		}
 	}
 
-	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel) {
+	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {
 		// Calculate the space that the label will fill
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 
@@ -87,9 +87,11 @@ namespace internal {
 		}
 
 		// Update the layout flow according to button size
-		aTextSize.width = theWidth;
-		aTextSize.height = theHeight;
-		updateLayoutFlow(theBlock, aTextSize);
+		// if we were told to update.
+		if (theUpdateLayout) {
+			cv::Size aSize(theWidth, theHeight);
+			updateLayoutFlow(theBlock, aSize);
+		}
 
 		// Tell if the button was clicked or not
 		return aMouseIsOver && gMouseJustReleased;
@@ -100,7 +102,7 @@ namespace internal {
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 
 		// Create a button based on the size of the text
-		return internal::button(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel);
+		return internal::button(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, true);
 	}
 
 	bool checkbox(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
@@ -134,13 +136,14 @@ namespace internal {
 		return *theState;
 	}
 
-	void text(cvui_block_t& theBlock, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor) {
+	void text(cvui_block_t& theBlock, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor, bool theUpdateLayout) {
 		cv::Point aPos(theX, theY);
 		render::text(theBlock, theText, aPos, theFontScale, theColor);
 
-		int aBaseline;
-		cv::Size aTextSize = cv::getTextSize(theText, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, &aBaseline);
-		updateLayoutFlow(theBlock, aTextSize);
+		if (theUpdateLayout) {
+			cv::Size aTextSize = cv::getTextSize(theText, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
+			updateLayoutFlow(theBlock, aTextSize);
+		}
 	}
 
 	void printf(cvui_block_t& theBlock, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...) {
@@ -157,16 +160,20 @@ namespace internal {
 	int counter(cvui_block_t& theBlock, int theX, int theY, int *theValue, int theStep, const char *theFormat) {
 		cv::Rect aContentArea(theX + 22, theY + 1, 48, 21);
 
-		if (internal::button(theBlock, theX, theY, 22, 22, "-")) {
+		if (internal::button(theBlock, theX, theY, 22, 22, "-", false)) {
 			*theValue -= theStep;
 		}
 
 		sprintf_s(gBuffer, theFormat, *theValue);
 		render::counter(theBlock, aContentArea, gBuffer);
 
-		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, 22, 22, "+")) {
+		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, 22, 22, "+", false)) {
 			*theValue += theStep;
 		}
+
+		// Update the layout flow
+		cv::Size aSize(22 * 2 + aContentArea.width, 22 * 2 + aContentArea.height);
+		updateLayoutFlow(theBlock, aSize);
 
 		return *theValue;
 	}
@@ -174,16 +181,20 @@ namespace internal {
 	double counter(cvui_block_t& theBlock, int theX, int theY, double *theValue, double theStep, const char *theFormat) {
 		cv::Rect aContentArea(theX + 22, theY + 1, 48, 21);
 
-		if (internal::button(theBlock, theX, theY, 22, 22, "-")) {
+		if (internal::button(theBlock, theX, theY, 22, 22, "-", false)) {
 			*theValue -= theStep;
 		}
 
 		sprintf_s(gBuffer, theFormat, *theValue);
 		render::counter(theBlock, aContentArea, gBuffer);
 
-		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, 22, 22, "+")) {
+		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, 22, 22, "+", false)) {
 			*theValue += theStep;
 		}
+
+		// Update the layout flow
+		cv::Size aSize(22 * 2 + aContentArea.width, 22 * 2 + aContentArea.height);
+		updateLayoutFlow(theBlock, aSize);
 
 		return *theValue;
 	}
@@ -384,7 +395,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
 
 bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel) {
 	gScreen.where = theWhere;
-	return internal::button(gScreen, theX, theY, theWidth, theHeight, theLabel);
+	return internal::button(gScreen, theX, theY, theWidth, theHeight, theLabel, true);
 }
 
 bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
@@ -394,7 +405,7 @@ bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel,
 
 void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor) {
 	gScreen.where = theWhere;
-	internal::text(gScreen, theX, theY, theText, theFontScale, theColor);
+	internal::text(gScreen, theX, theY, theText, theFontScale, theColor, true);
 }
 
 void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...) {
@@ -405,7 +416,7 @@ void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned
 	va_end(aArgs);
 
 	gScreen.where = theWhere;
-	internal::text(gScreen, theX, theY, gBuffer, theFontScale, theColor);
+	internal::text(gScreen, theX, theY, gBuffer, theFontScale, theColor, true);
 }
 
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep, const char *theFormat) {
@@ -463,7 +474,7 @@ bool button(const cv::String& theLabel) {
 
 bool button(int theWidth, int theHeight, const cv::String& theLabel) {
 	cvui_block_t& aBlock = gStack[gStackCount];
-	return internal::button(aBlock, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theLabel);
+	return internal::button(aBlock, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theLabel, true);
 }
 
 bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor) {
@@ -473,7 +484,7 @@ bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor)
 
 void text(const cv::String& theText, double theFontScale, unsigned int theColor) {
 	cvui_block_t& aBlock = gStack[gStackCount];
-	internal::text(aBlock, aBlock.rect.x, aBlock.rect.y, theText, theFontScale, theColor);
+	internal::text(aBlock, aBlock.rect.x, aBlock.rect.y, theText, theFontScale, theColor, true);
 }
 
 void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
