@@ -21,15 +21,63 @@ static bool gMouseJustReleased = false;
 static bool gMousePressed = false;
 static cv::Point gMouse;
 static char gBuffer[1024];
-
-static cvui_block_t gStack[100]; // TODO: make it dynamic?
-static int gStackCount = -1;
 static cvui_block_t gScreen;
-
 
 // This is an internal namespace with all code
 // that is shared among components/functions
 namespace internal {
+	static cvui_block_t gStack[100]; // TODO: make it dynamic?
+	static int gStackCount = -1;
+
+	void error(int theId, std::string theMessage) {
+		std::cout << "[CVUI] Fatal error (code " << theId << "): " << theMessage << "\n";
+		cv::waitKey(100000);
+		exit(-1);
+	}
+
+	bool blockStackEmpty() {
+		return gStackCount == -1;
+	}
+
+	cvui_block_t& topBlock() {
+		if (gStackCount < 0) {
+			error(3, "You are using a function that should be enclosed by begin*() and end*(), but you probably forgot to call begin*().");
+		}
+
+		return gStack[gStackCount];
+	}
+
+	cvui_block_t& pushBlock() {
+		return gStack[++gStackCount];
+	}
+
+	cvui_block_t& popBlock() {
+		// Check if there is anything to be popped out from the stack.
+		if (gStackCount < 0) {
+			error(1, "Mismatch in the number of begin*()/end*() calls. You are calling one more than the other.");
+		}
+		
+		return gStack[gStackCount--];
+	}
+
+	void begin(int theType, cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding) {
+		cvui_block_t& aBlock = internal::pushBlock();
+
+		aBlock.where = theWhere;
+		aBlock.rect.x = theX;
+		aBlock.rect.y = theY;
+		aBlock.rect.width = theWidth;
+		aBlock.rect.height = theHeight;
+		aBlock.padding = thePadding;
+		aBlock.type = theType;
+	}
+
+	void end(int theType) {
+		cvui_block_t& aBlock = popBlock();
+
+		// Check if aBlock.type == theType.
+	}
+
 	// Find the min and max values of a vector
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax) {
 		std::vector<double>::size_type aSize = theValues.size(), i;
@@ -56,7 +104,7 @@ namespace internal {
 	}
 
 	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize) {
-		if (theBlock.type == TYPE_ROW) {
+		if (theBlock.type == ROW) {
 			theBlock.rect.x += theSize.width + theBlock.padding;
 		}
 	}
@@ -378,7 +426,6 @@ namespace render {
 	
 void init(const cv::String& theWindowName) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
-
 	//TODO: init gScreen here?
 }
 
@@ -455,45 +502,35 @@ void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, 
 }
 
 void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding) {
-	// TODO: move this to internal namespace?
-	cvui_block_t& aBlock = gStack[++gStackCount];
-	
-	aBlock.where = theWhere;
-	aBlock.rect.x = theX;
-	aBlock.rect.y = theY;
-	aBlock.rect.width = theWidth;
-	aBlock.rect.height = theHeight;
-	aBlock.padding = thePadding;
-	aBlock.type = TYPE_ROW;
+	internal::begin(ROW, theWhere, theX, theY, theWidth, theHeight, thePadding);
 }
 
 void endRow() {
-	// TODO: check for empty stack before getting things out of it.
-	gStackCount--;
+	internal::end(ROW);
 }
 
 bool button(const cv::String& theLabel) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	return internal::button(aBlock, aBlock.rect.x, aBlock.rect.y, theLabel);
 }
 
 bool button(int theWidth, int theHeight, const cv::String& theLabel) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	return internal::button(aBlock, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theLabel, true);
 }
 
 bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	return internal::checkbox(aBlock, aBlock.rect.x, aBlock.rect.y, theLabel, theState, theColor);
 }
 
 void text(const cv::String& theText, double theFontScale, unsigned int theColor) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	internal::text(aBlock, aBlock.rect.x, aBlock.rect.y, theText, theFontScale, theColor, true);
 }
 
 void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	va_list aArgs;
 
 	va_start(aArgs, theFmt);
@@ -504,7 +541,7 @@ void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
 }
 
 void printf(char *theFmt, ...) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	va_list aArgs;
 
 	va_start(aArgs, theFmt);
@@ -515,32 +552,32 @@ void printf(char *theFmt, ...) {
 }
 
 int counter(int *theValue, int theStep, const char *theFormat) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	return internal::counter(aBlock, aBlock.rect.x, aBlock.rect.y, theValue, theStep, theFormat);
 }
 
 double counter(double *theValue, double theStep, const char *theFormat) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	return internal::counter(aBlock, aBlock.rect.x, aBlock.rect.y, theValue, theStep, theFormat);
 }
 
 void window(int theWidth, int theHeight, const cv::String& theTitle) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	internal::window(aBlock, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theTitle);
 }
 
 void rect(int theWidth, int theHeight, unsigned int theColor) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	internal::rect(aBlock, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theColor);
 }
 
 void sparkline(std::vector<double> theValues, int theWidth, int theHeight, unsigned int theColor) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	internal::sparkline(aBlock, theValues, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theColor);
 }
 
 void sparklineChart(std::vector<double> theValues, int theWidth, int theHeight) {
-	cvui_block_t& aBlock = gStack[gStackCount];
+	cvui_block_t& aBlock = internal::topBlock();
 	internal::sparkline(aBlock, theValues, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, 0x00FF00);
 }
 
@@ -552,6 +589,10 @@ void update() {
 	gScreen.rect.width = 0;
 	gScreen.rect.height = 0;
 	gScreen.padding = 0;
+
+	if (!internal::blockStackEmpty()) {
+		internal::error(2, "Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().");
+	}
 }
 
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {

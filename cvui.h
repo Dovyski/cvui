@@ -114,7 +114,8 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 static const char *VERSION = "1.1.0-DEV";
 
 // TODO: add docs
-const int TYPE_ROW = 0;
+const int ROW = 0;
+const int COLUMN = 1;
 
 // TODO: add docs
 typedef struct {
