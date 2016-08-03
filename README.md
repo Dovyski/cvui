@@ -18,7 +18,7 @@ The only dependency is OpenCV (version 3.0), which you are probably already usin
 
 Usage
 -----
-Check the [examples](examples) folder for some code, but the general idea is the following:
+Check the [examples](https://github.com/Dovyski/cvui/tree/master/example) folder for some code, but the general idea is the following:
 
 ```
 #define WINDOW_NAME		"CVUI Test"
