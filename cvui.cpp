@@ -64,10 +64,16 @@ namespace internal {
 		cvui_block_t& aBlock = internal::pushBlock();
 
 		aBlock.where = theWhere;
+		
 		aBlock.rect.x = theX;
 		aBlock.rect.y = theY;
 		aBlock.rect.width = theWidth;
 		aBlock.rect.height = theHeight;
+		
+		aBlock.fill = aBlock.rect;
+		aBlock.fill.width = 0;
+		aBlock.fill.height = 0;
+		
 		aBlock.padding = thePadding;
 		aBlock.type = theType;
 	}
@@ -75,7 +81,23 @@ namespace internal {
 	void end(int theType) {
 		cvui_block_t& aBlock = popBlock();
 
-		// Check if aBlock.type == theType.
+		if (aBlock.type != theType) {
+			error(4, "Calling wrong type of end*(). E.g. endColumn() instead of endRow(). Check if your begin*() calls are matched with their appropriate end*() calls.");
+		}
+
+		// If we still have blocks in the stack, we must update
+		// the current top with the dimensions there were filled by
+		// the newly popped block.
+		if (!blockStackEmpty()) {
+			cvui_block_t& aTop = topBlock();
+
+			if (aTop.type == ROW) {
+				aTop.fill.width += aBlock.fill.width + aTop.padding;
+				
+			} else if (aTop.type == COLUMN) {
+				aTop.fill.height += aBlock.fill.height + aTop.padding;
+			}
+		}
 	}
 
 	// Find the min and max values of a vector
@@ -105,7 +127,10 @@ namespace internal {
 
 	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize) {
 		if (theBlock.type == ROW) {
-			theBlock.rect.x += theSize.width + theBlock.padding;
+			theBlock.fill.width += theSize.width + theBlock.padding;
+
+		} else if(theBlock.type == COLUMN) {
+			theBlock.fill.height += theSize.height + theBlock.padding;
 		}
 	}
 
@@ -509,24 +534,60 @@ void endRow() {
 	internal::end(ROW);
 }
 
+void beginColumn(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding) {
+	internal::begin(COLUMN, theWhere, theX, theY, theWidth, theHeight, thePadding);
+}
+
+void endColumn() {
+	internal::end(COLUMN);
+}
+
+void beginRow(int theWidth, int theHeight, int thePadding) {
+	cvui_block_t& aBlock = internal::topBlock();
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	internal::begin(ROW, aBlock.where, x, y, theWidth, theHeight, thePadding);
+}
+
+void beginColumn(int theWidth, int theHeight, int thePadding) {
+	cvui_block_t& aBlock = internal::topBlock();
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	internal::begin(COLUMN, aBlock.where, x, y, theWidth, theHeight, thePadding);
+}
+
 bool button(const cv::String& theLabel) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::button(aBlock, aBlock.rect.x, aBlock.rect.y, theLabel);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	return internal::button(aBlock, x, y, theLabel);
 }
 
 bool button(int theWidth, int theHeight, const cv::String& theLabel) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::button(aBlock, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theLabel, true);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	return internal::button(aBlock, x, y, theWidth, theHeight, theLabel, true);
 }
 
 bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::checkbox(aBlock, aBlock.rect.x, aBlock.rect.y, theLabel, theState, theColor);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	return internal::checkbox(aBlock, x, y, theLabel, theState, theColor);
 }
 
 void text(const cv::String& theText, double theFontScale, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	internal::text(aBlock, aBlock.rect.x, aBlock.rect.y, theText, theFontScale, theColor, true);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	internal::text(aBlock, x, y, theText, theFontScale, theColor, true);
 }
 
 void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
@@ -537,7 +598,10 @@ void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
 	vsprintf_s(gBuffer, theFmt, aArgs);
 	va_end(aArgs);
 
-	internal::text(aBlock, aBlock.rect.x, aBlock.rect.y, gBuffer, theFontScale, theColor, true);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	internal::text(aBlock, x, y, gBuffer, theFontScale, theColor, true);
 }
 
 void printf(char *theFmt, ...) {
@@ -548,37 +612,58 @@ void printf(char *theFmt, ...) {
 	vsprintf_s(gBuffer, theFmt, aArgs);
 	va_end(aArgs);
 
-	internal::text(aBlock, aBlock.rect.x, aBlock.rect.y, gBuffer, 0.4, 0xCECECE, true);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	internal::text(aBlock, x, y, gBuffer, 0.4, 0xCECECE, true);
 }
 
 int counter(int *theValue, int theStep, const char *theFormat) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::counter(aBlock, aBlock.rect.x, aBlock.rect.y, theValue, theStep, theFormat);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	return internal::counter(aBlock, x, y, theValue, theStep, theFormat);
 }
 
 double counter(double *theValue, double theStep, const char *theFormat) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::counter(aBlock, aBlock.rect.x, aBlock.rect.y, theValue, theStep, theFormat);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	return internal::counter(aBlock, x, y, theValue, theStep, theFormat);
 }
 
 void window(int theWidth, int theHeight, const cv::String& theTitle) {
 	cvui_block_t& aBlock = internal::topBlock();
-	internal::window(aBlock, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theTitle);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	internal::window(aBlock, x, y, theWidth, theHeight, theTitle);
 }
 
 void rect(int theWidth, int theHeight, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	internal::rect(aBlock, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theColor);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	internal::rect(aBlock, x, y, theWidth, theHeight, theColor);
 }
 
 void sparkline(std::vector<double> theValues, int theWidth, int theHeight, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	internal::sparkline(aBlock, theValues, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, theColor);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	internal::sparkline(aBlock, theValues, x, y, theWidth, theHeight, theColor);
 }
 
 void sparklineChart(std::vector<double> theValues, int theWidth, int theHeight) {
 	cvui_block_t& aBlock = internal::topBlock();
-	internal::sparkline(aBlock, theValues, aBlock.rect.x, aBlock.rect.y, theWidth, theHeight, 0x00FF00);
+	int x = aBlock.fill.x + aBlock.fill.width;
+	int y = aBlock.fill.y + aBlock.fill.height;
+
+	internal::sparkline(aBlock, theValues, x, y, theWidth, theHeight, 0x00FF00);
 }
 
 void update() {
@@ -588,6 +673,11 @@ void update() {
 	gScreen.rect.y = 0;
 	gScreen.rect.width = 0;
 	gScreen.rect.height = 0;
+	
+	gScreen.fill = gScreen.rect;
+	gScreen.fill.width = 0;
+	gScreen.fill.height = 0;
+	
 	gScreen.padding = 0;
 
 	if (!internal::blockStackEmpty()) {

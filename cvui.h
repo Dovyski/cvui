@@ -62,6 +62,12 @@ void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, 
 // TODO: add docs
 void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding = 0);
 void endRow();
+void beginColumn(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding = 0);
+void endColumn();
+
+// TODO: add docs
+void beginRow(int theWidth, int theHeight, int thePadding = 0);
+void beginColumn(int theWidth, int theHeight, int thePadding = 0);
 
 // Display a piece of text within beginRow() and endRow();
 void text(const cv::String& theText, double theFontScale = 0.4, unsigned int theColor = 0xCECECE);
@@ -119,10 +125,11 @@ const int COLUMN = 1;
 
 // TODO: add docs
 typedef struct {
-	cv::Mat where;
-	cv::Rect rect;
-	int padding;
-	int type;
+	cv::Mat where;			// where the block should be rendered to.
+	cv::Rect rect;			// the size and position of the block.
+	cv::Rect fill;			// the filled area occuppied by the block as it gets modified by its inner components.
+	int padding;			// padding among components within this block.
+	int type;				// type of the block, e.g. ROW or COLUMN.
 } cvui_block_t;
 
 // TODO: add docs

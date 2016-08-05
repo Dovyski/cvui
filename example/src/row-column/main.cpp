@@ -19,9 +19,14 @@ Licensed under the MIT license.
 int main(int argc, const char *argv[])
 {
 	cv::Mat frame = cv::Mat(600, 800, CV_8UC3);
-	std::vector<double> values(10, 90);
+	std::vector<double> values;
 	bool checked = false;
 	double value = 1.0;
+
+	// Fill the vector with a few random values
+	for (std::vector<double>::size_type i = 0; i < 20; i++) {
+		values.push_back(rand() + 0.);
+	}
 
 	// Init a OpenCV window and tell cvui to use it.
 	// If cv::namedWindow() is not used, mouse events will
@@ -32,8 +37,6 @@ int main(int argc, const char *argv[])
 	while (true) {
 		// Fill the frame with a nice color
 		frame = cv::Scalar(49, 52, 49);
-
-		//cvui::rect(frame, 10, 20, 800, 400, 0x909090);
 
 		cvui::beginRow(frame, 10, 20, 100, 50);
 			cvui::text("Hi again.");
@@ -49,14 +52,30 @@ int main(int argc, const char *argv[])
 			cvui::button(100, 30, "Fixed");
 		cvui::endRow();
 
-		cvui::beginRow(frame, 10, 100, 100, 50);
+		cvui::beginRow(frame, 10, 150, 100, 50);
+			cvui::button("Expanding as needed");
+			cvui::button("Hey!");
 			cvui::text("2Hi again.");
 			cvui::text("2Its me,");
 			cvui::text("2a Mario!");
 		cvui::endRow();
 
-		cvui::text(frame, 50, 150, "Outside the row!", 0.4, 0x00FF00);
-		cvui::printf(frame, 50, 180, "Outside the row! %d", 23);
+		cvui::beginRow(frame, 10, 250, 100, 50);
+			cvui::button("Expanding as needed");
+			cvui::button("Hey!");
+
+			cvui::beginRow(600, 50);
+				cvui::button("inner0");
+				cvui::button("inner1");
+				cvui::button("inner2");
+				cvui::text("inner3");
+				cvui::text("inner4");
+			cvui::endRow();
+
+			cvui::text("2Hi again.");
+			cvui::text("2Its me,");
+			cvui::text("2a Mario!");
+		cvui::endRow();
 		
 		// This function must be called *AFTER* all UI components. It does
 		// all the behind the scenes magic to handle mouse clicks, etc.
