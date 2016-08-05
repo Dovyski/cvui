@@ -20,7 +20,12 @@ Usage
 -----
 Check the [examples](https://github.com/Dovyski/cvui/tree/master/example) folder for some code, but the general idea is the following:
 
-```
+```c++
+#include <iostream>
+
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+
 #define WINDOW_NAME		"CVUI Test"
 
 int main(int argc, const char *argv[])
