@@ -60,14 +60,17 @@ void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int t
 void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight);
 
 // TODO: add docs
-void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding = 0);
+void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth = -1, int theHeight = -1, int thePadding = 0);
 void endRow();
-void beginColumn(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding = 0);
+void beginColumn(cv::Mat &theWhere, int theX, int theY, int theWidth = -1, int theHeight = -1, int thePadding = 0);
 void endColumn();
 
 // TODO: add docs
-void beginRow(int theWidth, int theHeight, int thePadding = 0);
-void beginColumn(int theWidth, int theHeight, int thePadding = 0);
+void beginRow(int theWidth = -1, int theHeight = -1, int thePadding = 0);
+void beginColumn(int theWidth = -1, int theHeight = -1, int thePadding = 0);
+
+// TODO: add docs
+void space(int theValue = 5);
 
 // Display a piece of text within beginRow() and endRow();
 void text(const cv::String& theText, double theFontScale = 0.4, unsigned int theColor = 0xCECECE);

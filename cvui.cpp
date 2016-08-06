@@ -114,7 +114,17 @@ namespace internal {
 
 		if (!blockStackEmpty()) {
 			cvui_block_t& aTop = topBlock();
-			cv::Size aSize(aBlock.fill.width, aBlock.fill.height);
+			cv::Size aSize;
+			
+			// If the block has rect.width < 0 or rect.heigth < 0, it means the
+			// user don't want to calculate the block's width/height. It's up to
+			// us do to the math. In that case, we use the block's fill rect to find
+			// out the occupied space. If the block's width/height is greater than
+			// zero, then the user is very specific about the desired size. In that
+			// case, we use the provided width/height, no matter what the fill rect
+			// actually is.
+			aSize.width = aBlock.rect.width < 0 ? aBlock.fill.width : aBlock.rect.width;
+			aSize.height = aBlock.rect.height < 0 ? aBlock.fill.height : aBlock.rect.height;
 
 			updateLayoutFlow(aTop, aSize);
 		}
@@ -565,6 +575,13 @@ void beginRow(int theWidth, int theHeight, int thePadding) {
 void beginColumn(int theWidth, int theHeight, int thePadding) {
 	cvui_block_t& aBlock = internal::topBlock();
 	internal::begin(COLUMN, aBlock.where, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, thePadding);
+}
+
+void space(int theValue) {
+	cvui_block_t& aBlock = internal::topBlock();
+	cv::Size aSize(theValue, theValue);
+
+	internal::updateLayoutFlow(aBlock, aSize);
 }
 
 bool button(const cv::String& theLabel) {

@@ -74,6 +74,19 @@ int main(int argc, const char *argv[])
 
 			cvui::text("2Hi again.");
 			cvui::text("2Its me,");
+
+			cvui::beginColumn();
+				cvui::button("Column");
+				cvui::button("inner1");
+				cvui::button("inner2");
+				cvui::space();
+				cvui::text("inner3");
+				cvui::space(40);
+				cvui::text("inner4");
+			cvui::endColumn();
+
+			cvui::text("2a Mario!");
+			cvui::space(10);
 			cvui::text("2a Mario!");
 		cvui::endRow();
 		
