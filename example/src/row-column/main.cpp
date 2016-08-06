@@ -64,13 +64,13 @@ int main(int argc, const char *argv[])
 			cvui::button("Expanding as needed");
 			cvui::button("Hey!");
 
-			cvui::beginRow(600, 50);
-				cvui::button("inner0");
+			cvui::beginColumn(200, 50);
+				cvui::button("Column");
 				cvui::button("inner1");
 				cvui::button("inner2");
 				cvui::text("inner3");
 				cvui::text("inner4");
-			cvui::endRow();
+			cvui::endColumn();
 
 			cvui::text("2Hi again.");
 			cvui::text("2Its me,");

@@ -35,6 +35,26 @@ namespace internal {
 		exit(-1);
 	}
 
+	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize) {
+		int aValue;
+
+		if (theBlock.type == ROW) {
+			aValue = theSize.width + theBlock.padding;
+
+			theBlock.anchor.x += aValue;
+			theBlock.fill.width += aValue;
+			theBlock.fill.height = std::max(theSize.height, theBlock.fill.height);
+
+		}
+		else if (theBlock.type == COLUMN) {
+			aValue = theSize.height + theBlock.padding;
+
+			theBlock.anchor.y += aValue;
+			theBlock.fill.height += aValue;
+			theBlock.fill.width = std::max(theSize.width, theBlock.fill.width);
+		}
+	}
+
 	bool blockStackEmpty() {
 		return gStackCount == -1;
 	}
@@ -73,6 +93,9 @@ namespace internal {
 		aBlock.fill = aBlock.rect;
 		aBlock.fill.width = 0;
 		aBlock.fill.height = 0;
+
+		aBlock.anchor.x = theX;
+		aBlock.anchor.y = theY;
 		
 		aBlock.padding = thePadding;
 		aBlock.type = theType;
@@ -86,17 +109,14 @@ namespace internal {
 		}
 
 		// If we still have blocks in the stack, we must update
-		// the current top with the dimensions there were filled by
+		// the current top with the dimensions that were filled by
 		// the newly popped block.
+
 		if (!blockStackEmpty()) {
 			cvui_block_t& aTop = topBlock();
+			cv::Size aSize(aBlock.fill.width, aBlock.fill.height);
 
-			if (aTop.type == ROW) {
-				aTop.fill.width += aBlock.fill.width + aTop.padding;
-				
-			} else if (aTop.type == COLUMN) {
-				aTop.fill.height += aBlock.fill.height + aTop.padding;
-			}
+			updateLayoutFlow(aTop, aSize);
 		}
 	}
 
@@ -123,15 +143,6 @@ namespace internal {
 		*theRed = (theColor >> 16) & 0xff;
 		*theGreen = (theColor >> 8) & 0xff;
 		*theBlue = theColor & 0xff;
-	}
-
-	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize) {
-		if (theBlock.type == ROW) {
-			theBlock.fill.width += theSize.width + theBlock.padding;
-
-		} else if(theBlock.type == COLUMN) {
-			theBlock.fill.height += theSize.height + theBlock.padding;
-		}
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {
@@ -217,6 +228,10 @@ namespace internal {
 
 		if (theUpdateLayout) {
 			cv::Size aTextSize = cv::getTextSize(theText, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
+			
+			// Add an extra pixel to the height to overcome OpenCV font size problems.
+			aTextSize.height += 1;
+			
 			updateLayoutFlow(theBlock, aTextSize);
 		}
 	}
@@ -544,50 +559,32 @@ void endColumn() {
 
 void beginRow(int theWidth, int theHeight, int thePadding) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	internal::begin(ROW, aBlock.where, x, y, theWidth, theHeight, thePadding);
+	internal::begin(ROW, aBlock.where, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, thePadding);
 }
 
 void beginColumn(int theWidth, int theHeight, int thePadding) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	internal::begin(COLUMN, aBlock.where, x, y, theWidth, theHeight, thePadding);
+	internal::begin(COLUMN, aBlock.where, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, thePadding);
 }
 
 bool button(const cv::String& theLabel) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	return internal::button(aBlock, x, y, theLabel);
+	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theLabel);
 }
 
 bool button(int theWidth, int theHeight, const cv::String& theLabel) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	return internal::button(aBlock, x, y, theWidth, theHeight, theLabel, true);
+	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theLabel, true);
 }
 
 bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	return internal::checkbox(aBlock, x, y, theLabel, theState, theColor);
+	return internal::checkbox(aBlock, aBlock.anchor.x, aBlock.anchor.y, theLabel, theState, theColor);
 }
 
 void text(const cv::String& theText, double theFontScale, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	internal::text(aBlock, x, y, theText, theFontScale, theColor, true);
+	internal::text(aBlock, aBlock.anchor.x, aBlock.anchor.y, theText, theFontScale, theColor, true);
 }
 
 void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
@@ -598,10 +595,7 @@ void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
 	vsprintf_s(gBuffer, theFmt, aArgs);
 	va_end(aArgs);
 
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	internal::text(aBlock, x, y, gBuffer, theFontScale, theColor, true);
+	internal::text(aBlock, aBlock.anchor.x, aBlock.anchor.y, gBuffer, theFontScale, theColor, true);
 }
 
 void printf(char *theFmt, ...) {
@@ -612,58 +606,37 @@ void printf(char *theFmt, ...) {
 	vsprintf_s(gBuffer, theFmt, aArgs);
 	va_end(aArgs);
 
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	internal::text(aBlock, x, y, gBuffer, 0.4, 0xCECECE, true);
+	internal::text(aBlock, aBlock.anchor.x, aBlock.anchor.y, gBuffer, 0.4, 0xCECECE, true);
 }
 
 int counter(int *theValue, int theStep, const char *theFormat) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	return internal::counter(aBlock, x, y, theValue, theStep, theFormat);
+	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat);
 }
 
 double counter(double *theValue, double theStep, const char *theFormat) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	return internal::counter(aBlock, x, y, theValue, theStep, theFormat);
+	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat);
 }
 
 void window(int theWidth, int theHeight, const cv::String& theTitle) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	internal::window(aBlock, x, y, theWidth, theHeight, theTitle);
+	internal::window(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theTitle);
 }
 
 void rect(int theWidth, int theHeight, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	internal::rect(aBlock, x, y, theWidth, theHeight, theColor);
+	internal::rect(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theColor);
 }
 
 void sparkline(std::vector<double> theValues, int theWidth, int theHeight, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	internal::sparkline(aBlock, theValues, x, y, theWidth, theHeight, theColor);
+	internal::sparkline(aBlock, theValues, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theColor);
 }
 
 void sparklineChart(std::vector<double> theValues, int theWidth, int theHeight) {
 	cvui_block_t& aBlock = internal::topBlock();
-	int x = aBlock.fill.x + aBlock.fill.width;
-	int y = aBlock.fill.y + aBlock.fill.height;
-
-	internal::sparkline(aBlock, theValues, x, y, theWidth, theHeight, 0x00FF00);
+	internal::sparkline(aBlock, theValues, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, 0x00FF00);
 }
 
 void update() {
@@ -677,6 +650,9 @@ void update() {
 	gScreen.fill = gScreen.rect;
 	gScreen.fill.width = 0;
 	gScreen.fill.height = 0;
+
+	gScreen.anchor.x = 0;
+	gScreen.anchor.y = 0;
 	
 	gScreen.padding = 0;
 

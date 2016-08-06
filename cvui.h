@@ -128,6 +128,7 @@ typedef struct {
 	cv::Mat where;			// where the block should be rendered to.
 	cv::Rect rect;			// the size and position of the block.
 	cv::Rect fill;			// the filled area occuppied by the block as it gets modified by its inner components.
+	cv::Point anchor;		// the point where the next component of the block should be rendered.
 	int padding;			// padding among components within this block.
 	int type;				// type of the block, e.g. ROW or COLUMN.
 } cvui_block_t;
