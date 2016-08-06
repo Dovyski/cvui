@@ -301,9 +301,9 @@ namespace internal {
 		updateLayoutFlow(theBlock, aSize);
 	}
 
-	void rect(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
+	void rect(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor) {
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
-		render::rect(theBlock, aRect, theColor);
+		render::rect(theBlock, aRect, theBorderColor, theFillingColor);
 
 		// Update the layout flow
 		cv::Size aSize(aRect.width, aRect.height);
@@ -415,14 +415,18 @@ namespace render {
 		}
 	}
 
-	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theColor) {
-		int aRed, aGreen, aBlue;
+	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theBorderColor, unsigned int theFillingColor) {
+		cv::Scalar aBorder = internal::hexToScalar(theBorderColor);
+		cv::Scalar aFilling = internal::hexToScalar(theFillingColor);
+		
+		bool aHasFilling = aFilling[3] != 0xff;
 
-		aRed = (theColor >> 16) & 0xff;
-		aGreen = (theColor >> 8) & 0xff;
-		aBlue = theColor & 0xff;
+		if (aHasFilling) {
+			cv::rectangle(theBlock.where, thePos, aFilling, cv::FILLED, cv::LINE_AA);
+		}
 
-		cv::rectangle(theBlock.where, thePos, cv::Scalar(aBlue, aGreen, aRed), cv::FILLED, cv::LINE_AA);
+		// Render the border
+		cv::rectangle(theBlock.where, thePos, aBorder, 1, cv::LINE_AA);
 	}
 
 	void sparkline(cvui_block_t& theBlock, std::vector<double> theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor) {
@@ -510,9 +514,9 @@ void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 	internal::window(gScreen, theX, theY, theWidth, theHeight, theTitle);
 }
 
-void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
+void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor) {
 	gScreen.where = theWhere;
-	internal::rect(gScreen, theX, theY, theWidth, theHeight, theColor);
+	internal::rect(gScreen, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor);
 }
 
 void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
@@ -610,9 +614,9 @@ void window(int theWidth, int theHeight, const cv::String& theTitle) {
 	internal::window(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theTitle);
 }
 
-void rect(int theWidth, int theHeight, unsigned int theColor) {
+void rect(int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	internal::rect(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theColor);
+	internal::rect(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theBorderColor, theFillingColor);
 }
 
 void sparkline(std::vector<double> theValues, int theWidth, int theHeight, unsigned int theColor) {

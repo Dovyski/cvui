@@ -53,7 +53,7 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
 void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle);
 
 // Display a filled rectangle
-void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theColor);
+void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor = 0xff000000);
 
 // TODO: add docs
 void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
@@ -105,7 +105,7 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
 void window(int theWidth, int theHeight, const cv::String& theTitle);
 
 // Display a filled rectangle
-void rect(int theWidth, int theHeight, unsigned int theColor);
+void rect(int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor = 0xff000000);
 
 // TODO: add docs
 void sparkline(std::vector<double> theValues, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
@@ -149,7 +149,7 @@ namespace render {
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor);
 	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape);
 	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle);
-	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theColor);
+	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theBorderColor, unsigned int theFillingColor);
 	void sparkline(cvui_block_t& theBlock, std::vector<double> theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
 }
 
