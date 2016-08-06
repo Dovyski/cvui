@@ -57,7 +57,6 @@ void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, un
 
 // TODO: add docs
 void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
-void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight);
 
 // TODO: add docs
 void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth = -1, int theHeight = -1, int thePadding = 0);

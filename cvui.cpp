@@ -149,10 +149,13 @@ namespace internal {
 		*theMax = aMax;
 	}
 
-	void separateChannels(int *theRed, int *theGreen, int *theBlue, unsigned int theColor) {
-		*theRed = (theColor >> 16) & 0xff;
-		*theGreen = (theColor >> 8) & 0xff;
-		*theBlue = theColor & 0xff;
+	cv::Scalar hexToScalar(unsigned int theColor) {
+		int aAlpha = (theColor >> 24) & 0xff;
+		int aRed = (theColor >> 16) & 0xff;
+		int aGreen = (theColor >> 8) & 0xff;
+		int aBlue = theColor & 0xff;
+
+		return cv::Scalar(aBlue, aGreen, aRed, aAlpha);
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {
@@ -200,9 +203,8 @@ namespace internal {
 	}
 
 	bool checkbox(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
-		int aBaseline = 0;
 		cv::Rect aRect(theX, theY, 15, 15);
-		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, &aBaseline);
+		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 		cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width + 6, aRect.height);
 		bool aMouseIsOver = aHitArea.contains(gMouse);
 
@@ -319,38 +321,13 @@ namespace internal {
 		cv::Size aSize(theWidth, theHeight);
 		updateLayoutFlow(theBlock, aSize);
 	}
-
-	void sparklineChart(cvui_block_t& theBlock, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight) {
-		double aMin, aMax, aScale = 0;
-
-		internal::findMinMax(theValues, &aMin, &aMax);
-		aScale = aMax - aMin;
-
-		sparkline(theBlock, theValues, theX, theY, theWidth, theHeight, 0x00FF00);
-
-		sprintf_s(gBuffer, "%.1f", aMax);
-		internal::text(theBlock, theX + 2, theY + 8, gBuffer, 0.25, 0x717171, false);
-
-		sprintf_s(gBuffer, "%.1f", aScale / 2 + aMin);
-		internal::text(theBlock, theX + 2, theY + theHeight / 2, gBuffer, 0.25, 0x717171, false);
-
-		sprintf_s(gBuffer, "%.1f", aMin);
-		internal::text(theBlock, theX + 2, theY + theHeight - 5, gBuffer, 0.25, 0x717171, false);
-
-		// Update the layout flow
-		cv::Size aSize(theWidth, theHeight);
-		updateLayoutFlow(theBlock, aSize);
-	}
 }
 
 // This is an internal namespace with all functions
 // that actually render each one of the UI components
 namespace render {
 	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor) {
-		int aRed, aGreen, aBlue;
-
-		internal::separateChannels(&aRed, &aGreen, &aBlue, theColor);
-		cv::putText(theBlock.where, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, cv::Scalar(aBlue, aGreen, aRed), 1, cv::LINE_AA);
+		cv::putText(theBlock.where, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, internal::hexToScalar(theColor), 1, cv::LINE_AA);
 	}
 
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel) {
@@ -451,9 +428,6 @@ namespace render {
 	void sparkline(cvui_block_t& theBlock, std::vector<double> theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor) {
 		std::vector<double>::size_type aSize = theValues.size(), i;
 		double aGap, aPosX, aScale = 0, x, y;
-		int aRed, aGreen, aBlue ;
-
-		internal::separateChannels(&aRed, &aGreen, &aBlue, theColor);
 
 		aScale = theMax - theMin;
 		aGap = (double)theRect.width / aSize;
@@ -468,7 +442,7 @@ namespace render {
 			y = (theValues[i + 1] - theMin) / aScale * -(theRect.height - 5) + theRect.y + theRect.height - 5;
 			cv::Point aPoint2((int)x, (int)y);
 
-			cv::line(theBlock.where, aPoint1, aPoint2, cv::Scalar(aBlue, aGreen, aRed));
+			cv::line(theBlock.where, aPoint1, aPoint2, internal::hexToScalar(theColor));
 			aPosX += aGap;
 		}
 	}
@@ -544,11 +518,6 @@ void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, un
 void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
 	gScreen.where = theWhere;
 	internal::sparkline(gScreen, theValues, theX, theY, theWidth, theHeight, theColor);
-}
-
-void sparklineChart(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight) {
-	gScreen.where = theWhere;
-	internal::sparkline(gScreen, theValues, theX, theY, theWidth, theHeight, 0x00FF00);
 }
 
 void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding) {
@@ -649,11 +618,6 @@ void rect(int theWidth, int theHeight, unsigned int theColor) {
 void sparkline(std::vector<double> theValues, int theWidth, int theHeight, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
 	internal::sparkline(aBlock, theValues, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theColor);
-}
-
-void sparklineChart(std::vector<double> theValues, int theWidth, int theHeight) {
-	cvui_block_t& aBlock = internal::topBlock();
-	internal::sparkline(aBlock, theValues, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, 0x00FF00);
 }
 
 void update() {
