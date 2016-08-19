@@ -1,8 +1,8 @@
 /*
 This is a demo application to showcase the sparkline components of cvui.
+Sparklines are quite useful to display data, e.g. FPS charts.
 
-Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
-Licensed under the MIT license.
+Code licensed under the MIT license, check LICENSE file.
 */
 
 #include <iostream>
@@ -35,8 +35,6 @@ std::vector<double> load(std::string thePath) {
 
 int main(int argc, const char *argv[])
 {
-	std::vector<double> points = load("sparkline.csv");
-
 	cv::Mat frame = cv::Mat(600, 800, CV_8UC3);
 
 	// Init a OpenCV window and tell cvui to use it.
@@ -44,6 +42,9 @@ int main(int argc, const char *argv[])
 	// not be captured by cvui.
 	cv::namedWindow(WINDOW_NAME);
 	cvui::init(WINDOW_NAME);
+
+	// Load some data points from a file
+	std::vector<double> points = load("sparkline.csv");
 
 	while (true) {
 		// Fill the frame with a nice color
@@ -54,9 +55,11 @@ int main(int argc, const char *argv[])
 			break;
 		}
 
+		// Add 3 sparklines that are displaying the same data, but with
+		// different width/height/colors.
 		cvui::sparkline(frame, points, 0, 0, 800, 200);
-		cvui::sparkline(frame, points, 0, 200, 800, 100, 0xFF0000);
-		cvui::sparkline(frame, points, 0, 300, 400, 100, 0x0000FF);
+		cvui::sparkline(frame, points, 0, 200, 800, 100, 0xff0000);
+		cvui::sparkline(frame, points, 0, 300, 400, 100, 0x0000ff);
 		
 		// This function must be called *AFTER* all UI components. It does
 		// all the behind the scenes magic to handle mouse clicks, etc.

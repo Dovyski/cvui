@@ -1,8 +1,12 @@
 /*
-This is a demo application to showcase the UI components of cvui.
+This application showcase how UI components can be placed in order
+to create a more complex layout. The position of all components is
+determined by a (x,y) pair prodived by the developer.
 
-Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
-Licensed under the MIT license.
+Take a look at the "row-column" application to see how to use
+automatic positioning by leveraging the begin*()/end*() API.
+
+Code licensed under the MIT license, check LICENSE file.
 */
 
 #include <iostream>
@@ -17,36 +21,36 @@ Licensed under the MIT license.
 
 void group(cv::Mat& frame, int x, int y, int width, int height) {
 	int padding = 5, w = (width - padding) / 4, h = (height - 15 - padding) / 2;
-	cv::Point pos(x + padding, y + 15);
+	cv::Point pos(x + padding, y + 5);
 
 	cvui::text(frame, pos.x, pos.y, "Group title");
-	pos.y += 10;
+	pos.y += 15;
 
-	cvui::window(frame, pos.x, pos.y, width - padding * 2, h - padding, "FFT");
+	cvui::window(frame, pos.x, pos.y, width - padding * 2, h - padding, "Something");
 	cvui::rect(frame, pos.x + 2, pos.y + 20, width - padding * 2 - 5, h - padding - 20, 0xff0000);
 	pos.y += h;
 
-	cvui::window(frame, pos.x, pos.y, w / 3 - padding, h, "HR");
+	cvui::window(frame, pos.x, pos.y, w / 3 - padding, h, "Some");
 	cvui::text(frame, pos.x + 25, pos.y + 60, "65", 1.1);
 	pos.x += w / 3;
 
-	cvui::window(frame, pos.x, pos.y, w / 3 - padding, h, "HF");
+	cvui::window(frame, pos.x, pos.y, w / 3 - padding, h, "Info");
 	cvui::text(frame, pos.x + 25, pos.y + 60, "30", 1.1);
 	pos.x += w / 3;
 
-	cvui::window(frame, pos.x, pos.y, w / 3 - padding, h, "LF");
+	cvui::window(frame, pos.x, pos.y, w / 3 - padding, h, "Here");
 	cvui::text(frame, pos.x + 25, pos.y + 60, "70", 1.1);
 	pos.x += w / 3;
 
-	cvui::window(frame, pos.x, pos.y, w - padding, h, "Bpms");
+	cvui::window(frame, pos.x, pos.y, w - padding, h, "And");
 	cvui::rect(frame, pos.x + 2, pos.y + 22, w - padding - 5, h - padding - 20, 0xff0000);
 	pos.x += w;
 
-	cvui::window(frame, pos.x, pos.y, w - padding, h, "Means");
+	cvui::window(frame, pos.x, pos.y, w - padding, h, "Here");
 	cvui::rect(frame, pos.x + 2, pos.y + 22, w - padding - 5, h - padding - 20, 0xff0000);
 	pos.x += w;
 
-	cvui::window(frame, pos.x, pos.y, w - padding, h, "Normalized power");
+	cvui::window(frame, pos.x, pos.y, w - padding, h, "More info");
 	cvui::rect(frame, pos.x + 2, pos.y + 22, w - padding - 5, h - padding - 20, 0xff0000);
 	pos.x += w;
 }
@@ -68,7 +72,7 @@ int main(int argc, const char *argv[])
 		frame = cv::Scalar(49, 52, 49);
 
 		// Check if ESC key was pressed
-		if (cv::waitKey(10) == 27) {
+		if (cv::waitKey(1) == 27) {
 			break;
 		}
 

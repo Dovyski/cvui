@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sparkline", "src\sparkline\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "row-column", "src\row-column\row-column.vcxproj", "{91FE4395-3DCF-4B36-8069-61359B6B9FA8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nested-rows-columns", "src\nested-rows-columns\nested-rows-columns.vcxproj", "{B5E41CF7-4B1F-44C9-8674-865A77CBB690}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -32,6 +34,10 @@ Global
 		{91FE4395-3DCF-4B36-8069-61359B6B9FA8}.Debug|x64.Build.0 = Debug|x64
 		{91FE4395-3DCF-4B36-8069-61359B6B9FA8}.Release|x64.ActiveCfg = Release|x64
 		{91FE4395-3DCF-4B36-8069-61359B6B9FA8}.Release|x64.Build.0 = Release|x64
+		{B5E41CF7-4B1F-44C9-8674-865A77CBB690}.Debug|x64.ActiveCfg = Debug|x64
+		{B5E41CF7-4B1F-44C9-8674-865A77CBB690}.Debug|x64.Build.0 = Debug|x64
+		{B5E41CF7-4B1F-44C9-8674-865A77CBB690}.Release|x64.ActiveCfg = Release|x64
+		{B5E41CF7-4B1F-44C9-8674-865A77CBB690}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

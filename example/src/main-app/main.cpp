@@ -88,7 +88,7 @@ int main(int argc, const char *argv[])
 		cvui::checkbox(frame, 200, 190, "A checked checkbox", &checked2);
 
 		// Display the lib version at the bottom of the screen
-		cvui::printf(frame, frame.cols - 110, frame.rows - 20, 0.4, 0xCECECE, "cvui v.%s", cvui::VERSION);
+		cvui::printf(frame, frame.cols - 80, frame.rows - 20, 0.4, 0xCECECE, "cvui v.%s", cvui::VERSION);
 
 		// This function must be called *AFTER* all UI components. It does
 		// all the behind the scenes magic to handle mouse clicks, etc.
