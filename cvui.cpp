@@ -1,7 +1,7 @@
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
 
- Version: 1.0.0
+ Version: 1.1.0
 
  Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
  Licensed under the MIT license.

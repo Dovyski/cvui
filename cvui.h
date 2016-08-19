@@ -1,7 +1,7 @@
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
 
- Version: 1.1.0-DEV
+ Version: 1.1.0
 
  Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
  Licensed under the MIT license.
@@ -119,7 +119,7 @@ void update();
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 
 // Lib version
-static const char *VERSION = "1.1.0-DEV";
+static const char *VERSION = "1.1.0";
 
 // TODO: add docs
 const int ROW = 0;
