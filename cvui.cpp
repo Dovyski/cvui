@@ -310,7 +310,7 @@ namespace internal {
 		updateLayoutFlow(theBlock, aSize);
 	}
 
-	void sparkline(cvui_block_t& theBlock, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
+	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
 		double aMin, aMax;
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
 
@@ -429,7 +429,7 @@ namespace render {
 		cv::rectangle(theBlock.where, thePos, aBorder, 1, cv::LINE_AA);
 	}
 
-	void sparkline(cvui_block_t& theBlock, std::vector<double> theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor) {
+	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor) {
 		std::vector<double>::size_type aSize = theValues.size(), i;
 		double aGap, aPosX, aScale = 0, x, y;
 
@@ -519,7 +519,7 @@ void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, un
 	internal::rect(gScreen, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor);
 }
 
-void sparkline(cv::Mat& theWhere, std::vector<double> theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
+void sparkline(cv::Mat& theWhere, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
 	gScreen.where = theWhere;
 	internal::sparkline(gScreen, theValues, theX, theY, theWidth, theHeight, theColor);
 }
@@ -619,7 +619,7 @@ void rect(int theWidth, int theHeight, unsigned int theBorderColor, unsigned int
 	internal::rect(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theBorderColor, theFillingColor);
 }
 
-void sparkline(std::vector<double> theValues, int theWidth, int theHeight, unsigned int theColor) {
+void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsigned int theColor) {
 	cvui_block_t& aBlock = internal::topBlock();
 	internal::sparkline(aBlock, theValues, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theColor);
 }
