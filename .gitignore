@@ -32,6 +32,7 @@
 *.opensdf
 *.suo
 example/build/*
+.idea
 
 #Save those, please
 !example/build/README.txt
