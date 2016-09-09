@@ -405,7 +405,7 @@ void text(const cv::String& theText, double theFontScale = 0.4, unsigned int the
 
  \param theWidth width of the button.
  \param theHeight height of the button.
- \param theLabel text displayed inside the button.
+ \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()
@@ -421,7 +421,7 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel);
 
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
- \param theLabel text displayed inside the button.
+ \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()

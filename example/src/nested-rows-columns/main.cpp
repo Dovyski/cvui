@@ -105,6 +105,9 @@ int main(int argc, const char *argv[])
 				cvui::text("text");
 				cvui::button("btn2");
 				cvui::text("text2");
+				if (cvui::button("&Quit")) {
+          			break;
+        		}
 			cvui::endColumn();
 
 			// Add more text

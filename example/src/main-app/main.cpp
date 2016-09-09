@@ -51,8 +51,11 @@ int main(int argc, const char *argv[])
 
 		// Buttons will return true if they were clicked, which makes
 		// handling clicks a breeze.
-		if (cvui::button(frame, 50, 70, "Button")) {
-			std::cout << "Button clicked!" << std::endl;
+		if (cvui::button(frame, 50, 60, "&Button")) {
+			std::cout << "Button clicked" << std::endl;
+		}
+		if (cvui::button(frame, 50, 90, "&Quit")) {
+			break;
 		}
 
 		// If you do not specify the button width/height, the size will be
