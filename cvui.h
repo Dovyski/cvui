@@ -94,7 +94,7 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
  
  \sa text()
 */
-void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...);
+void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, const char *theFmt, ...);
 
 /**
  Display a piece of text that can be formated using `stdio's printf()` style. For instance
@@ -483,7 +483,7 @@ void printf(double theFontScale, unsigned int theColor, char *theFmt, ...);
  \sa endRow()
  \sa endColumn()
 */
-void printf(char *theFmt, ...);
+void printf(const char *theFmt, ...);
 
 /**
  Display a counter for integer values that the user can increase/descrease

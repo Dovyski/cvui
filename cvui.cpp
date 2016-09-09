@@ -493,7 +493,7 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
 	internal::text(gScreen, theX, theY, theText, theFontScale, theColor, true);
 }
 
-void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...) {
+void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, const char *theFmt, ...) {
 	va_list aArgs;
 
 	va_start(aArgs, theFmt);
@@ -604,7 +604,7 @@ void printf(double theFontScale, unsigned int theColor, char *theFmt, ...) {
 	internal::text(aBlock, aBlock.anchor.x, aBlock.anchor.y, gBuffer, theFontScale, theColor, true);
 }
 
-void printf(char *theFmt, ...) {
+void printf(const char *theFmt, ...) {
 	cvui_block_t& aBlock = internal::topBlock();
 	va_list aArgs;
 
