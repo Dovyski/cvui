@@ -6,3 +6,4 @@ set(ApplicationName nested-rows-columns)
 
 add_executable(${ApplicationName} main.cpp ../../../cvui.cpp)
 target_link_libraries( ${ApplicationName} ${OpenCV_LIBS} )
+set_property(TARGET ${ApplicationName} PROPERTY CXX_STANDARD 11)
