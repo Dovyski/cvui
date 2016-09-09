@@ -20,8 +20,19 @@ namespace cvui
  the components will be added.
  
  \param theWindowName name of the window where the components will be added
+ \param theDelayWaitKey delay used by cv::waitKey at each call of cvui::update()
 */
-void init(const cv::String& theWindowName);
+void init(const cv::String& theWindowName, int theDelayWaitKey = 15);
+
+/**
+ Return the last key that was pressed
+ You need not (and should not) call cv::waitKey between each frame.
+ Instead, call cvui::update() that will in turn call cv::waitKey()
+
+ Note : you can set the delay of cv::waitKey during cvui::init()
+ */
+int lastKeyPressed();
+
 
 /**
  Display a button. The size of the button will be automatically adjusted to

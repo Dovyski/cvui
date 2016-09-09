@@ -55,7 +55,12 @@ int main(int argc, const char *argv[])
 		cvui::update();
 
 		cv::imshow(WINDOW_NAME, frame);
-		cv::waitKey(30);
+		
+        // Check if ESC key was pressed
+        if (cvui::lastKeyPressed() == 27) {
+            break;
+        }
+
 	}
 
 	return 0;

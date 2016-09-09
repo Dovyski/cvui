@@ -37,6 +37,8 @@ static bool gMouseJustReleased = false;
 static bool gMousePressed = false;
 static cv::Point gMouse;
 static char gBuffer[1024];
+static int gLastKeyPressed;
+static int gDelayWaitKey;
 static cvui_block_t gScreen;
 
 // This is an internal namespace with all code
@@ -468,9 +470,15 @@ namespace render {
 	}
 }
 	
-void init(const cv::String& theWindowName) {
+void init(const cv::String& theWindowName, int theDelayWaitKey) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
+	gDelayWaitKey = theDelayWaitKey;
+	gLastKeyPressed = 0;
 	//TODO: init gScreen here?
+}
+
+int lastKeyPressed() {
+	return gLastKeyPressed;
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
@@ -656,6 +664,8 @@ void update() {
 	gScreen.anchor.y = 0;
 	
 	gScreen.padding = 0;
+
+	gLastKeyPressed = cv::waitKey(gDelayWaitKey);
 
 	if (!internal::blockStackEmpty()) {
 		internal::error(2, "Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().");
