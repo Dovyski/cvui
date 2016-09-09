@@ -7,6 +7,7 @@ Code licensed under the MIT license, check LICENSE file.
 
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -20,7 +21,7 @@ Code licensed under the MIT license, check LICENSE file.
 std::vector<double> load(std::string thePath) {
 	std::vector<double> data;
 	double time, value;
-	std::ifstream file(thePath);
+	std::ifstream file(thePath.c_str());
 
 	if (!file)	{
 		throw std::runtime_error("Unable to open file");

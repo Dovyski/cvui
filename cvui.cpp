@@ -13,6 +13,22 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "cvui.h"
 
+// Compatibility macros : this enables to compile the code with either Opencv 2 or Opencv 3
+#if (CV_MAJOR_VERSION < 3)
+#define CVUI_Antialiased CV_AA
+#define CVUI_Filled -1
+#else
+#define CVUI_Antialiased cv::LINE_AA
+#define CVUI_Filled cv::Filled
+#endif
+
+
+#if !defined(_MSC_VER)
+// sprintf_s and vsprintf_s only work with Visual Studio !
+#define vsprintf_s vsprintf
+#define sprintf_s sprintf
+#endif
+
 namespace cvui
 {
 
@@ -327,7 +343,7 @@ namespace internal {
 // that actually render each one of the UI components
 namespace render {
 	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor) {
-		cv::putText(theBlock.where, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, internal::hexToScalar(theColor), 1, cv::LINE_AA);
+		cv::putText(theBlock.where, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, internal::hexToScalar(theColor), 1, CVUI_Antialiased);
 	}
 
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel) {
@@ -340,22 +356,22 @@ namespace render {
 
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, theState == IDLE ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), cv::FILLED);
+		cv::rectangle(theBlock.where, theShape, theState == IDLE ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), CVUI_Filled);
 	}
 
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize) {
 		cv::Point aPos(theRect.x + theRect.width / 2 - theTextSize.width / 2, theRect.y + theRect.height / 2 + theTextSize.height / 2);
-		cv::putText(theBlock.where, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, theState == PRESSED ? 0.39 : 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+		cv::putText(theBlock.where, theLabel, aPos, cv::FONT_HERSHEY_SIMPLEX, theState == PRESSED ? 0.39 : 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
 	}
 
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue) {
-		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29), cv::FILLED); // fill
+		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29), CVUI_Filled); // fill
 		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x45, 0x45, 0x45)); // border
 
 		cv::Size aTextSize = getTextSize(theValue, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 
 		cv::Point aPos(theShape.x + theShape.width / 2 - aTextSize.width / 2, theShape.y + aTextSize.height / 2 + theShape.height / 2);
-		cv::putText(theBlock.where, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+		cv::putText(theBlock.where, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
 	}
 
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape) {
@@ -368,7 +384,7 @@ namespace render {
 
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29), cv::FILLED);
+		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29), CVUI_Filled);
 	}
 
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor) {
@@ -378,7 +394,7 @@ namespace render {
 
 	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape) {
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, cv::Scalar(0xFF, 0xBF, 0x75), cv::FILLED);
+		cv::rectangle(theBlock.where, theShape, cv::Scalar(0xFF, 0xBF, 0x75), CVUI_Filled);
 	}
 
 	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle) {
@@ -391,11 +407,11 @@ namespace render {
 		cv::rectangle(theBlock.where, theTitleBar, cv::Scalar(0x4A, 0x4A, 0x4A));
 		// then the inside
 		theTitleBar.x++; theTitleBar.y++; theTitleBar.width -= 2; theTitleBar.height -= 2;
-		cv::rectangle(theBlock.where, theTitleBar, cv::Scalar(0x21, 0x21, 0x21), cv::FILLED);
+		cv::rectangle(theBlock.where, theTitleBar, cv::Scalar(0x21, 0x21, 0x21), CVUI_Filled);
 
 		// Render title text.
 		cv::Point aPos(theTitleBar.x + 5, theTitleBar.y + 12);
-		cv::putText(theBlock.where, theTitle, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, cv::LINE_AA);
+		cv::putText(theBlock.where, theTitle, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
 
 		// Render the body.
 		// First the border.
@@ -403,15 +419,15 @@ namespace render {
 
 		// Then the filling.
 		theContent.x++; theContent.y++; theContent.width -= 2; theContent.height -= 2;
-		cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), cv::FILLED);
+		cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_Filled);
 
 		if (aTransparecy) {
 			theBlock.where.copyTo(aOverlay);
-			cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), cv::FILLED);
+			cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_Filled);
 			cv::addWeighted(aOverlay, aAlpha, theBlock.where, 1.0 - aAlpha, 0.0, theBlock.where);
 
 		} else {
-			cv::rectangle(theBlock.where, theContent, cv::Scalar(0x31, 0x31, 0x31), cv::FILLED);
+			cv::rectangle(theBlock.where, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_Filled);
 		}
 	}
 
@@ -422,11 +438,11 @@ namespace render {
 		bool aHasFilling = aFilling[3] != 0xff;
 
 		if (aHasFilling) {
-			cv::rectangle(theBlock.where, thePos, aFilling, cv::FILLED, cv::LINE_AA);
+			cv::rectangle(theBlock.where, thePos, aFilling, CVUI_Filled, CVUI_Antialiased);
 		}
 
 		// Render the border
-		cv::rectangle(theBlock.where, thePos, aBorder, 1, cv::LINE_AA);
+		cv::rectangle(theBlock.where, thePos, aBorder, 1, CVUI_Antialiased);
 	}
 
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor) {
@@ -481,7 +497,7 @@ void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned
 	va_list aArgs;
 
 	va_start(aArgs, theFmt);
-	vsprintf_s(gBuffer, theFmt, aArgs);
+	vsprintf(gBuffer, theFmt, aArgs);
 	va_end(aArgs);	
 
 	gScreen.where = theWhere;
