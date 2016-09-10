@@ -124,7 +124,7 @@ void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned
 
  \sa text()
 */
-void printf(cv::Mat& theWhere, int theX, int theY, char *theFmt, ...);
+void printf(cv::Mat& theWhere, int theX, int theY, const char *theFmt, ...);
 
 /**
  Display a counter for integer values that the user can increase/descrease
@@ -520,7 +520,7 @@ bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor 
 \sa endRow()
 \sa endColumn()
 */
-void printf(double theFontScale, unsigned int theColor, char *theFmt, ...);
+void printf(double theFontScale, unsigned int theColor, const char *theFmt, ...);
 
 /**
  Display a piece of text that can be formated using `stdio's printf()` style.
