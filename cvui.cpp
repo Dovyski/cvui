@@ -223,6 +223,8 @@ namespace internal {
 		return value;
 	}
 
+	static const int trackbar_XMargin = 14;
+
 	inline void trackbar_ForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, double *theValue)
 	{
 		if (theParams.ForceValuesAsMultiplesOfSmallStep)
@@ -235,7 +237,7 @@ namespace internal {
 
 	inline double trackbar_XPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int xPixel)
 	{
-		double ratio = (xPixel - (double)theBounding.x) / (double)theBounding.width;
+		double ratio = (xPixel - (double)(theBounding.x + trackbar_XMargin) ) / (double)( theBounding.width - 2 * trackbar_XMargin);
 		ratio = clamp01(ratio);
 		double value = theParams.MinimumValue + ratio * (theParams.MaximumValue - theParams.MinimumValue);
 		return value;
@@ -245,7 +247,7 @@ namespace internal {
 	{
 		double ratio = (value - theParams.MinimumValue) / (theParams.MaximumValue - theParams.MinimumValue);
 		ratio = clamp01(ratio);
-		double xPixels = (double)theBounding.x + ratio * (double)theBounding.width;
+		double xPixels = (double)theBounding.x + trackbar_XMargin + ratio * (double)(theBounding.width - 2 * trackbar_XMargin);
 		return (int)xPixels;
 	}
 
@@ -391,8 +393,7 @@ namespace internal {
 	}
 
 	bool trackbar(cvui_block_t& theBlock, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
-		cv::Rect aContentArea(theX, theY, 200, 54);
-
+		cv::Rect aContentArea(theX, theY, 150, 45);
 		double valueOrig = *theValue;
 		bool aMouseIsOver = aContentArea.contains(gMouse);
 		render::trackbar(theBlock, aContentArea, *theValue, theParams, aMouseIsOver);
@@ -505,22 +506,23 @@ namespace render {
 	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const TrackbarParams &theParams, bool theMouseIsOver) {
 		auto drawTextCentered = [&](const cv::Point & position, const std::string &text) {
 			auto fontFace = cv::FONT_HERSHEY_SIMPLEX;
-			auto fontScale = 0.4;
+			auto fontScale = 0.3;
 			int baseline;
 			auto size = cv::getTextSize(text, fontFace, fontScale, 1, &baseline);
 			cv::Point positionDecentered(position.x - size.width / 2, position.y);
 			cv::putText(theBlock.where, text, positionDecentered, fontFace, fontScale, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
 		};
-
+		cv::Rect internalShape(theShape.x + internal::trackbar_XMargin, theShape.y,
+							   theShape.width - 2 * internal::trackbar_XMargin, theShape.height);
 		auto color = cv::Scalar(150, 150, 150);
 		if (theMouseIsOver)
 			color = cv::Scalar(200, 200, 200);
 
-		cv::Point barTopLeft(theShape.x, theShape.y + 26);
+		cv::Point barTopLeft(internalShape.x, internalShape.y + 20);
 		int barHeight = 7;
 		{
 			// Draw bar
-			cv::Rect bar(barTopLeft, cv::Size(theShape.width, barHeight));
+			cv::Rect bar(barTopLeft, cv::Size(internalShape.width, barHeight));
 			cv::rectangle(theBlock.where, bar, color, -1);
 		}
 

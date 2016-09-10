@@ -16,7 +16,7 @@ Licensed under the MIT license.
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat frame = cv::Mat(400, 600, CV_8UC3);
+	cv::Mat frame = cv::Mat(300, 600, CV_8UC3);
 	bool checked = false;
 	bool checked2 = true;
 	int count = 0;
@@ -90,35 +90,41 @@ int main(int argc, const char *argv[])
 		cvui::checkbox(frame, 200, 160, "Checkbox", &checked);
 		cvui::checkbox(frame, 200, 190, "A checked checkbox", &checked2);
 
-		// Trackbar accept a pointer to a variable that controls
-		// their value
-		// They can be customized to your needs.
-		//Quick info about the Tracbar params
-		//double MinimumValue, MaximumValue : self-explanatory
-		//double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
-		//bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
-		//bool DrawValuesAtLargeSteps : draw value at large steps
-		//std::string Printf_Format : printf format string of the values and legend
-		static double value = 2.25;
-		static std::vector<double> lastValues;
-		cvui::TrackbarParams params;
-		params.MinimumValue = 0.;
-		params.MaximumValue = 5;
-		params.LargeStep = 1.;
-		params.SmallStep = 0.25;
-		params.Printf_Format = "%3.2lf";
-		params.ForceValuesAsMultiplesOfSmallStep = true;
-		if (cvui::trackbar(frame, 200, 230, &value, params)) {
-			std::cout << "Tracbar was modified, value : " << value << std::endl;
-			lastValues.push_back(value);
-		}
+		cvui::beginRow(frame, 50, 230, -1, -1, 10);
+			// Trackbar accept a pointer to a variable that controls
+			// their value
+			// They can be customized to your needs.
+			//Quick info about the Tracbar params
+			//double MinimumValue, MaximumValue : self-explanatory
+			//double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+			//bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+			//bool DrawValuesAtLargeSteps : draw value at large steps
+			//std::string Printf_Format : printf format string of the values and legend
+			static double value = 2.25;
+			static std::vector<double> lastValues;
+			cvui::TrackbarParams params;
+			params.MinimumValue = 0.;
+			params.MaximumValue = 5;
+			params.LargeStep = 1.;
+			params.SmallStep = 0.25;
+			params.Printf_Format = "%3.2lf";
+			params.Printf_Format_Steps = "%2.0lf";
+			params.ForceValuesAsMultiplesOfSmallStep = true;
+			if (cvui::trackbar(&value, params)) {
+				std::cout << "Tracbar was modified, value : " << value << std::endl;
+				lastValues.push_back(value);
+			}
 
-		if (lastValues.size() > 5) {
-			cvui::text(frame, 200, 285, "<- Your edits on a sparkline");
-			cvui::sparkline(frame, lastValues, 150, 289, 40, 15);
-			if (cvui::button(frame, 200, 315, "Clear sparkline"))
-				lastValues.clear();
-		}
+			if (lastValues.size() > 5) {
+				cvui::text("Your edits on a sparkline ->");
+				cvui::sparkline(lastValues, 40, 15);
+				if (cvui::button("&Clear sparkline"))
+					lastValues.clear();
+			} else {
+				cvui::text("<- Move me");
+			}
+
+		cvui::endRow();
 
 		// Display the lib version at the bottom of the screen
 		cvui::printf(frame, frame.cols - 80, frame.rows - 20, 0.4, 0xCECECE, "cvui v.%s", cvui::VERSION);
