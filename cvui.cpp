@@ -396,7 +396,7 @@ namespace internal {
 		double valueOrig = *theValue;
 		bool aMouseIsOver = aContentArea.contains(gMouse);
 		render::trackbar(theBlock, aContentArea, *theValue, theParams, aMouseIsOver);
-		if (gMousePressed) {
+		if (gMousePressed && aMouseIsOver) {
 			*theValue = internal::trackbar_XPixelToValue(theParams, aContentArea, gMouse.x);
 			if (theParams.ForceValuesAsMultiplesOfSmallStep) {
 				internal::trackbar_ForceValuesAsMultiplesOfSmallStep(theParams, theValue);
