@@ -90,6 +90,16 @@ int main(int argc, const char *argv[])
 		cvui::checkbox(frame, 200, 160, "Checkbox", &checked);
 		cvui::checkbox(frame, 200, 190, "A checked checkbox", &checked2);
 
+		// In a row, all added elements are
+		// horizontally placed, one next the other (from left to right)
+		//
+		// Within the cvui::beginRow() and cvui::endRow(),
+		// all elements will be automatically positioned by cvui.
+		//
+		// Notice that all component calls within the begin/end block
+		// DO NOT have (x,y) coordinates.
+		//
+		// Let's create a row at position (50,230) with automatic width and height, and a padding of 10
 		cvui::beginRow(frame, 50, 230, -1, -1, 10);
 			// Trackbar accept a pointer to a variable that controls
 			// their value
