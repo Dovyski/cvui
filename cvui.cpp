@@ -546,7 +546,8 @@ namespace render {
 			if (theParams.DrawValuesAtLargeSteps)
 			{
 				char legend[100];
-				sprintf(legend, theParams.Printf_Format.c_str(), value);
+				std::string printFormat = theParams.Printf_Format_Steps.empty() ? theParams.Printf_Format : theParams.Printf_Format_Steps;
+				sprintf(legend, printFormat.c_str(), value);
 				cv::Point textPos(xPixel, barTopLeft.y - 11);
 				drawTextCentered(textPos, legend);
 			}
