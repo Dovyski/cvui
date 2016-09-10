@@ -34,6 +34,10 @@
 example/build/*
 .idea
 
+#Build paths
+build
+install
+
 #Save those, please
 !example/build/README.txt
 !example/build/data/*
