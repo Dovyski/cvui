@@ -101,15 +101,15 @@ int main(int argc, const char *argv[])
 		//
 		// Let's create a row at position (50,230) with automatic width and height, and a padding of 10
 		cvui::beginRow(frame, 50, 230, -1, -1, 10);
-			// Trackbar accept a pointer to a variable that controls
-			// their value
+			// Trackbar accept a pointer to a variable that controls their value
 			// They can be customized to your needs.
 			//Quick info about the Tracbar params
 			//double MinimumValue, MaximumValue : self-explanatory
 			//double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
 			//bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
 			//bool DrawValuesAtLargeSteps : draw value at large steps
-			//std::string Printf_Format : printf format string of the values and legend
+			//string Printf_Format : printf format string of the value
+			//string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
 			static double value = 2.25;
 			static std::vector<double> lastValues;
 			cvui::TrackbarParams params;

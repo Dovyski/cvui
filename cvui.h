@@ -191,8 +191,8 @@ Display a trackbar
  	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
  	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
 	bool DrawValuesAtLargeSteps : draw value at large steps
-	std::string Printf_Format : printf format string of the value
-	std::string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
+	string Printf_Format : printf format string of the value
+	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
 
  \sa printf()
  \sa beginColumn()
@@ -596,8 +596,8 @@ Display a trackbar
  	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
  	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
 	bool DrawValuesAtLargeSteps : draw value at large steps
-	std::string Printf_Format : printf format string of the value
-	std::string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
+	string Printf_Format : printf format string of the value
+	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
 
   IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
