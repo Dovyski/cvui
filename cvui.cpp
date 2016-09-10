@@ -341,9 +341,10 @@ namespace internal {
 		return *theValue;
 	}
 
-	double trackbar(cvui_block_t& theBlock, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
+	bool trackbar(cvui_block_t& theBlock, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
 		cv::Rect aContentArea(theX, theY, 200, 54);
 
+		double valueOrig = *theValue;
 		bool aMouseIsOver = aContentArea.contains(gMouse);
 		render::trackbar(theBlock, aContentArea, *theValue, theParams, aMouseIsOver);
 		if (gMousePressed) {
@@ -357,7 +358,7 @@ namespace internal {
 		cv::Size aSize = aContentArea.size();
 		updateLayoutFlow(theBlock, aSize);
 
-		return *theValue;
+		return (*theValue != valueOrig);
 	}
 
 	void window(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
@@ -648,7 +649,7 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
 	return internal::counter(gScreen, theX, theY, theValue, theStep, theFormat);
 }
 
-double trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
+bool trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
 	gScreen.where = theWhere;
 	return internal::trackbar(gScreen, theX, theY, theValue, theParams);
 }
@@ -753,7 +754,7 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat);
 }
 
-double trackbar(double *theValue, const TrackbarParams & theParams) {
+bool trackbar(double *theValue, const TrackbarParams & theParams) {
 	cvui_block_t& aBlock = internal::topBlock();
 	return internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theParams);
 }

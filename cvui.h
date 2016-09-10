@@ -169,8 +169,9 @@ Display a trackbar
  \param theWhere the image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
- \param theValue : pointer to the variable that will hold the value
+ \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
  \param theParams : trackbar parameters : their names are self-explanatory
+ Returns true when the value was modified, false otherwise
 
    Quick info about the Tracbar params
  	double MinimumValue, MaximumValue : self-explanatory
@@ -185,7 +186,7 @@ Display a trackbar
  \sa endRow()
  \sa endColumn()
 */
-double trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams);
 
 
 	/**
@@ -574,6 +575,7 @@ Display a trackbar
 
  \param theValue : pointer to the variable that will hold the value
  \param theParams : trackbar parameters : their names are self-explanatory
+ Returns true when the value was modified, false otherwise
 
     Quick info about the Tracbar params
  	double MinimumValue, MaximumValue : self-explanatory
@@ -590,7 +592,7 @@ Display a trackbar
  \sa endRow()
  \sa endColumn()
 */
-double trackbar(double *theValue, const TrackbarParams & theParams);
+bool trackbar(double *theValue, const TrackbarParams & theParams);
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.

@@ -104,7 +104,9 @@ int main(int argc, const char *argv[])
 		params.SmallStep = 0.25;
 		params.Printf_Format = "%3.2lf";
 		params.ForceValuesAsMultiplesOfSmallStep = true;
-		cvui::trackbar(frame, 200, 230, &value, params);
+		if (cvui::trackbar(frame, 200, 230, &value, params)) {
+			std::cout << "Tracbar was modified, value : " << value << std::endl;
+		}
 
 
 		// Display the lib version at the bottom of the screen
