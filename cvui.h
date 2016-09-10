@@ -20,8 +20,19 @@ namespace cvui
  the components will be added.
  
  \param theWindowName name of the window where the components will be added
+ \param theDelayWaitKey delay used by cv::waitKey at each call of cvui::update()
 */
-void init(const cv::String& theWindowName);
+void init(const cv::String& theWindowName, int theDelayWaitKey = 15);
+
+/**
+ Return the last key that was pressed
+ You need not (and should not) call cv::waitKey between each frame.
+ Instead, call cvui::update() that will in turn call cv::waitKey()
+
+ Note : you can set the delay of cv::waitKey during cvui::init()
+ */
+int lastKeyPressed();
+
 
 /**
  Display a button. The size of the button will be automatically adjusted to
@@ -439,7 +450,7 @@ void text(const cv::String& theText, double theFontScale = 0.4, unsigned int the
 
  \param theWidth width of the button.
  \param theHeight height of the button.
- \param theLabel text displayed inside the button.
+ \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()
@@ -455,7 +466,7 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel);
 
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
- \param theLabel text displayed inside the button.
+ \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()
