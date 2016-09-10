@@ -104,7 +104,16 @@ int main(int argc, const char *argv[])
 			cvui::text("Column 2 (padding = 10)");
 			cvui::button("button1");
 			cvui::button("button2");
-			cvui::text("End of column 2");
+
+			static double value = 2.25;
+			cvui::TrackbarParams params;
+			params.MinimumValue = 0.; params.MaximumValue = 5;
+			params.LargeStep = 1.; params.SmallStep = 0.25;
+			params.Printf_Format = "%3.2lf";
+			params.ForceValuesAsMultiplesOfSmallStep = true;
+			cvui::trackbar(&value, params);
+
+		cvui::text("End of column 2");
 		cvui::endColumn();
 
 		// You can also add an arbitrary amount of space between

@@ -143,7 +143,52 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 
 */
 double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
 
+
+struct TrackbarParams
+{
+	double MinimumValue, MaximumValue;
+	double SmallStep, LargeStep;
+	bool ForceValuesAsMultiplesOfSmallStep;
+	bool DrawValuesAtLargeSteps;
+	std::string Printf_Format;
+
+	inline TrackbarParams()
+			: MinimumValue(0.)
+			, MaximumValue(25.)
+			, SmallStep(1.)
+			, LargeStep(5.)
+			, ForceValuesAsMultiplesOfSmallStep(false)
+			, DrawValuesAtLargeSteps(true)
+			, Printf_Format("%.0lf")
+	{
+	}
+};
 /**
+Display a trackbar
+
+ \param theWhere the image/frame where the component should be rendered.
+ \param theX position X where the component should be placed.
+ \param theY position Y where the component should be placed.
+ \param theValue : pointer to the variable that will hold the value
+ \param theParams : trackbar parameters : their names are self-explanatory
+
+   Quick info about the Tracbar params
+ 	double MinimumValue, MaximumValue : self-explanatory
+ 	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+ 	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+	bool DrawValuesAtLargeSteps : draw value at large steps
+	std::string Printf_Format : printf format string of the values and legend
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+double trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams);
+
+
+	/**
  Display a window (a block with a title and a body).
 
  \param theWhere the image/frame where the component should be rendered.
@@ -523,6 +568,30 @@ int counter(int *theValue, int theStep = 1, const char *theFormat = "%d");
 */
 double counter(double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
 
+
+/**
+Display a trackbar
+
+ \param theValue : pointer to the variable that will hold the value
+ \param theParams : trackbar parameters : their names are self-explanatory
+
+    Quick info about the Tracbar params
+ 	double MinimumValue, MaximumValue : self-explanatory
+ 	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+ 	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+	bool DrawValuesAtLargeSteps : draw value at large steps
+	std::string Printf_Format : printf format string of the values and legend
+
+  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+double trackbar(double *theValue, const TrackbarParams & theParams);
+
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
 
@@ -575,6 +644,8 @@ void rect(int theWidth, int theHeight, unsigned int theBorderColor, unsigned int
 */
 void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
 
+
+
 /**
  Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating
  UI elements in order for them to react to mouse interactions.
@@ -610,6 +681,7 @@ namespace render {
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel);
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize);
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue);
+	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const TrackbarParams &theParams, bool theMouseIsOver);
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor);
 	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape);

@@ -174,6 +174,41 @@ namespace internal {
 		return cv::Scalar(aBlue, aGreen, aRed, aAlpha);
 	}
 
+
+	inline double clamp01(double value)
+	{
+		value = value > 1. ? 1. : value;
+		value = value < 0. ? 0. : value;
+		return value;
+	}
+
+	inline void trackbar_ForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, double *theValue)
+	{
+		if (theParams.ForceValuesAsMultiplesOfSmallStep)
+		{
+			double k = (*theValue - theParams.MinimumValue) / theParams.SmallStep;
+			k = cvRound(k);
+			*theValue = theParams.MinimumValue + theParams.SmallStep * k;
+		}
+	}
+
+	inline double trackbar_XPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int xPixel)
+	{
+		double ratio = (xPixel - (double)theBounding.x) / (double)theBounding.width;
+		ratio = clamp01(ratio);
+		double value = theParams.MinimumValue + ratio * (theParams.MaximumValue - theParams.MinimumValue);
+		return value;
+	}
+
+	inline int trackbar_ValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, double value)
+	{
+		double ratio = (value - theParams.MinimumValue) / (theParams.MaximumValue - theParams.MinimumValue);
+		ratio = clamp01(ratio);
+		double xPixels = (double)theBounding.x + ratio * (double)theBounding.width;
+		return (int)xPixels;
+	}
+
+
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {
 		// Calculate the space that the label will fill
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
@@ -306,6 +341,27 @@ namespace internal {
 		return *theValue;
 	}
 
+	double trackbar(cvui_block_t& theBlock, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
+		//Internal OK
+		cv::Rect aContentArea(theX, theY, 200, 54);
+
+		bool aMouseIsOver = aContentArea.contains(gMouse);
+		render::trackbar(theBlock, aContentArea, *theValue, theParams, aMouseIsOver);
+		if (gMousePressed) {
+			*theValue = internal::trackbar_XPixelToValue(theParams, aContentArea, gMouse.x);
+			if (theParams.ForceValuesAsMultiplesOfSmallStep) {
+				internal::trackbar_ForceValuesAsMultiplesOfSmallStep(theParams, theValue);
+			}
+			std::cout << "track value:" << *theValue << std::endl;
+		}
+
+		// Update the layout flow
+		cv::Size aSize = aContentArea.size();
+		updateLayoutFlow(theBlock, aSize);
+
+		return *theValue;
+	}
+
 	void window(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
 		cv::Rect aTitleBar(theX, theY, theWidth, 20);
 		cv::Rect aContent(theX, theY + aTitleBar.height, theWidth, theHeight - aTitleBar.height);
@@ -337,6 +393,7 @@ namespace internal {
 		cv::Size aSize(theWidth, theHeight);
 		updateLayoutFlow(theBlock, aSize);
 	}
+
 }
 
 // This is an internal namespace with all functions
@@ -372,6 +429,76 @@ namespace render {
 
 		cv::Point aPos(theShape.x + theShape.width / 2 - aTextSize.width / 2, theShape.y + aTextSize.height / 2 + theShape.height / 2);
 		cv::putText(theBlock.where, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
+	}
+
+	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const TrackbarParams &theParams, bool theMouseIsOver) {
+		//OK Render
+		//cv::rectangle(theBlock.where, theShape, cv::Scalar(0, 0, 255), 1);
+
+		auto drawTextCentered = [&](const cv::Point & position, const std::string &text) {
+			auto fontFace = cv::FONT_HERSHEY_SIMPLEX;
+			auto fontScale = 0.4;
+			int baseline;
+			auto size = cv::getTextSize(text, fontFace, fontScale, 1, &baseline);
+			cv::Point positionDecentered(position.x - size.width / 2, position.y);
+			cv::putText(theBlock.where, text, positionDecentered, fontFace, fontScale, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
+		};
+
+		auto color = cv::Scalar(150, 150, 150);
+		if (theMouseIsOver)
+			color = cv::Scalar(200, 200, 200);
+
+		cv::Point barTopLeft(theShape.x, theShape.y + 26);
+		int barHeight = 7;
+		{
+			// Draw bar
+			cv::Rect bar(barTopLeft, cv::Size(theShape.width, barHeight));
+			cv::rectangle(theBlock.where, bar, color, -1);
+		}
+
+		//Draw small steps
+		for (double value = theParams.MinimumValue; value <= theParams.MaximumValue; value += theParams.SmallStep)
+		{
+			int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, value);
+			cv::Point pt1(xPixel, barTopLeft.y);
+			cv::Point pt2(xPixel, barTopLeft.y - 3);
+			cv::line(theBlock.where, pt1, pt2, color);
+		}
+
+		//Draw large steps and legends
+		for (double value = theParams.MinimumValue; value <= theParams.MaximumValue; value += theParams.LargeStep)
+		{
+			int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, value);
+			cv::Point pt1(xPixel, barTopLeft.y);
+			cv::Point pt2(xPixel, barTopLeft.y - 8);
+			cv::line(theBlock.where, pt1, pt2, color);
+
+			if (theParams.DrawValuesAtLargeSteps)
+			{
+				char legend[100];
+				sprintf(legend, theParams.Printf_Format.c_str(), value);
+				cv::Point textPos(xPixel, barTopLeft.y - 11);
+				drawTextCentered(textPos, legend);
+			}
+		}
+
+		// Draw current value indicator
+		{
+			cv::Scalar contrastedColor(100, 100, 100);
+
+			int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, theValue);
+			int indicatorWidth = 3;
+			int indicatorHeightAdd = 4;
+			cv::Point pt1(xPixel - indicatorWidth, barTopLeft.y - indicatorHeightAdd);
+			cv::Point pt2(xPixel + indicatorWidth, barTopLeft.y + barHeight + indicatorHeightAdd);
+			cv::rectangle(theBlock.where, cv::Rect(pt1, pt2), contrastedColor, -1);
+
+			// Draw current value as text
+			cv::Point textPos(xPixel, pt2.y + 11);
+			char legend[100];
+			sprintf(legend, theParams.Printf_Format.c_str(), theValue);
+			drawTextCentered(textPos, legend);
+		}
 	}
 
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape) {
@@ -466,6 +593,7 @@ namespace render {
 			aPosX += aGap;
 		}
 	}
+
 }
 	
 void init(const cv::String& theWindowName) {
@@ -523,6 +651,12 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep, c
 double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep, const char *theFormat) {
 	gScreen.where = theWhere;
 	return internal::counter(gScreen, theX, theY, theValue, theStep, theFormat);
+}
+
+double trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
+	// OK Public full
+	gScreen.where = theWhere;
+	return internal::trackbar(gScreen, theX, theY, theValue, theParams);
 }
 
 void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
@@ -624,6 +758,13 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 	cvui_block_t& aBlock = internal::topBlock();
 	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat);
 }
+
+double trackbar(double *theValue, const TrackbarParams & theParams) {
+	// Ok public simple
+	cvui_block_t& aBlock = internal::topBlock();
+	return internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theParams);
+}
+
 
 void window(int theWidth, int theHeight, const cv::String& theTitle) {
 	cvui_block_t& aBlock = internal::topBlock();
