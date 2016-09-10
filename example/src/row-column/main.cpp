@@ -22,8 +22,8 @@ Code licensed under the MIT license, check LICENSE file.
 
 #include <iostream>
 
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include "cvui.h"
 
@@ -104,7 +104,16 @@ int main(int argc, const char *argv[])
 			cvui::text("Column 2 (padding = 10)");
 			cvui::button("button1");
 			cvui::button("button2");
-			cvui::text("End of column 2");
+
+			static double value = 2.25;
+			cvui::TrackbarParams params;
+			params.MinimumValue = 0.; params.MaximumValue = 5;
+			params.LargeStep = 1.; params.SmallStep = 0.25;
+			params.Printf_Format = "%3.2lf";
+			params.ForceValuesAsMultiplesOfSmallStep = true;
+			cvui::trackbar(&value, params);
+
+		cvui::text("End of column 2");
 		cvui::endColumn();
 
 		// You can also add an arbitrary amount of space between
@@ -138,7 +147,7 @@ int main(int argc, const char *argv[])
 		cv::imshow(WINDOW_NAME, frame);
 
 		// Check if ESC key was pressed
-		if (cv::waitKey(1) == 27) {
+		if (cvui::lastKeyPressed() == 27) {
 			break;
 		}
 	}

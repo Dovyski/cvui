@@ -9,8 +9,8 @@ Code licensed under the MIT license, check LICENSE file.
 
 #include <iostream>
 
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include "cvui.h"
 
@@ -105,6 +105,9 @@ int main(int argc, const char *argv[])
 				cvui::text("text");
 				cvui::button("btn2");
 				cvui::text("text2");
+				if (cvui::button("&Quit")) {
+          			break;
+        		}
 			cvui::endColumn();
 
 			// Add more text
@@ -120,7 +123,7 @@ int main(int argc, const char *argv[])
 		cv::imshow(WINDOW_NAME, frame);
 
 		// Check if ESC key was pressed
-		if (cv::waitKey(10) == 27) {
+		if (cvui::lastKeyPressed() == 27) {
 			break;
 		}
 	}

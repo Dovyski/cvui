@@ -1,0 +1,21 @@
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = crlf
+insert_final_newline = true
+
+# Matches multiple files with brace expansion notation
+# Set default charset
+[*.{h,cpp]
+charset = latin1
+
+# 4 space indentation
+[*,h*.cpp]
+indent_style = tab
+indent_size = 2
+
+[CMakeLists.txt]
+indent_style = tab
+indent_size = 2

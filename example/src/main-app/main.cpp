@@ -7,8 +7,8 @@ Licensed under the MIT license.
 
 #include <iostream>
 
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include "cvui.h"
 
@@ -16,7 +16,7 @@ Licensed under the MIT license.
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat frame = cv::Mat(250, 600, CV_8UC3);
+	cv::Mat frame = cv::Mat(310, 600, CV_8UC3);
 	bool checked = false;
 	bool checked2 = true;
 	int count = 0;
@@ -33,7 +33,7 @@ int main(int argc, const char *argv[])
 		frame = cv::Scalar(49, 52, 49);
 
 		// Check if ESC key was pressed
-		if (cv::waitKey(10) == 27) {
+		if (cvui::lastKeyPressed() == 27) {
 			break;
 		}
 
@@ -51,8 +51,11 @@ int main(int argc, const char *argv[])
 
 		// Buttons will return true if they were clicked, which makes
 		// handling clicks a breeze.
-		if (cvui::button(frame, 50, 70, "Button")) {
-			std::cout << "Button clicked!" << std::endl;
+		if (cvui::button(frame, 50, 60, "&Button")) {
+			std::cout << "Button clicked" << std::endl;
+		}
+		if (cvui::button(frame, 50, 90, "&Quit")) {
+			break;
 		}
 
 		// If you do not specify the button width/height, the size will be
@@ -86,6 +89,28 @@ int main(int argc, const char *argv[])
 		// its appearance.
 		cvui::checkbox(frame, 200, 160, "Checkbox", &checked);
 		cvui::checkbox(frame, 200, 190, "A checked checkbox", &checked2);
+
+		// Trackbar accept a pointer to a variable that controls
+		// their value
+		// They can be customized to your needs.
+		//Quick info about the Tracbar params
+		//double MinimumValue, MaximumValue : self-explanatory
+		//double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+		//bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+		//bool DrawValuesAtLargeSteps : draw value at large steps
+		//std::string Printf_Format : printf format string of the values and legend
+		static double value = 2.25;
+		cvui::TrackbarParams params;
+		params.MinimumValue = 0.;
+		params.MaximumValue = 5;
+		params.LargeStep = 1.;
+		params.SmallStep = 0.25;
+		params.Printf_Format = "%3.2lf";
+		params.ForceValuesAsMultiplesOfSmallStep = true;
+		if (cvui::trackbar(frame, 200, 230, &value, params)) {
+			std::cout << "Tracbar was modified, value : " << value << std::endl;
+		}
+
 
 		// Display the lib version at the bottom of the screen
 		cvui::printf(frame, frame.cols - 80, frame.rows - 20, 0.4, 0xCECECE, "cvui v.%s", cvui::VERSION);

@@ -10,7 +10,7 @@
 #ifndef _CVUI_H_
 #define _CVUI_H_
 
-#include "opencv2/core/core.hpp"
+#include <opencv2/core/core.hpp>
 #include <stdarg.h>
 
 namespace cvui
@@ -20,8 +20,19 @@ namespace cvui
  the components will be added.
  
  \param theWindowName name of the window where the components will be added
+ \param theDelayWaitKey delay used by cv::waitKey at each call of cvui::update()
 */
-void init(const cv::String& theWindowName);
+void init(const cv::String& theWindowName, int theDelayWaitKey = 15);
+
+/**
+ Return the last key that was pressed
+ You need not (and should not) call cv::waitKey between each frame.
+ Instead, call cvui::update() that will in turn call cv::waitKey()
+
+ Note : you can set the delay of cv::waitKey during cvui::init()
+ */
+int lastKeyPressed();
+
 
 /**
  Display a button. The size of the button will be automatically adjusted to
@@ -94,7 +105,7 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
  
  \sa text()
 */
-void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...);
+void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, const char *theFmt, ...);
 
 /**
  Display a piece of text that can be formated using `stdio's printf()` style. For instance
@@ -143,7 +154,53 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 
 */
 double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
 
+
+struct TrackbarParams
+{
+	double MinimumValue, MaximumValue;
+	double SmallStep, LargeStep;
+	bool ForceValuesAsMultiplesOfSmallStep;
+	bool DrawValuesAtLargeSteps;
+	std::string Printf_Format;
+
+	inline TrackbarParams()
+			: MinimumValue(0.)
+			, MaximumValue(25.)
+			, SmallStep(1.)
+			, LargeStep(5.)
+			, ForceValuesAsMultiplesOfSmallStep(false)
+			, DrawValuesAtLargeSteps(true)
+			, Printf_Format("%.0lf")
+	{
+	}
+};
 /**
+Display a trackbar
+
+ \param theWhere the image/frame where the component should be rendered.
+ \param theX position X where the component should be placed.
+ \param theY position Y where the component should be placed.
+ \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+ \param theParams : trackbar parameters : their names are self-explanatory
+ Returns true when the value was modified, false otherwise
+
+   Quick info about the Tracbar params
+ 	double MinimumValue, MaximumValue : self-explanatory
+ 	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+ 	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+	bool DrawValuesAtLargeSteps : draw value at large steps
+	std::string Printf_Format : printf format string of the values and legend
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+bool trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams);
+
+
+	/**
  Display a window (a block with a title and a body).
 
  \param theWhere the image/frame where the component should be rendered.
@@ -394,7 +451,7 @@ void text(const cv::String& theText, double theFontScale = 0.4, unsigned int the
 
  \param theWidth width of the button.
  \param theHeight height of the button.
- \param theLabel text displayed inside the button.
+ \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()
@@ -410,7 +467,7 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel);
 
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
- \param theLabel text displayed inside the button.
+ \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()
@@ -483,7 +540,7 @@ void printf(double theFontScale, unsigned int theColor, char *theFmt, ...);
  \sa endRow()
  \sa endColumn()
 */
-void printf(char *theFmt, ...);
+void printf(const char *theFmt, ...);
 
 /**
  Display a counter for integer values that the user can increase/descrease
@@ -522,6 +579,31 @@ int counter(int *theValue, int theStep = 1, const char *theFormat = "%d");
  \sa endColumn()
 */
 double counter(double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
+
+
+/**
+Display a trackbar
+
+ \param theValue : pointer to the variable that will hold the value
+ \param theParams : trackbar parameters : their names are self-explanatory
+ Returns true when the value was modified, false otherwise
+
+    Quick info about the Tracbar params
+ 	double MinimumValue, MaximumValue : self-explanatory
+ 	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+ 	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+	bool DrawValuesAtLargeSteps : draw value at large steps
+	std::string Printf_Format : printf format string of the values and legend
+
+  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+bool trackbar(double *theValue, const TrackbarParams & theParams);
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
@@ -575,6 +657,8 @@ void rect(int theWidth, int theHeight, unsigned int theBorderColor, unsigned int
 */
 void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
 
+
+
 /**
  Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating
  UI elements in order for them to react to mouse interactions.
@@ -610,6 +694,7 @@ namespace render {
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel);
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize);
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue);
+	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const TrackbarParams &theParams, bool theMouseIsOver);
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor);
 	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape);

@@ -11,9 +11,9 @@ Code licensed under the MIT license, check LICENSE file.
 
 #include <iostream>
 
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include "cvui.h"
 
@@ -72,7 +72,7 @@ int main(int argc, const char *argv[])
 		frame = cv::Scalar(49, 52, 49);
 
 		// Check if ESC key was pressed
-		if (cv::waitKey(1) == 27) {
+		if (cvui::lastKeyPressed() == 27) {
 			break;
 		}
 
