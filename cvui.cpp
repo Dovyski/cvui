@@ -390,10 +390,10 @@ namespace internal {
 		return *theValue;
 	}
 
-	double trackbar(cvui_block_t& theBlock, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
-		//Internal OK
+	bool trackbar(cvui_block_t& theBlock, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
 		cv::Rect aContentArea(theX, theY, 200, 54);
 
+		double valueOrig = *theValue;
 		bool aMouseIsOver = aContentArea.contains(gMouse);
 		render::trackbar(theBlock, aContentArea, *theValue, theParams, aMouseIsOver);
 		if (gMousePressed) {
@@ -401,14 +401,13 @@ namespace internal {
 			if (theParams.ForceValuesAsMultiplesOfSmallStep) {
 				internal::trackbar_ForceValuesAsMultiplesOfSmallStep(theParams, theValue);
 			}
-			std::cout << "track value:" << *theValue << std::endl;
 		}
 
 		// Update the layout flow
 		cv::Size aSize = aContentArea.size();
 		updateLayoutFlow(theBlock, aSize);
 
-		return *theValue;
+		return (*theValue != valueOrig);
 	}
 
 	void window(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
@@ -504,9 +503,6 @@ namespace render {
 	}
 
 	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const TrackbarParams &theParams, bool theMouseIsOver) {
-		//OK Render
-		//cv::rectangle(theBlock.where, theShape, cv::Scalar(0, 0, 255), 1);
-
 		auto drawTextCentered = [&](const cv::Point & position, const std::string &text) {
 			auto fontFace = cv::FONT_HERSHEY_SIMPLEX;
 			auto fontScale = 0.4;
@@ -731,8 +727,7 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
 	return internal::counter(gScreen, theX, theY, theValue, theStep, theFormat);
 }
 
-double trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
-	// OK Public full
+bool trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
 	gScreen.where = theWhere;
 	return internal::trackbar(gScreen, theX, theY, theValue, theParams);
 }
@@ -837,8 +832,7 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat);
 }
 
-double trackbar(double *theValue, const TrackbarParams & theParams) {
-	// Ok public simple
+bool trackbar(double *theValue, const TrackbarParams & theParams) {
 	cvui_block_t& aBlock = internal::topBlock();
 	return internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theParams);
 }
