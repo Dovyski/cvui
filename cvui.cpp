@@ -255,8 +255,6 @@ namespace internal {
 		render::text(theBlock, theText, aPos, theFontScale, theColor);
 
 		if (theUpdateLayout) {
-			cv::Size aTextSize = cv::getTextSize(theText, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
-			
 			// Add an extra pixel to the height to overcome OpenCV font size problems.
 			aTextSize.height += 1;
 			
