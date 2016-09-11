@@ -201,6 +201,8 @@ Display a trackbar
  \sa endColumn()
 */
 bool trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, float *theValue, const TrackbarParams & theParams);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int *theValue, const TrackbarParams & theParams);
 
 
 	/**
@@ -608,6 +610,8 @@ Display a trackbar
  \sa endColumn()
 */
 bool trackbar(double *theValue, const TrackbarParams & theParams);
+bool trackbar(float *theValue, const TrackbarParams & theParams);
+bool trackbar(int *theValue, const TrackbarParams & theParams);
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.

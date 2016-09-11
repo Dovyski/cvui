@@ -410,6 +410,19 @@ namespace internal {
 
 		return (*theValue != valueOrig);
 	}
+	bool trackbar(cvui_block_t& theBlock, int theX, int theY, float *theValue, const TrackbarParams & theParams) {
+		double vd = (double)(*theValue);
+	  bool result = trackbar(theBlock, theX, theY, &vd, theParams);
+	  *theValue = (float)vd;
+	  return result;
+	}
+	bool trackbar(cvui_block_t& theBlock, int theX, int theY, int *theValue, const TrackbarParams & theParams) {
+		double vd = (double)(*theValue);
+		bool result = trackbar(theBlock, theX, theY, &vd, theParams);
+		*theValue = (int)vd;
+		return result;
+	}
+
 
 	void window(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
 		cv::Rect aTitleBar(theX, theY, theWidth, 20);
@@ -734,6 +747,14 @@ bool trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const Tra
 	gScreen.where = theWhere;
 	return internal::trackbar(gScreen, theX, theY, theValue, theParams);
 }
+bool trackbar(cv::Mat& theWhere, int theX, int theY, float *theValue, const TrackbarParams & theParams) {
+	gScreen.where = theWhere;
+	return internal::trackbar(gScreen, theX, theY, theValue, theParams);
+}
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int *theValue, const TrackbarParams & theParams) {
+	gScreen.where = theWhere;
+	return internal::trackbar(gScreen, theX, theY, theValue, theParams);
+}
 
 void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
 	gScreen.where = theWhere;
@@ -836,6 +857,14 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 }
 
 bool trackbar(double *theValue, const TrackbarParams & theParams) {
+	cvui_block_t& aBlock = internal::topBlock();
+	return internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theParams);
+}
+bool trackbar(float *theValue, const TrackbarParams & theParams) {
+	cvui_block_t& aBlock = internal::topBlock();
+	return internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theParams);
+}
+bool trackbar(int *theValue, const TrackbarParams & theParams) {
 	cvui_block_t& aBlock = internal::topBlock();
 	return internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theParams);
 }
