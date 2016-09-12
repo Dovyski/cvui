@@ -538,12 +538,15 @@ namespace render {
 		}
 
 		//Draw small steps
-		for (double value = theParams.MinimumValue; value <= theParams.MaximumValue; value += theParams.SmallStep)
+		if (theParams.DrawSmallSteps)
 		{
-			int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, value);
-			cv::Point pt1(xPixel, barTopLeft.y);
-			cv::Point pt2(xPixel, barTopLeft.y - 3);
-			cv::line(theBlock.where, pt1, pt2, color);
+			for (double value = theParams.MinimumValue; value <= theParams.MaximumValue; value += theParams.SmallStep)
+			{
+				int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, value);
+				cv::Point pt1(xPixel, barTopLeft.y);
+				cv::Point pt2(xPixel, barTopLeft.y - 3);
+				cv::line(theBlock.where, pt1, pt2, color);
+			}
 		}
 
 		//Draw large steps and legends
@@ -919,5 +922,53 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 		gMousePressed = false;
 	}
 }
+
+TrackbarParams trackbarParams_Floats(
+  double min, double max, 
+  int nbDecimals, 
+  int nbLargeSteps, 
+  double smallStep,
+  bool forceValuesAsMultiplesOfSmallStep)
+{
+	TrackbarParams params;
+	params.MinimumValue = min;
+	params.MaximumValue = max;
+	params.DrawValuesAtLargeSteps = true;
+	params.LargeStep = (max - min) / (double) nbLargeSteps;
+	params.SmallStep = smallStep;
+	if (smallStep > 0)
+	params.DrawSmallSteps = true;
+	else
+	params.DrawSmallSteps = false;
+	params.ForceValuesAsMultiplesOfSmallStep = forceValuesAsMultiplesOfSmallStep;
+
+	//Printf Format
+	{
+		int nbSignsBeforeDecimals = (int) ( log((double) max) / log(10.)) + 1;
+		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
+		std::stringstream format;
+		format << "%" << totalSigns << "." << nbDecimals << "lf";
+		params.Printf_Format = format.str();
+	}
+
+	return params;
+}
+
+TrackbarParams trackbarParams_Ints(
+  int min, int max, 
+  int nbLargeSteps)
+{
+	TrackbarParams params;
+	params.MinimumValue = (double)min;
+	params.MaximumValue = (double)max;
+	params.DrawValuesAtLargeSteps = true;
+	params.DrawSmallSteps = false;
+	params.LargeStep = (double)(max - min) / (double) nbLargeSteps;
+	params.SmallStep = 1.;
+	params.ForceValuesAsMultiplesOfSmallStep = true;
+	params.Printf_Format = "%.0lf";
+	return params;
+}
+
 
 } // namespace cvui

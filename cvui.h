@@ -161,6 +161,7 @@ struct TrackbarParams
 	double SmallStep, LargeStep;
 	bool ForceValuesAsMultiplesOfSmallStep;
 	bool DrawValuesAtLargeSteps;
+	bool DrawSmallSteps;
 	std::string Printf_Format;
 	std::string Printf_Format_Steps;
 
@@ -171,11 +172,28 @@ struct TrackbarParams
 			, LargeStep(5.)
 			, ForceValuesAsMultiplesOfSmallStep(false)
 			, DrawValuesAtLargeSteps(true)
+			, DrawSmallSteps(true)
 			, Printf_Format("%.0lf")
 			, Printf_Format_Steps("")
 	{
 	}
 };
+
+TrackbarParams trackbarParams_Floats(
+	double min, double max,
+	int nbDecimals = 1,
+	int nbLargeSteps = 1,
+	double smallStep = -1.,
+	bool forceValuesAsMultiplesOfSmallStep = false);
+
+TrackbarParams trackbarParams_Ints(
+	int min, int max,
+	int nbLargeSteps = 1);
+
+
+
+
+
 /**
 Display a trackbar
 
