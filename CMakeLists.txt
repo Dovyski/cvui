@@ -7,4 +7,5 @@ add_subdirectory(example/src/nested-rows-columns)
 add_subdirectory(example/src/row-column)
 add_subdirectory(example/src/sparkline)
 add_subdirectory(example/src/on-image)
+add_subdirectory(example/src/trackbar)
 
