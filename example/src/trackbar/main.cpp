@@ -53,6 +53,16 @@ int main(int argc, const char *argv[])
 						int theNumberOfLargeSteps = 1,
 						T theSmallStep = -1.,
 						bool flagForceValuesAsMultiplesOfSmallStep = true);
+
+			   Note : remember to cast the minimum and maximum values to your type
+			  See examples below :
+
+			   float myValue;
+			   cvui::trackbar_float(&myValue, 0.f, 100.f);
+			   unsigned char myValue;
+			   cvui::trackbar_float(&myValue, (unsigned char)0, (unsigned char)255);
+
+			   Returns true when the value was modified, false otherwise
 			*/
 
 			cvui::text("Simple int trackbar, no ticks");
