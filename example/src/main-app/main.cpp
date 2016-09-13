@@ -106,9 +106,9 @@ int main(int argc, const char *argv[])
 		    //and a precision of 0.25 (i.e the user can only enter values ending in .25, .5, .75 or .0
 			static double value = 2.25;
 			static std::vector<double> lastValues;
-			if (cvui::trackbar_float(&value, 0., 5., 2, 5, 	0.25))
+			if (cvui::trackbar(&value, 0., 5., 2, 5, 	0.25))
 			{
-				std::cout << "Tracbar was modified, value : " << value << std::endl;
+				std::cout << "Trackbar was modified, value : " << value << std::endl;
 				lastValues.push_back(value);
 			}
 

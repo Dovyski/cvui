@@ -181,17 +181,12 @@ struct TrackbarParams
 
 
 template <typename T> // T can be any floating point type (float, double, long double)
-TrackbarParams trackbarParams_Floats(
+TrackbarParams trackbarParams(
 	T min, T max,
 	int nbDecimals = 1,
 	int nbLargeSteps = 1,
 	T smallStep = -1.,
 	bool forceValuesAsMultiplesOfSmallStep = false);
-
-template <typename T> // T can be any integral type (char, unsigned char, int, ...)
-TrackbarParams trackbarParams_Ints(
-	T min, T max,
-	int nbLargeSteps = 1);
 
 
 
@@ -227,36 +222,9 @@ Display a trackbar
 template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
 bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams & theParams);
 
-/**
-trackbar_int : Display a trackbar, specialized version for integral types
- \param theWhere the image/frame where the component should be rendered.
- \param theX position X where the component should be placed.
- \param theY position Y where the component should be placed.
- \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
- \param theMin : minimum value of the trackbar
- \param theMax : maximum value of the trackbar
- \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
-
-   Returns true when the value was modified, false otherwise
-
-   Note : if you want to use types other than int,
-   remember to cast the minimum and maximum values to your type
-   see example below with uchar :
-     uchar myValue;
-     cvui::trackbar_int(mat, x, y, &myValue, (uchar)0, (uchar)255, 5);
-
- \sa printf()
- \sa beginColumn()
- \sa beginRow()
- \sa endRow()
- \sa endColumn()
-*/
-template <typename T> // T can be any integral type (int, long, char, unsigned int, etc)
-bool trackbar_int(cv::Mat& theWhere, int theX, int theY, T *theValue, T theMin, T theMax, int theNumberOfLargeSteps);
-
 
 /**
-trackbar_float : Display a trackbar, specialized version for float types
+trackbar_float : Display a trackbar
  \param theWhere the image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
@@ -270,11 +238,13 @@ trackbar_float : Display a trackbar, specialized version for float types
 
    Returns true when the value was modified, false otherwise
 
-   Note : if you want to use float instead of double,
-  remember to cast the minimum and maximum values to your type
-  see example below :
+   Note : remember to cast the minimum and maximum values to your type
+  See examples below :
+
    float myValue;
-   cvui::trackbar_float(image, x, y, &myValue, 0.f, 100.f);
+   cvui::trackbar_float(&myValue, 0.f, 100.f);
+   unsigned char myValue;
+   cvui::trackbar_float(&myValue, (unsigned char)0, (unsigned char)255);
 
  \sa printf()
  \sa beginColumn()
@@ -283,13 +253,13 @@ trackbar_float : Display a trackbar, specialized version for float types
  \sa endColumn()
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar_float(cv::Mat& theWhere, int theX, int theY,
-					T *theValue,
-					T theMin, T theMax,
-					int theNumberOfDecimals = 1,
-					int theNumberOfLargeSteps = 1,
-					T theSmallStep = -1.,
-					bool flagForceValuesAsMultiplesOfSmallStep = false);
+bool trackbar(  cv::Mat& theWhere, int theX, int theY,
+				T *theValue,
+				T theMin, T theMax,
+				int theNumberOfDecimals = 1,
+				int theNumberOfLargeSteps = 1,
+				T theSmallStep = -1.,
+				bool flagForceValuesAsMultiplesOfSmallStep = false);
 
 /**
  Display a window (a block with a title and a body).
@@ -699,32 +669,9 @@ Display a trackbar
 template<typename T>
 bool trackbar(T *theValue, const TrackbarParams & theParams);
 
-/**
-trackbar_int : Display a trackbar, specialized version for integral types
- \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
- \param theMin : minimum value of the trackbar
- \param theMax : maximum value of the trackbar
- \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
-
-   Returns true when the value was modified, false otherwise
-
-   Note : if you want to use types other than int,
-   remember to cast the minimum and maximum values to your type
-   see example below with uchar :
-     uchar myValue;
-     cvui::trackbar_int(&myValue, (uchar)0, (uchar)255, 5);
-
- \sa printf()
- \sa beginColumn()
- \sa beginRow()
- \sa endRow()
- \sa endColumn()
-*/
-template <typename T> // T can be any integral type (int, long, char, unsigned int, etc)
-bool trackbar_int(T *theValue, T theMin, T theMax, int theNumberOfLargeSteps = 1);
 
 /**
-trackbar_float : Display a trackbar, specialized version for float types
+trackbar_float : Display a trackbar
  \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
  \param theMin : minimum value of the trackbar
  \param theMax : maximum value of the trackbar
@@ -733,21 +680,24 @@ trackbar_float : Display a trackbar, specialized version for float types
  \param theSmallStep : small steps at which ticks will be drawn (-1 to cancel these)
  \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
 
-  Note : if you want to use float instead of double,
-  remember to cast the minimum and maximum values to your type
-  see example below :
+  Note : remember to cast the minimum and maximum values to your type
+  See examples below :
+
    float myValue;
    cvui::trackbar_float(&myValue, 0.f, 100.f);
+   unsigned char myValue;
+   cvui::trackbar_float(&myValue, (unsigned char)0, (unsigned char)255);
 
    Returns true when the value was modified, false otherwise
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar_float(T *theValue,
-					T theMin, T theMax,
-					int theNumberOfDecimals = 1,
-					int theNumberOfLargeSteps = 1,
-					T theSmallStep = -1.,
-					bool flagForceValuesAsMultiplesOfSmallStep = true);
+bool trackbar(
+		T *theValue,
+		T theMin, T theMax,
+		int theNumberOfDecimals = 1,
+		int theNumberOfLargeSteps = 1,
+		T theSmallStep = -1.,
+		bool flagForceValuesAsMultiplesOfSmallStep = true);
 
 
 
