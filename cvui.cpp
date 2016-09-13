@@ -408,18 +408,6 @@ namespace internal {
 
 		return (*theValue != valueOrig);
 	}
-	bool trackbar(cvui_block_t& theBlock, int theX, int theY, float *theValue, const TrackbarParams & theParams) {
-		double vd = (double)(*theValue);
-	  bool result = trackbar(theBlock, theX, theY, &vd, theParams);
-	  *theValue = (float)vd;
-	  return result;
-	}
-	bool trackbar(cvui_block_t& theBlock, int theX, int theY, int *theValue, const TrackbarParams & theParams) {
-		double vd = (double)(*theValue);
-		bool result = trackbar(theBlock, theX, theY, &vd, theParams);
-		*theValue = (int)vd;
-		return result;
-	}
 
 
 	void window(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
@@ -744,19 +732,6 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
 	return internal::counter(gScreen, theX, theY, theValue, theStep, theFormat);
 }
 
-bool trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams) {
-	gScreen.where = theWhere;
-	return internal::trackbar(gScreen, theX, theY, theValue, theParams);
-}
-bool trackbar(cv::Mat& theWhere, int theX, int theY, float *theValue, const TrackbarParams & theParams) {
-	gScreen.where = theWhere;
-	return internal::trackbar(gScreen, theX, theY, theValue, theParams);
-}
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int *theValue, const TrackbarParams & theParams) {
-	gScreen.where = theWhere;
-	return internal::trackbar(gScreen, theX, theY, theValue, theParams);
-}
-
 void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
 	gScreen.where = theWhere;
 	internal::window(gScreen, theX, theY, theWidth, theHeight, theTitle);
@@ -857,18 +832,47 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat);
 }
 
-bool trackbar(double *theValue, const TrackbarParams & theParams) {
-	cvui_block_t& aBlock = internal::topBlock();
-	return internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theParams);
-}
-bool trackbar(float *theValue, const TrackbarParams & theParams) {
-	cvui_block_t& aBlock = internal::topBlock();
-	return internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theParams);
-}
-bool trackbar(int *theValue, const TrackbarParams & theParams) {
-	cvui_block_t& aBlock = internal::topBlock();
-	return internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theParams);
-}
+#define instantiate_for_integral_types(what_to_instantiate) \
+	what_to_instantiate(int);                               \
+	what_to_instantiate(unsigned int);                      \
+	what_to_instantiate(long);                              \
+	what_to_instantiate(unsigned long);                     \
+	what_to_instantiate(long long);                         \
+	what_to_instantiate(char);                              \
+	what_to_instantiate(unsigned char);
+
+#define instantiate_for_float_types(what_to_instantiate) \
+	what_to_instantiate(float);                          \
+	what_to_instantiate(double);                         \
+	what_to_instantiate(long double);
+
+
+#define trackbar_template_simple_api(numeric_type)                                                                   \
+	template <>                                                                                                      \
+	bool trackbar(numeric_type *theValue, const TrackbarParams & theParams) {                                        \
+		cvui_block_t& aBlock = internal::topBlock();                                                                 \
+		double theValue_asdouble = static_cast<double>(*theValue);                                                   \
+		bool result  = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, & theValue_asdouble, theParams); \
+		*theValue = static_cast<numeric_type>(theValue_asdouble);                                                    \
+		return result;                                                                                               \
+	}
+
+instantiate_for_integral_types(trackbar_template_simple_api);
+instantiate_for_float_types(trackbar_template_simple_api);
+
+#define trackbar_template_complete_api(numeric_type)                                                                 \
+	template <>                                                                                                      \
+	bool trackbar(cv::Mat& theWhere, int theX, int theY, numeric_type *theValue, const TrackbarParams & theParams) { \
+		gScreen.where = theWhere;                                                                                    \
+		double theValue_asdouble = static_cast<double>(*theValue);                                                   \
+		bool result = internal::trackbar(gScreen, theX, theY, & theValue_asdouble, theParams);                       \
+		*theValue = static_cast<numeric_type>(theValue_asdouble);                                                    \
+		return result;                                                                                               \
+	}
+
+instantiate_for_integral_types(trackbar_template_complete_api);
+instantiate_for_float_types(trackbar_template_complete_api);
+
 
 
 void window(int theWidth, int theHeight, const cv::String& theTitle) {

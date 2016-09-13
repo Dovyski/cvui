@@ -196,19 +196,22 @@ TrackbarParams trackbarParams_Ints(
 
 /**
 Display a trackbar
-
  \param theWhere the image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
  \param theParams : trackbar parameters : their names are self-explanatory
- Returns true when the value was modified, false otherwise
+
+   Returns true when the value was modified, false otherwise
+
+   This is the fully customizable version of the trackbar.
 
    Quick info about the Tracbar params
  	double MinimumValue, MaximumValue : self-explanatory
  	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
  	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
 	bool DrawValuesAtLargeSteps : draw value at large steps
+	bool DrawSmallSteps : draw ticks at small steps
 	string Printf_Format : printf format string of the value
 	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
 
@@ -218,12 +221,11 @@ Display a trackbar
  \sa endRow()
  \sa endColumn()
 */
-bool trackbar(cv::Mat& theWhere, int theX, int theY, double *theValue, const TrackbarParams & theParams);
-bool trackbar(cv::Mat& theWhere, int theX, int theY, float *theValue, const TrackbarParams & theParams);
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int *theValue, const TrackbarParams & theParams);
+template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
+bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams & theParams);
 
 
-	/**
+/**
  Display a window (a block with a title and a body).
 
  \param theWhere the image/frame where the component should be rendered.
@@ -616,6 +618,7 @@ Display a trackbar
  	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
  	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
 	bool DrawValuesAtLargeSteps : draw value at large steps
+	bool DrawSmallSteps : draw ticks at small steps
 	string Printf_Format : printf format string of the value
 	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
 
@@ -627,9 +630,8 @@ Display a trackbar
  \sa endRow()
  \sa endColumn()
 */
-bool trackbar(double *theValue, const TrackbarParams & theParams);
-bool trackbar(float *theValue, const TrackbarParams & theParams);
-bool trackbar(int *theValue, const TrackbarParams & theParams);
+template<typename T>
+bool trackbar(T *theValue, const TrackbarParams & theParams);
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
