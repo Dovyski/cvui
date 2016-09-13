@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project( cvgui )
+project( cvui )
 
 add_subdirectory(example/src/main-app)
 add_subdirectory(example/src/complext-layout)
