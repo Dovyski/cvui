@@ -842,6 +842,7 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 	what_to_instantiate(long);                              \
 	what_to_instantiate(unsigned long);                     \
 	what_to_instantiate(long long);                         \
+	what_to_instantiate(unsigned long long);                \
 	what_to_instantiate(char);                              \
 	what_to_instantiate(unsigned char);
 
@@ -860,7 +861,6 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 		*theValue = static_cast<numeric_type>(theValue_asdouble);                                                    \
 		return result;                                                                                               \
 	}
-
 instantiate_for_integral_types(trackbar_template_simple_api);
 instantiate_for_float_types(trackbar_template_simple_api);
 
@@ -873,7 +873,6 @@ instantiate_for_float_types(trackbar_template_simple_api);
 		*theValue = static_cast<numeric_type>(theValue_asdouble);                                                    \
 		return result;                                                                                               \
 	}
-
 instantiate_for_integral_types(trackbar_template_complete_api);
 instantiate_for_float_types(trackbar_template_complete_api);
 
