@@ -224,6 +224,57 @@ Display a trackbar
 template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
 bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams & theParams);
 
+/**
+trackbar_int : Display a trackbar, specialized version for integral types
+ \param theWhere the image/frame where the component should be rendered.
+ \param theX position X where the component should be placed.
+ \param theY position Y where the component should be placed.
+ \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+ \param theMin : minimum value of the trackbar
+ \param theMax : maximum value of the trackbar
+ \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
+
+   Returns true when the value was modified, false otherwise
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+template <typename T> // T can be any integral type (int, long, char, unsigned int, etc)
+bool trackbar_int(cv::Mat& theWhere, int theX, int theY, T *theValue, T theMin, T theMax, int theNumberOfLargeSteps);
+
+
+/**
+trackbar_float : Display a trackbar, specialized version for float types
+ \param theWhere the image/frame where the component should be rendered.
+ \param theX position X where the component should be placed.
+ \param theY position Y where the component should be placed.
+ \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+ \param theMin : minimum value of the trackbar
+ \param theMax : maximum value of the trackbar
+ \param theNumberOfDecimals : number of decimal digits to be displayed
+ \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
+ \param theSmallStep : small steps at which ticks will be drawn (-1 to cancel these)
+ \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+
+   Returns true when the value was modified, false otherwise
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+template <typename T> // T can be any float type (float, double, long double)
+bool trackbar_float(cv::Mat& theWhere, int theX, int theY,
+					T *theValue,
+					T theMin, T theMax,
+					int theNumberOfDecimals = 1,
+					int theNumberOfLargeSteps = 1,
+					T theSmallStep = -1.,
+					bool flagForceValuesAsMultiplesOfSmallStep = false);
 
 /**
  Display a window (a block with a title and a body).
@@ -632,6 +683,46 @@ Display a trackbar
 */
 template<typename T>
 bool trackbar(T *theValue, const TrackbarParams & theParams);
+
+/**
+trackbar_int : Display a trackbar, specialized version for integral types
+ \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+ \param theMin : minimum value of the trackbar
+ \param theMax : maximum value of the trackbar
+ \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
+
+   Returns true when the value was modified, false otherwise
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+template <typename T> // T can be any integral type (int, long, char, unsigned int, etc)
+bool trackbar_int(T *theValue, T theMin, T theMax, int theNumberOfLargeSteps = 1);
+
+/**
+trackbar_float : Display a trackbar, specialized version for float types
+ \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+ \param theMin : minimum value of the trackbar
+ \param theMax : maximum value of the trackbar
+ \param theNumberOfDecimals : number of decimal digits to be displayed
+ \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
+ \param theSmallStep : small steps at which ticks will be drawn (-1 to cancel these)
+ \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+
+   Returns true when the value was modified, false otherwise
+*/
+template <typename T> // T can be any float type (float, double, long double)
+bool trackbar_float(T *theValue,
+					T theMin, T theMax,
+					int theNumberOfDecimals = 1,
+					int theNumberOfLargeSteps = 1,
+					T theSmallStep = -1.,
+					bool flagForceValuesAsMultiplesOfSmallStep = false);
+
+
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.

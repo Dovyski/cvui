@@ -832,6 +832,10 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat);
 }
 
+//
+// Note : these macros could be avoided using type_traits and enable_if
+// I do not master these enough to make it like this for now
+//
 #define instantiate_for_integral_types(what_to_instantiate) \
 	what_to_instantiate(int);                               \
 	what_to_instantiate(unsigned int);                      \
@@ -872,6 +876,73 @@ instantiate_for_float_types(trackbar_template_simple_api);
 
 instantiate_for_integral_types(trackbar_template_complete_api);
 instantiate_for_float_types(trackbar_template_complete_api);
+
+
+#define trackbar_int_template_complete_api(numeric_type)                                  \
+	template <>                                                                           \
+	bool trackbar_int(cv::Mat& theWhere, int theX, int theY,                              \
+					  numeric_type *theValue, numeric_type theMin, numeric_type theMax,   \
+					  int theNumberOfLargeSteps)                                          \
+	{                                                                                     \
+		TrackbarParams params = trackbarParams_Ints(theMin, theMax,theNumberOfLargeSteps);\
+		return trackbar<numeric_type>(theWhere, theX, theY, theValue, params);            \
+	}
+instantiate_for_integral_types(trackbar_int_template_complete_api);
+instantiate_for_float_types(trackbar_int_template_complete_api);
+
+#define trackbar_int_template_simple_api(numeric_type)                                    \
+	template <>                                                                           \
+	bool trackbar_int(                                                                    \
+					  numeric_type *theValue, numeric_type theMin, numeric_type theMax,   \
+					  int theNumberOfLargeSteps)                                          \
+	{                                                                                     \
+		TrackbarParams params = trackbarParams_Ints(theMin, theMax,theNumberOfLargeSteps);\
+		return trackbar<numeric_type>(theValue, params);                                  \
+	}
+instantiate_for_integral_types(trackbar_int_template_simple_api);
+instantiate_for_float_types(trackbar_int_template_simple_api);
+
+#define trackbar_float_template_complete_api(numeric_type)          \
+	template <>                                                     \
+	bool trackbar_float(cv::Mat& theWhere, int theX, int theY,      \
+						numeric_type *theValue,                     \
+						numeric_type theMin, numeric_type theMax,   \
+						int theNumberOfDecimals,                    \
+						int theNumberOfLargeSteps,                  \
+						numeric_type theSmallStep,                  \
+						bool flagForceValuesAsMultiplesOfSmallStep) \
+	{                                                               \
+		TrackbarParams params =                                     \
+			trackbarParams_Floats(                                  \
+					theMin, theMax,                                 \
+					theNumberOfDecimals, theNumberOfLargeSteps,     \
+					theSmallStep,                                   \
+					flagForceValuesAsMultiplesOfSmallStep);         \
+		return trackbar<numeric_type>(                              \
+					theWhere, theX, theY,                           \
+					theValue, params);                              \
+	}
+instantiate_for_float_types(trackbar_float_template_complete_api);
+
+#define trackbar_float_template_simple_api(numeric_type)            \
+	template <>                                                     \
+	bool trackbar_float(                                            \
+						numeric_type *theValue,                     \
+						numeric_type theMin, numeric_type theMax,   \
+						int theNumberOfDecimals,                    \
+						int theNumberOfLargeSteps,                  \
+						numeric_type theSmallStep,                  \
+						bool flagForceValuesAsMultiplesOfSmallStep) \
+	{                                                               \
+		TrackbarParams params =                                     \
+			trackbarParams_Floats(                                  \
+					theMin, theMax,                                 \
+					theNumberOfDecimals, theNumberOfLargeSteps,     \
+					theSmallStep,                                   \
+					flagForceValuesAsMultiplesOfSmallStep);         \
+		return trackbar<numeric_type>(theValue, params);            \
+	}
+instantiate_for_float_types(trackbar_float_template_simple_api);
 
 
 
