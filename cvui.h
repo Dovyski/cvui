@@ -157,8 +157,8 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
 
 struct TrackbarParams
 {
-	double MinimumValue, MaximumValue;
-	double SmallStep, LargeStep;
+	long double MinimumValue, MaximumValue;
+	long double SmallStep, LargeStep;
 	bool ForceValuesAsMultiplesOfSmallStep;
 	bool DrawValuesAtLargeSteps;
 	bool DrawSmallSteps;
@@ -179,15 +179,18 @@ struct TrackbarParams
 	}
 };
 
+
+template <typename T> // T can be any floating point type (float, double, long double)
 TrackbarParams trackbarParams_Floats(
-	double min, double max,
+	T min, T max,
 	int nbDecimals = 1,
 	int nbLargeSteps = 1,
-	double smallStep = -1.,
+	T smallStep = -1.,
 	bool forceValuesAsMultiplesOfSmallStep = false);
 
+template <typename T> // T can be any integral type (char, unsigned char, int, ...)
 TrackbarParams trackbarParams_Ints(
-	int min, int max,
+	T min, T max,
 	int nbLargeSteps = 1);
 
 

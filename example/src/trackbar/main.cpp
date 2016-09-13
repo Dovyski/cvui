@@ -36,9 +36,14 @@ int main(int argc, const char *argv[])
 			cvui::trackbar_int(&intValue1, 0, 100);
 			cvui::text("");
 
-			static int intValue2 = 30;
-			cvui::text("Simple int trackbar, 5 large steps");
-			cvui::trackbar_int(&intValue2, 0, 100, 5);
+			static uchar ucharValue2 = 30;
+			cvui::text("Simple uchar trackbar, 8 large steps");
+			cvui::trackbar_int(&ucharValue2, (uchar)0, (uchar)255, 5);
+			cvui::text("");
+
+			static char charValue3 = 30;
+			cvui::text("Simple signed char trackbar, no large");
+			cvui::trackbar_int(&charValue3, (char)-128, (char)127);
 			cvui::text("");
 
 			static double doubleValue1 = 30.;

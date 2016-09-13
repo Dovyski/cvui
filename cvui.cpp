@@ -852,6 +852,62 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 	what_to_instantiate(long double);
 
 
+
+#define template_trackbarParams_Floats(num_type)                                       \
+template<>                                                                             \
+TrackbarParams trackbarParams_Floats(                                                  \
+		num_type min, num_type max,                                                    \
+		int nbDecimals,                                                                \
+		int nbLargeSteps,                                                              \
+		num_type smallStep,                                                            \
+		bool forceValuesAsMultiplesOfSmallStep)                                        \
+{                                                                                      \
+	TrackbarParams params;                                                             \
+	params.MinimumValue = (long double) min;                                           \
+	params.MaximumValue = (long double) max;                                           \
+	params.DrawValuesAtLargeSteps = true;                                              \
+	params.LargeStep = (max - min) / (double) nbLargeSteps;                            \
+	params.SmallStep = (long double) smallStep;                                        \
+	if (smallStep > 0)                                                                 \
+		params.DrawSmallSteps = true;                                                  \
+	else                                                                               \
+		params.DrawSmallSteps = false;                                                 \
+	params.ForceValuesAsMultiplesOfSmallStep                                           \
+			= forceValuesAsMultiplesOfSmallStep;                                       \
+                                                                                       \
+	{                                                                                  \
+		int nbSignsBeforeDecimals = (int) ( log((double) max) / log(10.)) + 1;         \
+		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;                       \
+		std::stringstream format;                                                      \
+		format << "%" << totalSigns << "." << nbDecimals << "lf";                      \
+		params.Printf_Format = format.str();                                           \
+	}                                                                                  \
+	return params;                                                                     \
+}
+instantiate_for_float_types(template_trackbarParams_Floats)
+
+#define template_trackbarParams_Ints(num_type)                                         \
+template<>                                                                             \
+TrackbarParams trackbarParams_Ints(                                                    \
+		num_type min, num_type max,                                                    \
+		int nbLargeSteps)                                                              \
+{                                                                                      \
+	TrackbarParams params;                                                             \
+	params.MinimumValue = (long double)min;                                            \
+	params.MaximumValue = (long double)max;                                            \
+	params.DrawValuesAtLargeSteps = true;                                              \
+	params.DrawSmallSteps = false;                                                     \
+	params.LargeStep = (double)(max - min) / (double) nbLargeSteps;                    \
+	params.SmallStep = 1.;                                                             \
+	params.ForceValuesAsMultiplesOfSmallStep = true;                                   \
+	params.Printf_Format = "%.0lf";                                                    \
+	return params;                                                                     \
+}
+instantiate_for_float_types(template_trackbarParams_Ints)
+instantiate_for_integral_types(template_trackbarParams_Ints)
+
+
+
 #define trackbar_template_simple_api(numeric_type)                                                                   \
 	template <>                                                                                                      \
 	bool trackbar(numeric_type *theValue, const TrackbarParams & theParams) {                                        \
@@ -997,52 +1053,6 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 	}
 }
 
-TrackbarParams trackbarParams_Floats(
-  double min, double max, 
-  int nbDecimals, 
-  int nbLargeSteps, 
-  double smallStep,
-  bool forceValuesAsMultiplesOfSmallStep)
-{
-	TrackbarParams params;
-	params.MinimumValue = min;
-	params.MaximumValue = max;
-	params.DrawValuesAtLargeSteps = true;
-	params.LargeStep = (max - min) / (double) nbLargeSteps;
-	params.SmallStep = smallStep;
-	if (smallStep > 0)
-	params.DrawSmallSteps = true;
-	else
-	params.DrawSmallSteps = false;
-	params.ForceValuesAsMultiplesOfSmallStep = forceValuesAsMultiplesOfSmallStep;
-
-	//Printf Format
-	{
-		int nbSignsBeforeDecimals = (int) ( log((double) max) / log(10.)) + 1;
-		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
-		std::stringstream format;
-		format << "%" << totalSigns << "." << nbDecimals << "lf";
-		params.Printf_Format = format.str();
-	}
-
-	return params;
-}
-
-TrackbarParams trackbarParams_Ints(
-  int min, int max, 
-  int nbLargeSteps)
-{
-	TrackbarParams params;
-	params.MinimumValue = (double)min;
-	params.MaximumValue = (double)max;
-	params.DrawValuesAtLargeSteps = true;
-	params.DrawSmallSteps = false;
-	params.LargeStep = (double)(max - min) / (double) nbLargeSteps;
-	params.SmallStep = 1.;
-	params.ForceValuesAsMultiplesOfSmallStep = true;
-	params.Printf_Format = "%.0lf";
-	return params;
-}
 
 
 } // namespace cvui
