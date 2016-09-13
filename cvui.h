@@ -747,7 +747,7 @@ bool trackbar_float(T *theValue,
 					int theNumberOfDecimals = 1,
 					int theNumberOfLargeSteps = 1,
 					T theSmallStep = -1.,
-					bool flagForceValuesAsMultiplesOfSmallStep = false);
+					bool flagForceValuesAsMultiplesOfSmallStep = true);
 
 
 
