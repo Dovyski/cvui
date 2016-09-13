@@ -233,7 +233,8 @@ trackbar_float : Display a trackbar
  \param theMax : maximum value of the trackbar
  \param theNumberOfDecimals : number of decimal digits to be displayed
  \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
- \param theSmallStep : small steps at which ticks will be drawn (-1 to cancel these)
+ \param theSmallStep : small steps at which ticks will be drawn (if negative,
+ \                    theSmallStep is a calculated according to theNumberOfDecimals)
  \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
 
    Returns true when the value was modified, false otherwise
@@ -671,13 +672,14 @@ bool trackbar(T *theValue, const TrackbarParams & theParams);
 
 
 /**
-trackbar_float : Display a trackbar
+trackbar : Display a trackbar
  \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
  \param theMin : minimum value of the trackbar
  \param theMax : maximum value of the trackbar
  \param theNumberOfDecimals : number of decimal digits to be displayed
  \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
- \param theSmallStep : small steps at which ticks will be drawn (-1 to cancel these)
+ \param theSmallStep : small steps at which ticks will be drawn (if negative,
+ \                    theSmallStep is a calculated according to theNumberOfDecimals)
  \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
 
   Note : remember to cast the minimum and maximum values to your type

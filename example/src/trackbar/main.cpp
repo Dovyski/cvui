@@ -32,6 +32,20 @@ int main(int argc, const char *argv[])
 
 
 		cvui::beginColumn(frame, 20, 20, -1, -1, 6);
+
+			/**
+			The API of the tracbkar is shown here for reference (extract from cvui.h)
+			trackbar : Display a trackbar
+			 \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+			 \param theMin : minimum value of the trackbar
+			 \param theMax : maximum value of the trackbar
+			 \param theNumberOfDecimals : number of decimal digits to be displayed
+			 \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
+			 \param theSmallStep : small steps at which ticks will be drawn (if negative,
+			 \                    theSmallStep is a calculated according to theNumberOfDecimals)
+			 \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+			*/
+
 			cvui::text("Simple int trackbar, no ticks");
 			static int intValue1 = 30;
 			cvui::trackbar(&intValue1, 0, 100, 0);
