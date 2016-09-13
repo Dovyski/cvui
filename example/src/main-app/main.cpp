@@ -101,26 +101,13 @@ int main(int argc, const char *argv[])
 		//
 		// Let's create a row at position (50,230) with automatic width and height, and a padding of 10
 		cvui::beginRow(frame, 50, 230, -1, -1, 10);
-			// Trackbar accept a pointer to a variable that controls their value
-			// They can be customized to your needs.
-			//Quick info about the Tracbar params
-			//double MinimumValue, MaximumValue : self-explanatory
-			//double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
-			//bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
-			//bool DrawValuesAtLargeSteps : draw value at large steps
-			//string Printf_Format : printf format string of the value
-			//string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
+			// trackbar_float accept a pointer to a variable that controls their value
+			// here we define a float trackbar between 0 and 5, with 2 digits, 5 large steps
+		    //and a precision of 0.25 (i.e the user can only enter values ending in .25, .5, .75 or .0
 			static double value = 2.25;
 			static std::vector<double> lastValues;
-			cvui::TrackbarParams params;
-			params.MinimumValue = 0.;
-			params.MaximumValue = 5;
-			params.LargeStep = 1.;
-			params.SmallStep = 0.25;
-			params.Printf_Format = "%3.2lf";
-			params.Printf_Format_Steps = "%2.0lf";
-			params.ForceValuesAsMultiplesOfSmallStep = true;
-			if (cvui::trackbar(&value, params)) {
+			if (cvui::trackbar_float(&value, 0., 5., 2, 5, 	0.25))
+			{
 				std::cout << "Tracbar was modified, value : " << value << std::endl;
 				lastValues.push_back(value);
 			}
