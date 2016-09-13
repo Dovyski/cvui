@@ -14,12 +14,11 @@
 #include "cvui.h"
 
 // Compatibility macros : this enables to compile the code with either Opencv 2 or Opencv 3
+#define CVUI_Filled -1
 #if (CV_MAJOR_VERSION < 3)
 #define CVUI_Antialiased CV_AA
-#define CVUI_Filled -1
 #else
 #define CVUI_Antialiased cv::LINE_AA
-#define CVUI_Filled cv::Filled
 #endif
 
 
