@@ -233,7 +233,7 @@ trackbar_float : Display a trackbar
  \param theMax : maximum value of the trackbar
  \param theNumberOfDecimals : number of decimal digits to be displayed
  \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
- \param theSmallStep : small steps at which ticks will be drawn (if negative,
+ \param theSmallStep : small steps at which ticks will be drawn (if not given,
  \                    theSmallStep is a calculated according to theNumberOfDecimals)
  \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
 
@@ -678,7 +678,7 @@ trackbar : Display a trackbar
  \param theMax : maximum value of the trackbar
  \param theNumberOfDecimals : number of decimal digits to be displayed
  \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
- \param theSmallStep : small steps at which ticks will be drawn (if negative,
+ \param theSmallStep : small steps at which ticks will be drawn (if not given,
  \                    theSmallStep is a calculated according to theNumberOfDecimals)
  \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
 

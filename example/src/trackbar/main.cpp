@@ -41,9 +41,18 @@ int main(int argc, const char *argv[])
 			 \param theMax : maximum value of the trackbar
 			 \param theNumberOfDecimals : number of decimal digits to be displayed
 			 \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
-			 \param theSmallStep : small steps at which ticks will be drawn (if negative,
+			 \param theSmallStep : small steps at which ticks will be drawn (if not given,
 			 \                    theSmallStep is a calculated according to theNumberOfDecimals)
 			 \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+
+			 template <typename T> // T can be any float type (float, double, long double)
+				bool trackbar(
+						T *theValue,
+						T theMin, T theMax,
+						int theNumberOfDecimals = 1,
+						int theNumberOfLargeSteps = 1,
+						T theSmallStep = -1.,
+						bool flagForceValuesAsMultiplesOfSmallStep = true);
 			*/
 
 			cvui::text("Simple int trackbar, no ticks");
