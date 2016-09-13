@@ -21,7 +21,7 @@ Code licensed under the MIT license, check LICENSE file.
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat frame = cv::Mat(cv::Size(250, 550), CV_8UC3);
+	cv::Mat frame = cv::Mat(cv::Size(250, 650), CV_8UC3);
 
 	cv::namedWindow(WINDOW_NAME);
 	cvui::init(WINDOW_NAME);
@@ -37,8 +37,8 @@ int main(int argc, const char *argv[])
 			cvui::text("");
 
 			static uchar ucharValue2 = 30;
-			cvui::text("Simple uchar trackbar, 8 large steps");
-			cvui::trackbar_int(&ucharValue2, (uchar)0, (uchar)255, 5);
+			cvui::text("Simple uchar trackbar");
+			cvui::trackbar_int(&ucharValue2, (uchar)0, (uchar)255);
 			cvui::text("");
 
 			static char charValue3 = 30;
@@ -46,10 +46,10 @@ int main(int argc, const char *argv[])
 			cvui::trackbar_int(&charValue3, (char)-128, (char)127);
 			cvui::text("");
 
-			static double doubleValue1 = 30.;
+			static float floatValue1 = 30.;
 			cvui::text("Simple float trackbar");
 			cvui::text("1 decimal, no large step");
-			cvui::trackbar_float(&doubleValue1, 10., 50., 1);
+			cvui::trackbar_float(&floatValue1, 10.f, 50.f, 1);
 			cvui::text("");
 
 			static double doubleValue2 = 30.;

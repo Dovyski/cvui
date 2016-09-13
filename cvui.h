@@ -239,6 +239,12 @@ trackbar_int : Display a trackbar, specialized version for integral types
 
    Returns true when the value was modified, false otherwise
 
+   Note : if you want to use types other than int,
+   remember to cast the minimum and maximum values to your type
+   see example below with uchar :
+     uchar myValue;
+     cvui::trackbar_int(mat, x, y, &myValue, (uchar)0, (uchar)255, 5);
+
  \sa printf()
  \sa beginColumn()
  \sa beginRow()
@@ -263,6 +269,12 @@ trackbar_float : Display a trackbar, specialized version for float types
  \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
 
    Returns true when the value was modified, false otherwise
+
+   Note : if you want to use float instead of double,
+  remember to cast the minimum and maximum values to your type
+  see example below :
+   float myValue;
+   cvui::trackbar_float(image, x, y, &myValue, 0.f, 100.f);
 
  \sa printf()
  \sa beginColumn()
@@ -696,6 +708,12 @@ trackbar_int : Display a trackbar, specialized version for integral types
 
    Returns true when the value was modified, false otherwise
 
+   Note : if you want to use types other than int,
+   remember to cast the minimum and maximum values to your type
+   see example below with uchar :
+     uchar myValue;
+     cvui::trackbar_int(&myValue, (uchar)0, (uchar)255, 5);
+
  \sa printf()
  \sa beginColumn()
  \sa beginRow()
@@ -714,6 +732,12 @@ trackbar_float : Display a trackbar, specialized version for float types
  \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
  \param theSmallStep : small steps at which ticks will be drawn (-1 to cancel these)
  \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+
+  Note : if you want to use float instead of double,
+  remember to cast the minimum and maximum values to your type
+  see example below :
+   float myValue;
+   cvui::trackbar_float(&myValue, 0.f, 100.f);
 
    Returns true when the value was modified, false otherwise
 */
