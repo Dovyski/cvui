@@ -93,7 +93,7 @@ namespace internal {
 		if (gStackCount < 0) {
 			error(1, "Mismatch in the number of begin*()/end*() calls. You are calling one more than the other.");
 		}
-		
+
 		return gStack[gStackCount--];
 	}
 
@@ -101,19 +101,19 @@ namespace internal {
 		cvui_block_t& aBlock = internal::pushBlock();
 
 		aBlock.where = theWhere;
-		
+
 		aBlock.rect.x = theX;
 		aBlock.rect.y = theY;
 		aBlock.rect.width = theWidth;
 		aBlock.rect.height = theHeight;
-		
+
 		aBlock.fill = aBlock.rect;
 		aBlock.fill.width = 0;
 		aBlock.fill.height = 0;
 
 		aBlock.anchor.x = theX;
 		aBlock.anchor.y = theY;
-		
+
 		aBlock.padding = thePadding;
 		aBlock.type = theType;
 	}
@@ -132,7 +132,7 @@ namespace internal {
 		if (!blockStackEmpty()) {
 			cvui_block_t& aTop = topBlock();
 			cv::Size aSize;
-			
+
 			// If the block has rect.width < 0 or rect.heigth < 0, it means the
 			// user don't want to calculate the block's width/height. It's up to
 			// us do to the math. In that case, we use the block's fill rect to find
@@ -342,7 +342,7 @@ namespace internal {
 		if (theUpdateLayout) {
 			// Add an extra pixel to the height to overcome OpenCV font size problems.
 			aTextSize.height += 1;
-			
+
 			updateLayoutFlow(theBlock, aTextSize);
 		}
 	}
@@ -633,7 +633,7 @@ namespace render {
 	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theBorderColor, unsigned int theFillingColor) {
 		cv::Scalar aBorder = internal::hexToScalar(theBorderColor);
 		cv::Scalar aFilling = internal::hexToScalar(theFillingColor);
-		
+
 		bool aHasFilling = aFilling[3] != 0xff;
 
 		if (aHasFilling) {
@@ -667,7 +667,7 @@ namespace render {
 	}
 
 }
-	
+
 void init(const cv::String& theWindowName, int theDelayWaitKey) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
 	gDelayWaitKey = theDelayWaitKey;
@@ -893,7 +893,7 @@ instantiate_for_numeric_types(template_trackbarParams)
 	template <>                                                                                                      \
 	bool trackbar(numeric_type *theValue, const TrackbarParams & theParams) {                                        \
 		cvui_block_t& aBlock = internal::topBlock();                                                                 \
-		long double theValue_asdouble = static_cast<long double>(*theValue);                                                   \
+		long double theValue_asdouble = static_cast<long double>(*theValue);                                         \
 		bool result  = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, & theValue_asdouble, theParams); \
 		*theValue = static_cast<numeric_type>(theValue_asdouble);                                                    \
 		return result;                                                                                               \
@@ -904,7 +904,7 @@ instantiate_for_numeric_types(trackbar_template_simple_api);
 	template <>                                                                                                      \
 	bool trackbar(cv::Mat& theWhere, int theX, int theY, numeric_type *theValue, const TrackbarParams & theParams) { \
 		gScreen.where = theWhere;                                                                                    \
-		long double theValue_asdouble = static_cast<long double>(*theValue);                                                   \
+		long double theValue_asdouble = static_cast<long double>(*theValue);                                         \
 		bool result = internal::trackbar(gScreen, theX, theY, & theValue_asdouble, theParams);                       \
 		*theValue = static_cast<numeric_type>(theValue_asdouble);                                                    \
 		return result;                                                                                               \
@@ -980,14 +980,14 @@ void update() {
 	gScreen.rect.y = 0;
 	gScreen.rect.width = 0;
 	gScreen.rect.height = 0;
-	
+
 	gScreen.fill = gScreen.rect;
 	gScreen.fill.width = 0;
 	gScreen.fill.height = 0;
 
 	gScreen.anchor.x = 0;
 	gScreen.anchor.y = 0;
-	
+
 	gScreen.padding = 0;
 
 	gLastKeyPressed = cv::waitKey(gDelayWaitKey);
