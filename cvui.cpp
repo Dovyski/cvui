@@ -38,7 +38,7 @@ static cv::Point gMouse;
 static char gBuffer[1024];
 static int gLastKeyPressed;
 static int gDelayWaitKey;
-static cvui_block_t gScreen;
+cvui_block_t gScreen;
 
 // This is an internal namespace with all code
 // that is shared among components/functions
@@ -830,133 +830,6 @@ double counter(double *theValue, double theStep, const char *theFormat) {
 	cvui_block_t& aBlock = internal::topBlock();
 	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat);
 }
-
-//
-// Note : these macros could be avoided using type_traits and enable_if
-// I do not master these enough to make it like this for now
-//
-#define instantiate_for_numeric_types(what_to_instantiate)  \
-	what_to_instantiate(int);                               \
-	what_to_instantiate(unsigned int);                      \
-	what_to_instantiate(long);                              \
-	what_to_instantiate(unsigned long);                     \
-	what_to_instantiate(long long);                         \
-	what_to_instantiate(unsigned long long);                \
-	what_to_instantiate(char);                              \
-	what_to_instantiate(unsigned char);                     \
-	what_to_instantiate(float);                             \
-	what_to_instantiate(double);                            \
-	what_to_instantiate(long double);
-
-
-
-#define template_trackbarParams(num_type)                                              \
-template<>                                                                             \
-TrackbarParams trackbarParams(                                                         \
-		num_type min, num_type max,                                                    \
-		int nbDecimals,                                                                \
-		int nbLargeSteps,                                                              \
-		num_type smallStep,                                                            \
-		bool forceValuesAsMultiplesOfSmallStep)                                        \
-{                                                                                      \
-	TrackbarParams params;                                                             \
-	params.MinimumValue = (long double) min;                                           \
-	params.MaximumValue = (long double) max;                                           \
-	params.DrawValuesAtLargeSteps = true;                                              \
-	params.LargeStep = (long double)(max - min) / (long double) nbLargeSteps;          \
-	params.SmallStep = (long double) smallStep;                                        \
-	if ( smallStep < 0 )                                                               \
-		params.SmallStep = pow(10., -nbDecimals);                                      \
-	int nbSmallSteps =                                                                 \
-		(int)(params.MaximumValue - params.MinimumValue) / params.SmallStep;           \
-	if ( (params.SmallStep > 0) && (nbSmallSteps < 50) )                               \
-		params.DrawSmallSteps = true;                                                  \
-	else                                                                               \
-		params.DrawSmallSteps = false;                                                 \
-	params.ForceValuesAsMultiplesOfSmallStep                                           \
-			= forceValuesAsMultiplesOfSmallStep;                                       \
-                                                                                       \
-	{                                                                                  \
-		int nbSignsBeforeDecimals = (int) ( log((double) max) / log(10.)) + 1;         \
-		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;                       \
-		std::stringstream format;                                                      \
-		format << "%" << totalSigns << "." << nbDecimals << "lf";                      \
-		params.Printf_Format = format.str();                                           \
-	}                                                                                  \
-	return params;                                                                     \
-}
-instantiate_for_numeric_types(template_trackbarParams)
-
-
-
-#define trackbar_template_simple_api(numeric_type)                                                                   \
-	template <>                                                                                                      \
-	bool trackbar(numeric_type *theValue, const TrackbarParams & theParams) {                                        \
-		cvui_block_t& aBlock = internal::topBlock();                                                                 \
-		long double theValue_asdouble = static_cast<long double>(*theValue);                                         \
-		bool result  = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, & theValue_asdouble, theParams); \
-		*theValue = static_cast<numeric_type>(theValue_asdouble);                                                    \
-		return result;                                                                                               \
-	}
-instantiate_for_numeric_types(trackbar_template_simple_api);
-
-#define trackbar_template_complete_api(numeric_type)                                                                 \
-	template <>                                                                                                      \
-	bool trackbar(cv::Mat& theWhere, int theX, int theY, numeric_type *theValue, const TrackbarParams & theParams) { \
-		gScreen.where = theWhere;                                                                                    \
-		long double theValue_asdouble = static_cast<long double>(*theValue);                                         \
-		bool result = internal::trackbar(gScreen, theX, theY, & theValue_asdouble, theParams);                       \
-		*theValue = static_cast<numeric_type>(theValue_asdouble);                                                    \
-		return result;                                                                                               \
-	}
-instantiate_for_numeric_types(trackbar_template_complete_api);
-
-
-
-#define trackbar_template2_complete_api(numeric_type)               \
-	template <>                                                     \
-	bool trackbar(  cv::Mat& theWhere, int theX, int theY,          \
-					numeric_type *theValue,                         \
-					numeric_type theMin, numeric_type theMax,       \
-					int theNumberOfDecimals,                        \
-					int theNumberOfLargeSteps,                      \
-					numeric_type theSmallStep,                      \
-					bool flagForceValuesAsMultiplesOfSmallStep)     \
-	{                                                               \
-		TrackbarParams params =                                     \
-			trackbarParams(                                         \
-					theMin, theMax,                                 \
-					theNumberOfDecimals, theNumberOfLargeSteps,     \
-					theSmallStep,                                   \
-					flagForceValuesAsMultiplesOfSmallStep);         \
-		return trackbar<numeric_type>(                              \
-					theWhere, theX, theY,                           \
-					theValue, params);                              \
-	}
-instantiate_for_numeric_types(trackbar_template2_complete_api);
-
-
-#define trackbar_template2_simple_api(numeric_type)                 \
-	template <>                                                     \
-	bool trackbar(                                                  \
-		numeric_type *theValue,                                     \
-		numeric_type theMin, numeric_type theMax,                   \
-		int theNumberOfDecimals,                                    \
-		int theNumberOfLargeSteps,                                  \
-		numeric_type theSmallStep,                                  \
-		bool flagForceValuesAsMultiplesOfSmallStep)                 \
-	{                                                               \
-		TrackbarParams params =                                     \
-			trackbarParams(                                         \
-					theMin, theMax,                                 \
-					theNumberOfDecimals, theNumberOfLargeSteps,     \
-					theSmallStep,                                   \
-					flagForceValuesAsMultiplesOfSmallStep);         \
-		return trackbar<numeric_type>(theValue, params);            \
-	}
-instantiate_for_numeric_types(trackbar_template2_simple_api);
-
-
 
 void window(int theWidth, int theHeight, const cv::String& theTitle) {
 	cvui_block_t& aBlock = internal::topBlock();

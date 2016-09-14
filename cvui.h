@@ -806,6 +806,110 @@ namespace render {
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
 }
 
+
+
+//
+// Implementations of the template versions of trackbar below
+//
+// Import internal definitions used by the templates
+namespace internal
+{
+	bool trackbar(cvui_block_t &theBlock, int theX, int theY, long double *theValue, const TrackbarParams &theParams);
+	cvui_block_t &topBlock();
+}
+extern cvui_block_t gScreen;
+
+template<typename num_type>
+TrackbarParams trackbarParams(
+		num_type min, num_type max,
+		int nbDecimals,
+		int nbLargeSteps,
+		num_type smallStep,
+		bool forceValuesAsMultiplesOfSmallStep) {
+	TrackbarParams params;
+	params.MinimumValue = (long double) min;
+	params.MaximumValue = (long double) max;
+	params.DrawValuesAtLargeSteps = true;
+	params.LargeStep = (long double)(max - min) / (long double) nbLargeSteps;
+	params.SmallStep = (long double) smallStep;
+	if ( smallStep < 0 )
+		params.SmallStep = pow(10., -nbDecimals);
+	int nbSmallSteps =
+			(int)(params.MaximumValue - params.MinimumValue) / params.SmallStep;
+	if ( (params.SmallStep > 0) && (nbSmallSteps < 50) )
+		params.DrawSmallSteps = true;
+	else
+		params.DrawSmallSteps = false;
+	params.ForceValuesAsMultiplesOfSmallStep
+			= forceValuesAsMultiplesOfSmallStep;
+
+	{
+		int nbSignsBeforeDecimals = (int) ( log((double) max) / log(10.)) + 1;
+		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
+		std::stringstream format;
+		format << "%" << totalSigns << "." << nbDecimals << "lf";
+		params.Printf_Format = format.str();
+	}
+	return params;
+}
+
+
+template <typename num_type>
+bool trackbar(num_type *theValue, const TrackbarParams & theParams) {
+	cvui_block_t& aBlock = internal::topBlock();
+	long double theValue_asdouble = static_cast<long double>(*theValue);
+	bool result  = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, & theValue_asdouble, theParams);
+	*theValue = static_cast<num_type>(theValue_asdouble);
+	return result;
+}
+
+template <typename num_type>
+bool trackbar(cv::Mat& theWhere, int theX, int theY, num_type *theValue, const TrackbarParams & theParams) {
+	gScreen.where = theWhere;
+	long double theValue_asdouble = static_cast<long double>(*theValue);
+	bool result = internal::trackbar(gScreen, theX, theY, & theValue_asdouble, theParams);
+	*theValue = static_cast<num_type>(theValue_asdouble);
+	return result;
+}
+
+
+
+template <typename num_type>
+bool trackbar(  cv::Mat& theWhere, int theX, int theY,
+				num_type *theValue,
+				num_type theMin, num_type theMax,
+				int theNumberOfDecimals,
+				int theNumberOfLargeSteps,
+				num_type theSmallStep,
+				bool flagForceValuesAsMultiplesOfSmallStep) {
+	TrackbarParams params =
+			trackbarParams(
+					theMin, theMax,
+					theNumberOfDecimals, theNumberOfLargeSteps,
+					theSmallStep,
+					flagForceValuesAsMultiplesOfSmallStep);
+	return trackbar<num_type>(
+			theWhere, theX, theY,
+			theValue, params);
+}
+
+template <typename num_type>
+bool trackbar(
+		num_type *theValue,
+		num_type theMin, num_type theMax,
+		int theNumberOfDecimals,
+		int theNumberOfLargeSteps,
+		num_type theSmallStep,
+		bool flagForceValuesAsMultiplesOfSmallStep) {
+	TrackbarParams params =
+			trackbarParams(
+					theMin, theMax,
+					theNumberOfDecimals, theNumberOfLargeSteps,
+					theSmallStep,
+					flagForceValuesAsMultiplesOfSmallStep);
+	return trackbar<num_type>(theValue, params);
+}
+
 } // namespace cvui
 
 #endif // _CVUI_H_
