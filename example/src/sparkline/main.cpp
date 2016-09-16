@@ -7,10 +7,11 @@ Code licensed under the MIT license, check LICENSE file.
 
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include "cvui.h"
 
@@ -20,10 +21,10 @@ Code licensed under the MIT license, check LICENSE file.
 std::vector<double> load(std::string thePath) {
 	std::vector<double> data;
 	double time, value;
-	std::ifstream file(thePath);
+	std::ifstream file(thePath.c_str());
 
 	if (!file)	{
-		throw std::exception("Unable to open file");
+		throw std::runtime_error("Unable to open file");
 	}
 
 	while (file >> time >> value) {

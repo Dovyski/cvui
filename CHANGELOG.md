@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Space component.
 - `begin*()` and `end*()` block.
 - Docs for all components.
+- More [examples](https://github.com/Dovyski/cvui/tree/master/example/).
 
 ## [1.0.0](https://github.com/Dovyski/cvui/releases/tag/v.1.0.0) - 2016-06-19
 ### Added
