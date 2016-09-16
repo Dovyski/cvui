@@ -263,7 +263,7 @@ namespace internal {
 		}
 
 		// Update the layout flow
-		cv::Size aSize(22 * 2 + aContentArea.width, 22 * 2 + aContentArea.height);
+		cv::Size aSize(22 * 2 + aContentArea.width, aContentArea.height);
 		updateLayoutFlow(theBlock, aSize);
 
 		return *theValue;
@@ -284,7 +284,7 @@ namespace internal {
 		}
 
 		// Update the layout flow
-		cv::Size aSize(22 * 2 + aContentArea.width, 22 * 2 + aContentArea.height);
+		cv::Size aSize(22 * 2 + aContentArea.width, aContentArea.height);
 		updateLayoutFlow(theBlock, aSize);
 
 		return *theValue;
