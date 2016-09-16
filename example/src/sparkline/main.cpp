@@ -52,7 +52,7 @@ int main(int argc, const char *argv[])
 		frame = cv::Scalar(49, 52, 49);
 
 		// Check if ESC key was pressed
-		if (cv::waitKey(1) == 27) {
+    if (cvui::lastKeyPressed() == 27) {
 			break;
 		}
 

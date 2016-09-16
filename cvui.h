@@ -20,8 +20,19 @@ namespace cvui
  the components will be added.
  
  \param theWindowName name of the window where the components will be added
+ \param theDelayWaitKey delay used by cv::waitKey at each call of cvui::update()
 */
-void init(const cv::String& theWindowName);
+void init(const cv::String& theWindowName, int theDelayWaitKey = 15);
+
+/**
+ Return the last key that was pressed
+ You need not (and should not) call cv::waitKey between each frame.
+ Instead, call cvui::update() that will in turn call cv::waitKey()
+
+ Note : you can set the delay of cv::waitKey during cvui::init()
+ */
+int lastKeyPressed();
+
 
 /**
  Display a button. The size of the button will be automatically adjusted to
@@ -142,6 +153,114 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 
  \return a float that corresponds to the current value of the counter.
 */
 double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
+
+
+struct TrackbarParams
+{
+	long double MinimumValue, MaximumValue;
+	long double SmallStep, LargeStep;
+	bool ForceValuesAsMultiplesOfSmallStep;
+	bool DrawValuesAtLargeSteps;
+	bool DrawSmallSteps;
+	std::string Printf_Format;
+	std::string Printf_Format_Steps;
+
+	inline TrackbarParams()
+			: MinimumValue(0.)
+			, MaximumValue(25.)
+			, SmallStep(1.)
+			, LargeStep(5.)
+			, ForceValuesAsMultiplesOfSmallStep(false)
+			, DrawValuesAtLargeSteps(true)
+			, DrawSmallSteps(true)
+			, Printf_Format("%.0lf")
+			, Printf_Format_Steps("")
+	{
+	}
+};
+
+
+template <typename T> // T can be any floating point type (float, double, long double)
+TrackbarParams trackbarParams(
+	T min, T max,
+	int nbDecimals = 1,
+	int nbLargeSteps = 1,
+	T smallStep = -1.,
+	bool forceValuesAsMultiplesOfSmallStep = false);
+
+
+
+
+
+/**
+Display a trackbar
+ \param theWhere the image/frame where the component should be rendered.
+ \param theX position X where the component should be placed.
+ \param theY position Y where the component should be placed.
+ \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+ \param theParams : trackbar parameters : their names are self-explanatory
+
+   Returns true when the value was modified, false otherwise
+
+   This is the fully customizable version of the trackbar.
+
+   Quick info about the Tracbar params
+ 	double MinimumValue, MaximumValue : self-explanatory
+ 	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+ 	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+	bool DrawValuesAtLargeSteps : draw value at large steps
+	bool DrawSmallSteps : draw ticks at small steps
+	string Printf_Format : printf format string of the value
+	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
+bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams & theParams);
+
+
+/**
+trackbar_float : Display a trackbar
+ \param theWhere the image/frame where the component should be rendered.
+ \param theX position X where the component should be placed.
+ \param theY position Y where the component should be placed.
+ \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+ \param theMin : minimum value of the trackbar
+ \param theMax : maximum value of the trackbar
+ \param theNumberOfDecimals : number of decimal digits to be displayed
+ \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
+ \param theSmallStep : small steps at which ticks will be drawn (if not given,
+ \                    theSmallStep is a calculated according to theNumberOfDecimals)
+ \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+
+   Returns true when the value was modified, false otherwise
+
+   Note : remember to cast the minimum and maximum values to your type
+  See examples below :
+
+   float myValue;
+   cvui::trackbar_float(&myValue, 0.f, 100.f);
+   unsigned char myValue;
+   cvui::trackbar_float(&myValue, (unsigned char)0, (unsigned char)255);
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+template <typename T> // T can be any float type (float, double, long double)
+bool trackbar(  cv::Mat& theWhere, int theX, int theY,
+				T *theValue,
+				T theMin, T theMax,
+				int theNumberOfDecimals = 1,
+				int theNumberOfLargeSteps = 1,
+				T theSmallStep = -1.,
+				bool flagForceValuesAsMultiplesOfSmallStep = false);
 
 /**
  Display a window (a block with a title and a body).
@@ -394,7 +513,7 @@ void text(const cv::String& theText, double theFontScale = 0.4, unsigned int the
 
  \param theWidth width of the button.
  \param theHeight height of the button.
- \param theLabel text displayed inside the button.
+ \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()
@@ -410,7 +529,7 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel);
 
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
- \param theLabel text displayed inside the button.
+ \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()
@@ -523,6 +642,67 @@ int counter(int *theValue, int theStep = 1, const char *theFormat = "%d");
 */
 double counter(double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
 
+
+/**
+Display a trackbar
+
+ \param theValue : pointer to the variable that will hold the value
+ \param theParams : trackbar parameters : their names are self-explanatory
+ Returns true when the value was modified, false otherwise
+
+    Quick info about the Tracbar params
+ 	double MinimumValue, MaximumValue : self-explanatory
+ 	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+ 	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+	bool DrawValuesAtLargeSteps : draw value at large steps
+	bool DrawSmallSteps : draw ticks at small steps
+	string Printf_Format : printf format string of the value
+	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
+
+  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+ \sa printf()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
+*/
+template<typename T>
+bool trackbar(T *theValue, const TrackbarParams & theParams);
+
+
+/**
+trackbar : Display a trackbar
+ \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+ \param theMin : minimum value of the trackbar
+ \param theMax : maximum value of the trackbar
+ \param theNumberOfDecimals : number of decimal digits to be displayed
+ \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
+ \param theSmallStep : small steps at which ticks will be drawn (if not given,
+ \                    theSmallStep is a calculated according to theNumberOfDecimals)
+ \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+
+  Note : remember to cast the minimum and maximum values to your type
+  See examples below :
+
+   float myValue;
+   cvui::trackbar_float(&myValue, 0.f, 100.f);
+   unsigned char myValue;
+   cvui::trackbar_float(&myValue, (unsigned char)0, (unsigned char)255);
+
+   Returns true when the value was modified, false otherwise
+*/
+template <typename T> // T can be any float type (float, double, long double)
+bool trackbar(
+		T *theValue,
+		T theMin, T theMax,
+		int theNumberOfDecimals = 1,
+		int theNumberOfLargeSteps = 1,
+		T theSmallStep = -1.,
+		bool flagForceValuesAsMultiplesOfSmallStep = true);
+
+
+
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
 
@@ -575,6 +755,8 @@ void rect(int theWidth, int theHeight, unsigned int theBorderColor, unsigned int
 */
 void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
 
+
+
 /**
  Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating
  UI elements in order for them to react to mouse interactions.
@@ -615,12 +797,117 @@ namespace render {
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel);
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize);
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue);
+	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const TrackbarParams &theParams, bool theMouseIsOver);
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor);
 	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape);
 	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle);
 	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theBorderColor, unsigned int theFillingColor);
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
+}
+
+
+
+//
+// Implementations of the template versions of trackbar below
+//
+// Import internal definitions used by the templates
+namespace internal
+{
+	bool trackbar(cvui_block_t &theBlock, int theX, int theY, long double *theValue, const TrackbarParams &theParams);
+	cvui_block_t &topBlock();
+}
+extern cvui_block_t gScreen;
+
+template<typename num_type>
+TrackbarParams trackbarParams(
+		num_type min, num_type max,
+		int nbDecimals,
+		int nbLargeSteps,
+		num_type smallStep,
+		bool forceValuesAsMultiplesOfSmallStep) {
+	TrackbarParams params;
+	params.MinimumValue = (long double) min;
+	params.MaximumValue = (long double) max;
+	params.DrawValuesAtLargeSteps = true;
+	params.LargeStep = (long double)(max - min) / (long double) nbLargeSteps;
+	params.SmallStep = (long double) smallStep;
+	if ( smallStep < 0 )
+		params.SmallStep = pow(10., -nbDecimals);
+	int nbSmallSteps =
+			(int)(params.MaximumValue - params.MinimumValue) / params.SmallStep;
+	if ( (params.SmallStep > 0) && (nbSmallSteps < 50) )
+		params.DrawSmallSteps = true;
+	else
+		params.DrawSmallSteps = false;
+	params.ForceValuesAsMultiplesOfSmallStep
+			= forceValuesAsMultiplesOfSmallStep;
+
+	{
+		int nbSignsBeforeDecimals = (int) ( log((double) max) / log(10.)) + 1;
+		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
+		std::stringstream format;
+		format << "%" << totalSigns << "." << nbDecimals << "lf";
+		params.Printf_Format = format.str();
+	}
+	return params;
+}
+
+
+template <typename num_type>
+bool trackbar(num_type *theValue, const TrackbarParams & theParams) {
+	cvui_block_t& aBlock = internal::topBlock();
+	long double theValue_asdouble = static_cast<long double>(*theValue);
+	bool result  = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, & theValue_asdouble, theParams);
+	*theValue = static_cast<num_type>(theValue_asdouble);
+	return result;
+}
+
+template <typename num_type>
+bool trackbar(cv::Mat& theWhere, int theX, int theY, num_type *theValue, const TrackbarParams & theParams) {
+	gScreen.where = theWhere;
+	long double theValue_asdouble = static_cast<long double>(*theValue);
+	bool result = internal::trackbar(gScreen, theX, theY, & theValue_asdouble, theParams);
+	*theValue = static_cast<num_type>(theValue_asdouble);
+	return result;
+}
+
+
+
+template <typename num_type>
+bool trackbar(  cv::Mat& theWhere, int theX, int theY,
+				num_type *theValue,
+				num_type theMin, num_type theMax,
+				int theNumberOfDecimals,
+				int theNumberOfLargeSteps,
+				num_type theSmallStep,
+				bool flagForceValuesAsMultiplesOfSmallStep) {
+	TrackbarParams params =
+			trackbarParams(
+					theMin, theMax,
+					theNumberOfDecimals, theNumberOfLargeSteps,
+					theSmallStep,
+					flagForceValuesAsMultiplesOfSmallStep);
+	return trackbar<num_type>(
+			theWhere, theX, theY,
+			theValue, params);
+}
+
+template <typename num_type>
+bool trackbar(
+		num_type *theValue,
+		num_type theMin, num_type theMax,
+		int theNumberOfDecimals,
+		int theNumberOfLargeSteps,
+		num_type theSmallStep,
+		bool flagForceValuesAsMultiplesOfSmallStep) {
+	TrackbarParams params =
+			trackbarParams(
+					theMin, theMax,
+					theNumberOfDecimals, theNumberOfLargeSteps,
+					theSmallStep,
+					flagForceValuesAsMultiplesOfSmallStep);
+	return trackbar<num_type>(theValue, params);
 }
 
 } // namespace cvui
