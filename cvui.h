@@ -10,7 +10,7 @@
 #ifndef _CVUI_H_
 #define _CVUI_H_
 
-#include "opencv2/core/core.hpp"
+#include <opencv2/core/core.hpp>
 #include <stdarg.h>
 
 namespace cvui
@@ -94,7 +94,7 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
  
  \sa text()
 */
-void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, char *theFmt, ...);
+void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, const char *theFmt, ...);
 
 /**
  Display a piece of text that can be formated using `stdio's printf()` style. For instance
@@ -113,7 +113,7 @@ void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned
 
  \sa text()
 */
-void printf(cv::Mat& theWhere, int theX, int theY, char *theFmt, ...);
+void printf(cv::Mat& theWhere, int theX, int theY, const char *theFmt, ...);
 
 /**
  Display a counter for integer values that the user can increase/descrease
@@ -460,7 +460,7 @@ bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor 
 \sa endRow()
 \sa endColumn()
 */
-void printf(double theFontScale, unsigned int theColor, char *theFmt, ...);
+void printf(double theFontScale, unsigned int theColor, const char *theFmt, ...);
 
 /**
  Display a piece of text that can be formated using `stdio's printf()` style.
@@ -483,7 +483,7 @@ void printf(double theFontScale, unsigned int theColor, char *theFmt, ...);
  \sa endRow()
  \sa endColumn()
 */
-void printf(char *theFmt, ...);
+void printf(const char *theFmt, ...);
 
 /**
  Display a counter for integer values that the user can increase/descrease
@@ -584,6 +584,11 @@ void update();
 // Internally used to handle mouse events
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 
+#ifdef __GNUC__
+// just to remove the warning under gcc that is introduced by the VERSION variable below
+// (needed for those who compile with -Werror (make warning as errors)
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 // Lib version
 static const char *VERSION = "1.1.0";
 
