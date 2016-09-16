@@ -16,7 +16,7 @@ Licensed under the MIT license.
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat frame = cv::Mat(250, 600, CV_8UC3);
+	cv::Mat frame = cv::Mat(300, 600, CV_8UC3);
 	bool checked = false;
 	bool checked2 = true;
 	int count = 0;
@@ -33,7 +33,7 @@ int main(int argc, const char *argv[])
 		frame = cv::Scalar(49, 52, 49);
 
 		// Check if ESC key was pressed
-		if (cv::waitKey(10) == 27) {
+		if (cvui::lastKeyPressed() == 27) {
 			break;
 		}
 
@@ -51,8 +51,11 @@ int main(int argc, const char *argv[])
 
 		// Buttons will return true if they were clicked, which makes
 		// handling clicks a breeze.
-		if (cvui::button(frame, 50, 70, "Button")) {
-			std::cout << "Button clicked!" << std::endl;
+		if (cvui::button(frame, 50, 60, "&Button")) {
+			std::cout << "Button clicked" << std::endl;
+		}
+		if (cvui::button(frame, 50, 90, "&Quit")) {
+			break;
 		}
 
 		// If you do not specify the button width/height, the size will be
@@ -86,6 +89,39 @@ int main(int argc, const char *argv[])
 		// its appearance.
 		cvui::checkbox(frame, 200, 160, "Checkbox", &checked);
 		cvui::checkbox(frame, 200, 190, "A checked checkbox", &checked2);
+
+		// In a row, all added elements are
+		// horizontally placed, one next the other (from left to right)
+		//
+		// Within the cvui::beginRow() and cvui::endRow(),
+		// all elements will be automatically positioned by cvui.
+		//
+		// Notice that all component calls within the begin/end block
+		// DO NOT have (x,y) coordinates.
+		//
+		// Let's create a row at position (50,230) with automatic width and height, and a padding of 10
+		cvui::beginRow(frame, 50, 230, -1, -1, 10);
+			// trackbar_float accept a pointer to a variable that controls their value
+			// here we define a float trackbar between 0 and 5, with 2 digits, 5 large steps
+		    //and a precision of 0.25 (i.e the user can only enter values ending in .25, .5, .75 or .0
+			static double value = 2.25;
+			static std::vector<double> lastValues;
+			if (cvui::trackbar(&value, 0., 5., 2, 5, 	0.25))
+			{
+				std::cout << "Trackbar was modified, value : " << value << std::endl;
+				lastValues.push_back(value);
+			}
+
+			if (lastValues.size() > 5) {
+				cvui::text("Your edits on a sparkline ->");
+				cvui::sparkline(lastValues, 40, 15);
+				if (cvui::button("&Clear sparkline"))
+					lastValues.clear();
+			} else {
+				cvui::text("<- Move me");
+			}
+
+		cvui::endRow();
 
 		// Display the lib version at the bottom of the screen
 		cvui::printf(frame, frame.cols - 80, frame.rows - 20, 0.4, 0xCECECE, "cvui v.%s", cvui::VERSION);
