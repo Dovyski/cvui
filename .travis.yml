@@ -16,9 +16,8 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      env:
-		- COMPILER=g++-4.9
-		- OPENCV_VERSION=2.4.13
+      env: COMPILER=g++-4.9 OPENCV_VERSION=2.4.13
+
     - compiler: gcc
       addons:
         apt:
@@ -26,25 +25,22 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      env:
-	    - COMPILER=g++-4.9
-		- OPENCV_VERSION=3.0
-	- compiler: gcc
+      env: COMPILER=g++-4.9 OPENCV_VERSION=3.0
+
+    - compiler: gcc
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      env:
-	    - COMPILER=g++-4.9
-		- OPENCV_VERSION=3.1
+      env: COMPILER=g++-4.9 OPENCV_VERSION=3.1
 
 before_install:
-  - sudo apt-get update -qq
-		
+    - sudo apt-get update -qq
+
 install:
-    - ./.travis/install.sh 
+    - ./.travis/install.sh
 
 script:
   - mkdir build.release
