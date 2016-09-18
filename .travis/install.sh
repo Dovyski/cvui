@@ -1,14 +1,14 @@
 #!/bin/bash
 
-if [[ $TRAVIS_OS_NAME == 'linux' ]]; then	
+if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
 	# OpenCV install code (modified from orignal source: https://github.com/jayrambhia/Install-OpenCV)
 	sudo apt-get install -y build-essential
 	sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
 	sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
-	
+
 	curl -sL https://github.com/Itseez/opencv/archive/$OPENCV_VERSION.zip > opencv.zip
 	unzip opencv.zip
-	
+
 	cd opencv-$OPENCV_VERSION
 
 	# Create a new 'build' folder.
@@ -32,6 +32,4 @@ if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
 
 	# We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
 	cd ../../
-else
-    # Install some custom requirements on non-Linux
 fi
