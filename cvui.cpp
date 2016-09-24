@@ -229,7 +229,7 @@ namespace internal {
 		if ( (theParams.ForceValuesAsMultiplesOfSmallStep) && (theParams.SmallStep != 0.) )
 		{
 			long double k = (*theValue - theParams.MinimumValue) / theParams.SmallStep;
-			k = cvRound((double)k);
+			k = (long double) cvRound( (double)k );
 			*theValue = theParams.MinimumValue + theParams.SmallStep * k;
 		}
 	}
