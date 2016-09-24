@@ -229,7 +229,7 @@ namespace internal {
 		if ( (theParams.ForceValuesAsMultiplesOfSmallStep) && (theParams.SmallStep != 0.) )
 		{
 			long double k = (*theValue - theParams.MinimumValue) / theParams.SmallStep;
-			k = cvRound((double)k);
+			k = (long double) cvRound( (double)k );
 			*theValue = theParams.MinimumValue + theParams.SmallStep * k;
 		}
 	}
@@ -709,7 +709,8 @@ void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned
 	va_list aArgs;
 
 	va_start(aArgs, theFmt);
-
+	vsprintf_s(gBuffer, theFmt, aArgs);
+	va_end(aArgs);
 
 	gScreen.where = theWhere;
 	internal::text(gScreen, theX, theY, gBuffer, theFontScale, theColor, true);

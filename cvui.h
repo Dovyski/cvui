@@ -835,7 +835,7 @@ TrackbarParams trackbarParams(
 	if ( smallStep < 0 )
 		params.SmallStep = pow(10., -nbDecimals);
 	int nbSmallSteps =
-			(int)(params.MaximumValue - params.MinimumValue) / params.SmallStep;
+			(int)( (params.MaximumValue - params.MinimumValue) / params.SmallStep );
 	if ( (params.SmallStep > 0) && (nbSmallSteps < 50) )
 		params.DrawSmallSteps = true;
 	else

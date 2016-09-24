@@ -1,5 +1,17 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 project( cvui )
+
+# For cmake 2.8.12 and higher
+if (NOT MSVC)
+  add_compile_options(-std=c++11)
+endif()
+
+# New way for cmake 3.1 and higher
+#set(CMAKE_CXX_STANDARD 11) # C++11...
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_EXTENSIONS OFF) #...without compiler extensions like gnu++11
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(example/src/main-app)
 add_subdirectory(example/src/complext-layout)
@@ -9,3 +21,10 @@ add_subdirectory(example/src/sparkline)
 add_subdirectory(example/src/on-image)
 add_subdirectory(example/src/trackbar)
 
+
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_BINARY_DIR}/bin/)
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)

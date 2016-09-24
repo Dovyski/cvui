@@ -106,13 +106,13 @@ int main(int argc, const char *argv[])
 
 			if (hsvModified) {
 				cv::Mat hsvMat;
-				cv::cvtColor(frame_orig, hsvMat, CV_BGR2HSV);
+				cv::cvtColor(frame_orig, hsvMat, cv::COLOR_BGR2HSV);
 				std::vector<cv::Mat> channels;
 				cv::split(hsvMat, channels);
 				for (int c = 0; c < 3; c++)
 					channels[c] = channels[c] * hsv[c];
 				cv::merge(channels, hsvMat);
-				cv::cvtColor(hsvMat, doubleBuffer, CV_HSV2BGR);
+				cv::cvtColor(hsvMat, doubleBuffer, cv::COLOR_HSV2BGR);
 			}
 		cvui::endColumn();
 
