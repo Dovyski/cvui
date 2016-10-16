@@ -61,6 +61,11 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel);
 bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel);
 
 /**
+TODO: add docs
+*/
+bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown);
+
+/**
  TODO: add docs.
 */
 void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage);
@@ -548,6 +553,21 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel);
  \sa endColumn()
 */
 bool button(const cv::String& theLabel);
+
+/**
+TODO: add docs
+
+IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+\param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
+\return `true` everytime the user clicks the button.
+
+\sa beginColumn()
+\sa beginRow()
+\sa endRow()
+\sa endColumn()
+*/
+bool button(cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown);
 
 /**
 TODO: add docs

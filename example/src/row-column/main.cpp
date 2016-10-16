@@ -40,6 +40,8 @@ int main(int argc, const char *argv[])
 	double value = 1.0;
 	int padding = 10;
 	cv::Mat img = cv::imread("./lena-face.jpg", cv::IMREAD_COLOR);
+	cv::Mat imgRed = cv::imread("./lena-face-red.jpg", cv::IMREAD_COLOR);
+	cv::Mat imgGray = cv::imread("./lena-face-gray.jpg", cv::IMREAD_COLOR);
 
 	// Fill the vector with a few random values
 	for (std::vector<double>::size_type i = 0; i < 20; i++) {
@@ -76,6 +78,7 @@ int main(int argc, const char *argv[])
 			cvui::counter(&value);
 			cvui::button(100, 30, "Fixed");
 			cvui::image(img);
+			cvui::button(img, imgGray, imgRed);
 		cvui::endRow();
 
 		// Here is another row, this time with a padding of 50px among components.

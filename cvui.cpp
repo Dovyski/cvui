@@ -325,6 +325,27 @@ namespace internal {
 		return internal::button(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, true);
 	}
 
+	bool button(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, bool theUpdateLayout) {
+		cv::Rect aRect(theX, theY, theIdle.cols, theIdle.rows);
+		int aStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
+
+		switch (aStatus) {
+			case cvui::OUT: render::image(theBlock, aRect, theIdle); break;
+			case cvui::OVER: render::image(theBlock, aRect, theOver); break;
+			case cvui::DOWN: render::image(theBlock, aRect, theDown); break;
+		}
+
+		// Update the layout flow according to button size
+		// if we were told to update.
+		if (theUpdateLayout) {
+			cv::Size aSize(aRect.width, aRect.height);
+			updateLayoutFlow(theBlock, aSize);
+		}
+
+		// Return true if the button was clicked
+		return aStatus == cvui::CLICK;
+	}
+
 	void image(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theImage) {
 		cv::Rect aRect(theX, theY, theImage.cols, theImage.rows);
 
@@ -732,6 +753,11 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 	return internal::button(gScreen, theX, theY, theWidth, theHeight, theLabel, true);
 }
 
+bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown) {
+	gScreen.where = theWhere;
+	return internal::button(gScreen, theX, theY, theIdle, theOver, theDown, true);
+}
+
 void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage) {
 	gScreen.where = theWhere;
 	return internal::image(gScreen, theX, theY, theImage);
@@ -839,6 +865,11 @@ bool button(const cv::String& theLabel) {
 bool button(int theWidth, int theHeight, const cv::String& theLabel) {
 	cvui_block_t& aBlock = internal::topBlock();
 	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theLabel, true);
+}
+
+bool button(cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown) {
+	cvui_block_t& aBlock = internal::topBlock();
+	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theIdle, theOver, theDown, true);
 }
 
 void image(cv::Mat& theImage) {

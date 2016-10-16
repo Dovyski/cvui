@@ -1,6 +1,5 @@
 /*
-This is a demo application to showcase how you use buttons
-and images.
+This is a demo application to showcase the image button component.
 
 Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
 Licensed under the MIT license.
@@ -18,9 +17,9 @@ Licensed under the MIT license.
 int main(int argc, const char *argv[])
 {
 	cv::Mat frame = cv::Mat(300, 600, CV_8UC3);
-	cv::Mat lena = cv::imread("./lena-face.jpg", cv::IMREAD_COLOR);
-	cv::Mat lenaRed = cv::imread("./lena-face-red.jpg", cv::IMREAD_COLOR);
-	cv::Mat lenaGray = cv::imread("./lena-face-gray.jpg", cv::IMREAD_COLOR);
+	cv::Mat out = cv::imread("./lena-face.jpg", cv::IMREAD_COLOR);
+	cv::Mat down = cv::imread("./lena-face-red.jpg", cv::IMREAD_COLOR);
+	cv::Mat over = cv::imread("./lena-face-gray.jpg", cv::IMREAD_COLOR);
 
 	// Init a OpenCV window and tell cvui to use it.
 	// If cv::namedWindow() is not used, mouse events will
@@ -32,12 +31,17 @@ int main(int argc, const char *argv[])
 		// Fill the frame with a nice color
 		frame = cv::Scalar(49, 52, 49);
 
-		// Check if ESC key was pressed
-		if (cvui::lastKeyPressed() == 27) {
-			break;
+		// Render an image-based button. You can provide images
+		// to be used to render the button when the mouse cursor is
+		// outside, over or down the button area.
+		if (cvui::button(frame, 200, 80, out, over, down)) {
+			std::cout << "Image button clicked!" << std::endl;
 		}
 
-		cvui::image(frame, 10, 10, lena);
+		// Render a regular button.
+		if (cvui::button(frame, 360, 80, "Button")) {
+			std::cout << "Regular button clicked!" << std::endl;
+		}
 
 		// This function must be called *AFTER* all UI components. It does
 		// all the behind the scenes magic to handle mouse clicks, etc.
@@ -45,6 +49,11 @@ int main(int argc, const char *argv[])
 
 		// Show everything on the screen
 		cv::imshow(WINDOW_NAME, frame);
+
+		// Check if ESC key was pressed
+		if (cv::waitKey(10) == 27) {
+			break;
+		}
 	}
 
 	return 0;
