@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "main-app", "src\main-app\main-app.vcxproj", "{1A6DE26D-57B3-464A-8EF5-F921441D2A86}"
 EndProject
@@ -15,6 +15,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "trackbar", "src\trackbar\trackbar.vcxproj", "{B8FA8D6A-E782-489F-B336-88EB712CBE8B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "on-image", "src\on-image\on-image.vcxproj", "{181C33B6-FFB5-4AB3-B969-A0A2DC74E7F8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "image-button", "src\image-button\image-button.vcxproj", "{23C6200D-EE1B-4E87-91C0-BD549903E8DB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "interaction-area", "src\interaction-area\interaction-area.vcxproj", "{E2432E1E-235C-4E6F-A79F-D95B0AE26A9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +54,14 @@ Global
 		{181C33B6-FFB5-4AB3-B969-A0A2DC74E7F8}.Debug|x64.Build.0 = Debug|x64
 		{181C33B6-FFB5-4AB3-B969-A0A2DC74E7F8}.Release|x64.ActiveCfg = Release|x64
 		{181C33B6-FFB5-4AB3-B969-A0A2DC74E7F8}.Release|x64.Build.0 = Release|x64
+		{23C6200D-EE1B-4E87-91C0-BD549903E8DB}.Debug|x64.ActiveCfg = Debug|x64
+		{23C6200D-EE1B-4E87-91C0-BD549903E8DB}.Debug|x64.Build.0 = Debug|x64
+		{23C6200D-EE1B-4E87-91C0-BD549903E8DB}.Release|x64.ActiveCfg = Release|x64
+		{23C6200D-EE1B-4E87-91C0-BD549903E8DB}.Release|x64.Build.0 = Release|x64
+		{E2432E1E-235C-4E6F-A79F-D95B0AE26A9A}.Debug|x64.ActiveCfg = Debug|x64
+		{E2432E1E-235C-4E6F-A79F-D95B0AE26A9A}.Debug|x64.Build.0 = Debug|x64
+		{E2432E1E-235C-4E6F-A79F-D95B0AE26A9A}.Release|x64.ActiveCfg = Release|x64
+		{E2432E1E-235C-4E6F-A79F-D95B0AE26A9A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

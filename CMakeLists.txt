@@ -20,11 +20,14 @@ add_subdirectory(example/src/row-column)
 add_subdirectory(example/src/sparkline)
 add_subdirectory(example/src/on-image)
 add_subdirectory(example/src/trackbar)
+add_subdirectory(example/src/interaction-area)
+add_subdirectory(example/src/image-button)
 
-
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena*.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)
 file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_BINARY_DIR}/bin/)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
+
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena*.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
 file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
+
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena*.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
 file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
