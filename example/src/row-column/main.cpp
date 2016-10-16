@@ -34,11 +34,12 @@ int main(int argc, const char *argv[])
 {
 	cv::Mat frame = cv::Mat(600, 800, CV_8UC3);
 	
-	// Create a variables used by some components
+	// Create variables used by some components
 	std::vector<double> values;
 	bool checked = false;
 	double value = 1.0;
 	int padding = 10;
+	cv::Mat img = cv::imread("./lena-face.jpg", cv::IMREAD_COLOR);
 
 	// Fill the vector with a few random values
 	for (std::vector<double>::size_type i = 0; i < 20; i++) {
@@ -74,6 +75,7 @@ int main(int argc, const char *argv[])
 			cvui::sparkline(values, 50, 50);
 			cvui::counter(&value);
 			cvui::button(100, 30, "Fixed");
+			cvui::image(img);
 		cvui::endRow();
 
 		// Here is another row, this time with a padding of 50px among components.

@@ -61,6 +61,11 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel);
 bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel);
 
 /**
+ TODO: add docs.
+*/
+void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage);
+
+/**
  Display a checkbox. You can use the state parameter to monitor if the
  checkbox is checked or not.
 
@@ -545,6 +550,21 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel);
 bool button(const cv::String& theLabel);
 
 /**
+TODO: add docs
+
+IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+\param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
+\return `true` everytime the user clicks the button.
+
+\sa beginColumn()
+\sa beginRow()
+\sa endRow()
+\sa endColumn()
+*/
+void image(cv::Mat& theImage);
+
+/**
  Display a checkbox within a `begin*()` and `end*()` block. You can use the state parameter
  to monitor if the checkbox is checked or not.
 
@@ -805,6 +825,7 @@ namespace render {
 	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor);
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel);
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize);
+	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage);
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue);
 	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const TrackbarParams &theParams, bool theMouseIsOver);
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);

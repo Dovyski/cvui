@@ -325,6 +325,17 @@ namespace internal {
 		return internal::button(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, true);
 	}
 
+	void image(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theImage) {
+		cv::Rect aRect(theX, theY, theImage.cols, theImage.rows);
+
+		// TODO: check for render outside the frame area
+		render::image(theBlock, aRect, theImage);
+
+		// Update the layout flow according to image size
+		cv::Size aSize(theImage.cols, theImage.rows);
+		updateLayoutFlow(theBlock, aSize);
+	}
+
 	bool checkbox(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
 		cv::Rect aRect(theX, theY, 15, 15);
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
@@ -517,6 +528,10 @@ namespace render {
 			putTextAndReturnWidth(shortcutInfo.labelAfterShortcut, aPos);
 			cv::line(theBlock.where, cv::Point(xStart, aPos.y + 3), cv::Point(xEnd, aPos.y + 3), color, 1, CVUI_Antialiased);
 		}
+	}
+
+	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage) {
+		theImage.copyTo(theBlock.where(theRect));
 	}
 
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue) {
@@ -717,6 +732,11 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 	return internal::button(gScreen, theX, theY, theWidth, theHeight, theLabel, true);
 }
 
+void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage) {
+	gScreen.where = theWhere;
+	return internal::image(gScreen, theX, theY, theImage);
+}
+
 bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
 	gScreen.where = theWhere;
 	return internal::checkbox(gScreen, theX, theY, theLabel, theState, theColor);
@@ -819,6 +839,11 @@ bool button(const cv::String& theLabel) {
 bool button(int theWidth, int theHeight, const cv::String& theLabel) {
 	cvui_block_t& aBlock = internal::topBlock();
 	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theLabel, true);
+}
+
+void image(cv::Mat& theImage) {
+	cvui_block_t& aBlock = internal::topBlock();
+	return internal::image(aBlock, aBlock.anchor.x, aBlock.anchor.y, theImage);
 }
 
 bool checkbox(const cv::String& theLabel, bool *theState, unsigned int theColor) {
