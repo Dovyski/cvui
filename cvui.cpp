@@ -250,6 +250,28 @@ namespace internal {
 		return (int)xPixels;
 	}
 
+	int iarea(int theX, int theY, int theWidth, int theHeight) {
+		// By default, return that the mouse is out of the interaction area.
+		int aRet = cvui::OUT;
+
+		// Check if the mouse is over the interaction area.
+		bool aMouseIsOver = cv::Rect(theX, theY, theWidth, theHeight).contains(gMouse);
+
+		if (aMouseIsOver) {
+			if (gMousePressed) {
+				aRet = cvui::DOWN;
+			} else {
+				aRet = cvui::OVER;
+			}
+		}
+
+		// Tell if the button was clicked or not
+		if (aMouseIsOver && gMouseJustReleased) {
+			aRet = cvui::CLICK;
+		}
+
+		return aRet;
+	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {
 		// Calculate the space that the label will fill
@@ -750,6 +772,10 @@ void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, un
 void sparkline(cv::Mat& theWhere, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
 	gScreen.where = theWhere;
 	internal::sparkline(gScreen, theValues, theX, theY, theWidth, theHeight, theColor);
+}
+
+int iarea(int theX, int theY, int theWidth, int theHeight) {
+	return internal::iarea(theX, theY, theWidth, theHeight);
 }
 
 void beginRow(cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding) {

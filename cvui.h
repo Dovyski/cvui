@@ -303,6 +303,11 @@ void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, un
 void sparkline(cv::Mat& theWhere, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
 
 /**
+ TODO: add docs 
+*/
+int iarea(int theX, int theY, int theWidth, int theHeight);
+
+/**
  Start a new row.
  
  One of the most annoying tasks when building UI is to calculate 
@@ -776,6 +781,10 @@ static const char *VERSION = "1.1.0";
 
 const int ROW = 0;
 const int COLUMN = 1;
+const int DOWN = 2;
+const int CLICK = 3;
+const int OVER = 4;
+const int OUT = 5;
 
 // Describes the block structure used by the lib to handle `begin*()` and `end*()` calls.
 typedef struct {
