@@ -51,7 +51,7 @@ int main(int argc, const char *argv[])
 		cv::imshow(WINDOW_NAME, frame);
 
 		// Check if ESC key was pressed
-		if (cv::waitKey(10) == 27) {
+		if (cv::waitKey(20) == 27) {
 			break;
 		}
 	}
