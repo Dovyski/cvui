@@ -1,31 +1,7 @@
-<div class="sidebar sticky" style="position: absolute; left: 22px; right: 1069.46px; bottom: auto; width: auto; margin-left: 0px; margin-right: 0px; margin-top: 0px; top: 0px;">
-    <nav class="nav__list">
-        <ul class="nav__items">
-            <li>
-                <span class="nav__sub-title">Getting started</span>
-                <ul>
-                    <li class="{% if page.id == 'test' %}active{% endif %}"><a href="{{ site.baseurl }}/components/test/">Test</a></li>
-                </ul>
-            </li>
-            <li>
-                <span class="nav__sub-title">Rows and columns</span>
-                <ul>
-                    <li class="{% if page.id == 'test2' %}active{% endif %}"><a href="{{ site.baseurl }}/components/test/">Test</a></li>
-                </ul>
-            </li>
-            <li>
-                <span class="nav__sub-title">Components</span>
-                <ul>
-                    <li class="{% if page.url contains 'test3' %}active{% endif %}"><a href="{{ site.baseurl }}{{ entry.url }}">Test</a></li>
-                </ul>
-            </li>
-            <li>
-                <span class="nav__sub-title">Extra</span>
-                <ul>
-                    <li><a href="">CHANGELOG</a></li>
-                    <li><a href="">License</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
-</div>
+<nav id="site-nav" class="greedy-nav">
+  <ul class="visible-links">
+      <li class="masthead__menu-item masthead__menu-item--lg"><a href="{{ site.url }}">cvui <small>{{ site.cvui_version }}</small></a></li>
+      <li class="masthead__menu-item"><a class="github-button" href="https://github.com/Dovyski/cvui" data-icon="octicon-star" data-style="mega" data-count-href="/Dovyski/cvui/stargazers" data-count-api="/repos/Dovyski/cvui#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star cvui on GitHub">Star</a></li>
+      <li class="masthead__menu-item"><a class="github-button" href="https://github.com/Dovyski/cvui/archive/master.zip" data-icon="octicon-cloud-download" data-style="mega" aria-label="Download cvui on GitHub">Download</a></li>
+  </ul>
+</nav>

@@ -2,18 +2,19 @@
 layout: default
 ---
 
-# Layouts
+# cvui
 
-The Sbread and butter of any theme. Below you’ll find the layouts included with Minimal Mistakes, what they look like and the type of content they’ve been built for.
+cvui is a (very) simple UI lib built on top of OpenCV drawing primitives. Other UI libs, such as [imgui](https://github.com/ocornut/imgui), require a graphical backend (e.g. OpenGL) to work, so if you want to use imgui in a OpenCV app, you must make it OpenGL enabled, for instance.
 
-## Default Layout
+It is not the case with cvui, which uses *only* OpenCV drawing primitives to do all the rendering (no OpenGL or Qt required).
 
-The base layout all other layouts inherit from. There’s not much to this layout apart from pulling in several <code class="highlighter-rouge">_includes</code>:
+![image](https://raw.githubusercontent.com/Dovyski/depository/master/cvui.png?20160819)
 
-<p class="notice--warning"><strong>Note:</strong> You won’t ever assign this layout directly to a post or page. Instead all other layouts will build off of it by setting <code class="highlighter-rouge">layout: default</code> in their YAML Front Matter.</p>
+## Features
 
-### Layout Based and User-Defined Classes
-
-Class names corresponding to each layout are automatically added to the <code class="highlighter-rouge">&lt;body&gt;</code> element eg. <code class="highlighter-rouge">&lt;body class="layout--single"&gt;</code>.
-
-Using YAML Front Matter you can also assign custom classes to target with CSS or JavaScript. Perfect for “art directed” posts or adding custom styles to specific pages.
+- Lightweight and simple to use user interface.
+- No external dependencies (except OpenCV).
+- Based on OpenCV drawing primitives only (OpenGL or Qt are not required).
+- Friendly and C-like API (no classes/objects, etc).
+- Easily render components without worrying about their position (using rows/columns).
+- MIT licensed.

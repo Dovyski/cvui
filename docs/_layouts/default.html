@@ -7,9 +7,9 @@
     {% include head.html %}
 </head>
 
-<style id="fit-vids-style">.fluid-width-video-wrapper{width:100%;position:relative;padding:0;}.fluid-width-video-wrapper iframe,.fluid-width-video-wrapper object,.fluid-width-video-wrapper embed {position:absolute;top:0;left:0;width:100%;height:100%;}</style></head>
+<body class="layout--single" style="margin-bottom: 221px;">
 
-<body class="layout--single" data-gr-c-s-loaded="true" style="margin-bottom: 221px;">
+<a href="https://github.com/Dovyski/cvui"><img style="position: absolute; top: 0; right: 0; border: 0;z-index:9999;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
 
     <!--[if lt IE 9]>
 <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
@@ -17,17 +17,13 @@
 <div class="masthead">
   <div class="masthead__inner-wrap">
     <div class="masthead__menu">
-      <nav id="site-nav" class="greedy-nav">
-        <ul class="visible-links">
-            <li class="masthead__menu-item masthead__menu-item--lg"><a href="{{ site.url }}">cvui <small>{{ site.cvui_version }}</small></a></li>
-        </ul>
-      </nav>
+      {% include navbar.html %}
     </div>
   </div>
 </div>
 
 <div id="main" role="main" style="position: relative;">
-    {% include navbar.html %}
+    {% include sidemenu.html %}
 
     <div style="height: 861.8px; width: 188.538px; margin: 0px 20.9375px 22px 0px; border-spacing: 0px; border: 0px; padding: 0px; font-size: 1em; position: static; float: left;"></div>
 
@@ -49,6 +45,9 @@
         <div class="page__footer-copyright">Powered by <a href="http://jekyllrb.com/" rel="nofollow">Jekyll</a>. Theme based on <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
     </footer>
 </div>
+
+<!-- Super cool Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
 
 </body>
 </html>
