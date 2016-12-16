@@ -38,6 +38,9 @@ example/build/*
 build
 install
 
+# "Compiled" docs folder
+/docs/_site
+
 #Save those, please
 !example/build/README.txt
 !example/build/data/*

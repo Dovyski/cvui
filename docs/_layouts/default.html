@@ -1,0 +1,54 @@
+---
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include head.html %}
+</head>
+
+<style id="fit-vids-style">.fluid-width-video-wrapper{width:100%;position:relative;padding:0;}.fluid-width-video-wrapper iframe,.fluid-width-video-wrapper object,.fluid-width-video-wrapper embed {position:absolute;top:0;left:0;width:100%;height:100%;}</style></head>
+
+<body class="layout--single" data-gr-c-s-loaded="true" style="margin-bottom: 221px;">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="{{ site.url }}">cvui <small>{{ site.cvui_version }}</small></a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div id="main" role="main" style="position: relative;">
+    {% include navbar.html %}
+
+    <div style="height: 861.8px; width: 188.538px; margin: 0px 20.9375px 22px 0px; border-spacing: 0px; border: 0px; padding: 0px; font-size: 1em; position: static; float: left;"></div>
+
+    <article class="page" itemscope="" itemtype="http://schema.org/CreativeWork">
+        <div class="page__inner-wrap">
+            <section class="page__content" itemprop="text">
+            {{ content }}
+            </section>
+
+            <footer class="page__meta">
+                <p class="page__date"><strong>Last updated:</strong> <time datetime="2016-12-16">2016-12-16</time></p>
+            </footer>
+        </div>
+    </article>
+</div>
+
+<div class="page__footer">
+    <footer>
+        <div class="page__footer-copyright">Powered by <a href="http://jekyllrb.com/" rel="nofollow">Jekyll</a>. Theme based on <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+    </footer>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<div class="sidebar sticky" style="position: absolute; left: 22px; right: 1069.46px; bottom: auto; width: auto; margin-left: 0px; margin-right: 0px; margin-top: 0px; top: 0px;">
+    <nav class="nav__list">
+        <ul class="nav__items">
+            <li>
+                <span class="nav__sub-title">Getting started</span>
+                <ul>
+                    <li class="{% if page.id == 'test' %}active{% endif %}"><a href="{{ site.baseurl }}/components/test/">Test</a></li>
+                </ul>
+            </li>
+            <li>
+                <span class="nav__sub-title">Rows and columns</span>
+                <ul>
+                    <li class="{% if page.id == 'test2' %}active{% endif %}"><a href="{{ site.baseurl }}/components/test/">Test</a></li>
+                </ul>
+            </li>
+            <li>
+                <span class="nav__sub-title">Components</span>
+                <ul>
+                    <li class="{% if page.url contains 'test3' %}active{% endif %}"><a href="{{ site.baseurl }}{{ entry.url }}">Test</a></li>
+                </ul>
+            </li>
+            <li>
+                <span class="nav__sub-title">Extra</span>
+                <ul>
+                    <li><a href="">CHANGELOG</a></li>
+                    <li><a href="">License</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</div>
