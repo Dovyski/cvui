@@ -761,10 +761,10 @@ namespace internal
 	struct TrackbarParams
 	{
 		long double min, max, step;
-		long double LargeStep;
-		bool ForceValuesAsMultiplesOfSmallStep;
-		bool DrawValuesAtLargeSteps;
-		bool DrawSmallSteps;
+		int segments;
+		bool discrete;
+		bool showSegmentLabels;
+		bool showSteps;
 		std::string Printf_Format;
 		std::string Printf_Format_Steps;
 
@@ -772,10 +772,10 @@ namespace internal
 			: min(0.)
 			, max(25.)
 			, step(1.)
-			, LargeStep(5.)
-			, ForceValuesAsMultiplesOfSmallStep(false)
-			, DrawValuesAtLargeSteps(true)
-			, DrawSmallSteps(true)
+			, segments(0)
+			, discrete(false)
+			, showSegmentLabels(true)
+			, showSteps(true)
 			, Printf_Format("%.0lf")
 			, Printf_Format_Steps("")
 		{
@@ -830,9 +830,9 @@ namespace internal
 
 		params.min = (long double)min;
 		params.max = (long double)max;
-		params.DrawValuesAtLargeSteps = true;
-		params.LargeStep = (long double)(max - min) / (long double)nbLargeSteps;
 		params.step = (long double)smallStep;
+		params.showSegmentLabels = true;
+		params.segments = nbLargeSteps;
 
 		if (smallStep < 0) {
 			params.step = pow(10., -nbDecimals);
@@ -840,8 +840,8 @@ namespace internal
 
 		int nbSmallSteps = (int)((params.max - params.min) / params.step);
 
-		params.DrawSmallSteps = (params.step > 0) && (nbSmallSteps < 50);
-		params.ForceValuesAsMultiplesOfSmallStep = forceValuesAsMultiplesOfSmallStep;
+		params.showSteps = (params.step > 0) && (nbSmallSteps < 50);
+		params.discrete = forceValuesAsMultiplesOfSmallStep;
 	
 		int nbSignsBeforeDecimals = (int)(log((double)max) / log(10.)) + 1;
 		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;

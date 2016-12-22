@@ -211,7 +211,7 @@ namespace internal
 
 	inline void trackbar_ForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue)
 	{
-		if ( (theParams.ForceValuesAsMultiplesOfSmallStep) && (theParams.step != 0.) )
+		if ( (theParams.discrete) && (theParams.step != 0.) )
 		{
 			long double k = (*theValue - theParams.min) / theParams.step;
 			k = (long double) cvRound( (double)k );
@@ -438,7 +438,7 @@ namespace internal
 		render::trackbar(theBlock, aContentArea, *theValue, theParams, aMouseIsOver);
 		if (gMousePressed && aMouseIsOver) {
 			*theValue = internal::trackbar_XPixelToValue(theParams, aContentArea, gMouse.x);
-			if (theParams.ForceValuesAsMultiplesOfSmallStep) {
+			if (theParams.discrete) {
 				internal::trackbar_ForceValuesAsMultiplesOfSmallStep(theParams, theValue);
 			}
 		}
@@ -579,7 +579,7 @@ namespace render {
 		}
 
 		//Draw small steps
-		if (theParams.DrawSmallSteps)
+		if (theParams.showSteps)
 		{
 			for (double value = theParams.min; value <= theParams.max; value += theParams.step)
 			{
@@ -590,16 +590,16 @@ namespace render {
 			}
 		}
 
+		long double aSegmentLength = (long double)(theParams.max - theParams.min) / (long double)theParams.segments;
+
 		//Draw large steps and legends
-		for (double value = theParams.min; value <= theParams.max; value += theParams.LargeStep)
-		{
+		for (double value = theParams.min; value <= theParams.max; value += aSegmentLength) {
 			int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, value);
 			cv::Point pt1(xPixel, barTopLeft.y);
 			cv::Point pt2(xPixel, barTopLeft.y - 8);
 			cv::line(theBlock.where, pt1, pt2, color);
 
-			if (theParams.DrawValuesAtLargeSteps)
-			{
+			if (theParams.showSegmentLabels) {
 				char legend[100];
 				std::string printFormat = theParams.Printf_Format_Steps.empty() ? theParams.Printf_Format : theParams.Printf_Format_Steps;
 				sprintf_s(legend, printFormat.c_str(), value);
