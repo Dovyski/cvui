@@ -164,31 +164,33 @@ namespace internal
 		*theMax = aMax;
 	}
 
-	cvui_labelshortcutinfo labelShortcutInfo(const std::string &theLabel) {
-		cvui_labelshortcutinfo info;
-		info.hasShortcut = false;
-		info.shortcut = 0;
-		info.labelBeforeShortcut = std::string("");
-		info.labelAfterShortcut = std::string("");
+	cvui_label_t createLabel(const std::string &theLabel) {
+		cvui_label_t aLabel;
+		std::stringstream aBefore, aAfter;
+		
+		aLabel.hasShortcut = false;
+		aLabel.shortcut = 0;
+		aLabel.textBeforeShortcut = "";
+		aLabel.textAfterShortcut = "";
 
-		std::stringstream before, after;
 		for (size_t i = 0; i < theLabel.size(); i++) {
 			char c = theLabel[i];
 			if ((c == '&') && (i < theLabel.size() - 1)) {
-				info.hasShortcut = true;
-				info.shortcut = theLabel[i + 1];
+				aLabel.hasShortcut = true;
+				aLabel.shortcut = theLabel[i + 1];
 				++i;
-			} else if (!info.hasShortcut) {
-				before << c;
+			} else if (!aLabel.hasShortcut) {
+				aBefore << c;
 			} else {
-				after << c;
+				aAfter << c;
 			}
 		}
-		info.labelBeforeShortcut = before.str();
-		info.labelAfterShortcut = after.str();
-		return info;
-	}
 
+		aLabel.textBeforeShortcut = aBefore.str();
+		aLabel.textAfterShortcut = aAfter.str();
+		
+		return aLabel;
+	}
 
 	cv::Scalar hexToScalar(unsigned int theColor) {
 		int aAlpha = (theColor >> 24) & 0xff;
@@ -288,12 +290,15 @@ namespace internal
 			updateLayoutFlow(theBlock, aSize);
 		}
 
-		//Handle keyboard shortcuts
 		bool wasShortcutPressed = false;
+
+		//Handle keyboard shortcuts
 		if (gLastKeyPressed != -1) {
-			auto info = internal::labelShortcutInfo(theLabel);
-			if (info.hasShortcut && ( tolower(info.shortcut) == tolower((char)gLastKeyPressed)) )
+			// TODO: replace with something like strpos(). I think it has better performance.
+			auto aLabel = internal::createLabel(theLabel);
+			if (aLabel.hasShortcut && (tolower(aLabel.shortcut) == tolower((char)gLastKeyPressed))) {
 				wasShortcutPressed = true;
+			}
 		}
 
 		// Tell if the button was clicked or not
@@ -499,37 +504,41 @@ namespace render {
 		cv::rectangle(theBlock.where, theShape, theState == IDLE ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), CVUI_Filled);
 	}
 
+	int putText(cvui_block_t& theBlock, int theState, cv::Scalar aColor, const std::string& theText, const cv::Point & thePosition) {
+		double aFontSize = theState == PRESSED ? 0.39 : 0.4;
+		cv::Size aSize;
+
+		if (theText != "") {
+			cv::putText(theBlock.where, theText, thePosition, cv::FONT_HERSHEY_SIMPLEX, aFontSize, aColor, 1, CVUI_Antialiased);
+			aSize = cv::getTextSize(theText, cv::FONT_HERSHEY_SIMPLEX, aFontSize, 1, nullptr);
+		}
+
+		return aSize.width;
+	}
+
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize) {
 		cv::Point aPos(theRect.x + theRect.width / 2 - theTextSize.width / 2, theRect.y + theRect.height / 2 + theTextSize.height / 2);
-		cv::Scalar color = cv::Scalar(0xCE, 0xCE, 0xCE);
+		cv::Scalar aColor = cv::Scalar(0xCE, 0xCE, 0xCE);
 
-		auto putTextAndReturnWidth = [&] (const std::string & str, const cv::Point & position) -> int {
-			double fontSize = theState == PRESSED ? 0.39 : 0.4;
-			int aWidth = 0;
-			
-			if (str != "") {
-				cv::putText(theBlock.where, str, position, cv::FONT_HERSHEY_SIMPLEX, fontSize, color, 1, CVUI_Antialiased);
-				int baseline;
-				cv::Size size = cv::getTextSize(str, cv::FONT_HERSHEY_SIMPLEX, fontSize, 1, &baseline);
-				aWidth = size.width;
-			}
+		auto aLabel = internal::createLabel(theLabel);
 
-			return aWidth;
-		};
-		auto shortcutInfo = internal::labelShortcutInfo(theLabel);
-		if ( ! shortcutInfo.hasShortcut ) {
-			putTextAndReturnWidth(theLabel, aPos);
-		}
-		else {
-			int widthBeforeShortcut = putTextAndReturnWidth(shortcutInfo.labelBeforeShortcut, aPos);
-			int xStart = aPos.x + widthBeforeShortcut;
-			aPos.x += widthBeforeShortcut;
-			std::string shortcut; shortcut.push_back(shortcutInfo.shortcut);
-			int widthOfShortcut = putTextAndReturnWidth(shortcut, aPos);
-			int xEnd = xStart + widthOfShortcut;
-			aPos.x += widthOfShortcut;
-			putTextAndReturnWidth(shortcutInfo.labelAfterShortcut, aPos);
-			cv::line(theBlock.where, cv::Point(xStart, aPos.y + 3), cv::Point(xEnd, aPos.y + 3), color, 1, CVUI_Antialiased);
+		if (!aLabel.hasShortcut) {
+			putText(theBlock, theState, aColor, theLabel, aPos);
+
+		} else {
+			int aWidth = putText(theBlock, theState, aColor, aLabel.textBeforeShortcut, aPos);
+			int aStart = aPos.x + aWidth;
+			aPos.x += aWidth;
+
+			std::string aShortcut;
+			aShortcut.push_back(aLabel.shortcut);
+
+			aWidth = putText(theBlock, theState, aColor, aShortcut, aPos);
+			int aEnd = aStart + aWidth;
+			aPos.x += aWidth;
+
+			putText(theBlock, theState, aColor, aLabel.textAfterShortcut, aPos);
+			cv::line(theBlock.where, cv::Point(aStart, aPos.y + 3), cv::Point(aEnd, aPos.y + 3), aColor, 1, CVUI_Antialiased);
 		}
 	}
 

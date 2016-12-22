@@ -839,18 +839,18 @@ typedef struct {
 	int type;				// type of the block, e.g. ROW or COLUMN.
 } cvui_block_t;
 
-// Contains info about a shortcut.
+// Describes a component label, including info about a shortcut.
 // If a label contains "Re&start", then:
 // - hasShortcut will be true
 // - shortcut will be 's'
-// - labelBeforeShortcut will be "Re"
-// - labelAfterShortcut will be "tart"
-struct cvui_labelshortcutinfo {
+// - textBeforeShortcut will be "Re"
+// - textAfterShortcut will be "tart"
+typedef struct {
 	bool hasShortcut;
 	char shortcut;
-	std::string labelBeforeShortcut;
-	std::string labelAfterShortcut;
-};
+	std::string textBeforeShortcut;
+	std::string textAfterShortcut;
+} cvui_label_t;
 
 // Internal namespace that contains all rendering functions.
 namespace render {
@@ -870,6 +870,8 @@ namespace render {
 	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle);
 	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theBorderColor, unsigned int theFillingColor);
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
+
+	int putText(cvui_block_t& theBlock, int theState, cv::Scalar aColor, const std::string& theText, const cv::Point & thePosition);
 }
 
 // Internal namespace with all code that is shared among components/functions
@@ -887,7 +889,7 @@ namespace internal
 	cvui_block_t& popBlock();
 	void begin(int theType, cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding);
 	void end(int theType);
-	cvui_labelshortcutinfo labelShortcutInfo(const std::string &theLabel);
+	cvui_label_t createLabel(const std::string &theLabel);
 	int iarea(int theX, int theY, int theWidth, int theHeight);
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout);
 	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel);
