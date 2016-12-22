@@ -42,10 +42,8 @@ cvui_block_t gScreen;
 
 // This is an internal namespace with all code
 // that is shared among components/functions
-namespace internal {
-	static cvui_block_t gStack[100]; // TODO: make it dynamic?
-	static int gStackCount = -1;
-
+namespace internal
+{
 	void error(int theId, std::string theMessage) {
 		std::cout << "[CVUI] Fatal error (code " << theId << "): " << theMessage << "\n";
 		cv::waitKey(100000);
@@ -166,19 +164,6 @@ namespace internal {
 		*theMax = aMax;
 	}
 
-	// Contains info about a shortcut
-	// If a label contains "Re&start", then :
-	// - hasShortcut will be true
-	// - shortcut will be 's'
-	// - labelBeforeShortcut will be "Re"
-	// - labelAfterShortcut will be "tart"
-	struct cvui_labelshortcutinfo {
-		bool hasShortcut;
-		char shortcut;
-		std::string labelBeforeShortcut;
-		std::string labelAfterShortcut;
-	};
-
 	cvui_labelshortcutinfo labelShortcutInfo(const std::string &theLabel) {
 		cvui_labelshortcutinfo info;
 		info.hasShortcut = false;
@@ -221,8 +206,6 @@ namespace internal {
 		value = value < 0. ? 0. : value;
 		return value;
 	}
-
-	static const int trackbar_XMargin = 14;
 
 	inline void trackbar_ForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue)
 	{
@@ -494,7 +477,6 @@ namespace internal {
 		cv::Size aSize(theWidth, theHeight);
 		updateLayoutFlow(theBlock, aSize);
 	}
-
 }
 
 // This is an internal namespace with all functions
@@ -729,7 +711,6 @@ namespace render {
 			aPosX += aGap;
 		}
 	}
-
 }
 
 void init(const cv::String& theWindowName, int theDelayWaitKey) {

@@ -17,7 +17,12 @@ namespace cvui
 {
 /**
  Initializes the library. You must provide the name of the window where
- the components will be added.
+ the components will be added. It is also possible to tell cvui to handle
+ OpenCV's event queue automatically (by informing a value greater than zero
+ in the `theDelayWaitKey` parameter of function). In that case, cvui will
+ automatically call `cv::waitKey()` within `cvui::update()`, so you don't
+ have to worry about it. The value passed to `theDelayWaitKey` will be
+ used as the delay for `cv::waitKey()`.
  
  \param theWindowName name of the window where the components will be added
  \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
@@ -25,14 +30,13 @@ namespace cvui
 void init(const cv::String& theWindowName, int theDelayWaitKey = -1);
 
 /**
- Return the last key that was pressed
- You need not (and should not) call cv::waitKey between each frame.
- Instead, call cvui::update() that will in turn call cv::waitKey()
+ Return the last key that was pressed. This function will only
+ work if a value greater than zero was passed to `cvui::init()`
+ as the delay waitkey parameter.
 
- Note : you can set the delay of cv::waitKey during cvui::init()
+ \sa init()
  */
 int lastKeyPressed();
-
 
 /**
  Display a button. The size of the button will be automatically adjusted to
@@ -800,8 +804,6 @@ void rect(int theWidth, int theHeight, unsigned int theBorderColor, unsigned int
 */
 void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
 
-
-
 /**
  Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating
  UI elements in order for them to react to mouse interactions.
@@ -816,6 +818,7 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 // (needed for those who compile with -Werror (make warning as errors)
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
+
 // Lib version
 static const char *VERSION = "1.1.0";
 
@@ -835,6 +838,19 @@ typedef struct {
 	int padding;			// padding among components within this block.
 	int type;				// type of the block, e.g. ROW or COLUMN.
 } cvui_block_t;
+
+// Contains info about a shortcut.
+// If a label contains "Re&start", then:
+// - hasShortcut will be true
+// - shortcut will be 's'
+// - labelBeforeShortcut will be "Re"
+// - labelAfterShortcut will be "tart"
+struct cvui_labelshortcutinfo {
+	bool hasShortcut;
+	char shortcut;
+	std::string labelBeforeShortcut;
+	std::string labelAfterShortcut;
+};
 
 // Internal namespace that contains all rendering functions.
 namespace render {
@@ -856,18 +872,43 @@ namespace render {
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
 }
 
-
-
-//
-// Implementations of the template versions of trackbar below
-//
-// Import internal definitions used by the templates
+// Internal namespace with all code that is shared among components/functions
 namespace internal
 {
-	bool trackbar(cvui_block_t &theBlock, int theX, int theY, long double *theValue, const TrackbarParams &theParams);
-	cvui_block_t &topBlock();
+	static cvui_block_t gStack[100]; // TODO: make it dynamic?
+	static int gStackCount = -1;
+	static const int trackbar_XMargin = 14;
+
+	void error(int theId, std::string theMessage);
+	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize);
+	bool blockStackEmpty();
+	cvui_block_t& topBlock();
+	cvui_block_t& pushBlock();
+	cvui_block_t& popBlock();
+	void begin(int theType, cv::Mat &theWhere, int theX, int theY, int theWidth, int theHeight, int thePadding);
+	void end(int theType);
+	cvui_labelshortcutinfo labelShortcutInfo(const std::string &theLabel);
+	int iarea(int theX, int theY, int theWidth, int theHeight);
+	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout);
+	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel);
+	bool button(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, bool theUpdateLayout);
+	void image(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theImage);
+	bool checkbox(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor);
+	void text(cvui_block_t& theBlock, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor, bool theUpdateLayout);
+	int counter(cvui_block_t& theBlock, int theX, int theY, int *theValue, int theStep, const char *theFormat);
+	double counter(cvui_block_t& theBlock, int theX, int theY, double *theValue, double theStep, const char *theFormat);
+	void window(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle);
+	void rect(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor);
+	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor);
+	bool trackbar(cvui_block_t &theBlock, int theX, int theY, long double *theValue, const TrackbarParams& theParams);
+	inline void trackbar_ForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue);
+	inline long double trackbar_XPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int xPixel);
+	inline int trackbar_ValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double value);
+
+	inline double clamp01(double value);
+	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
+	cv::Scalar hexToScalar(unsigned int theColor);
 }
-extern cvui_block_t gScreen;
 
 template<typename num_type>
 TrackbarParams trackbarParams(
