@@ -754,55 +754,34 @@ typedef struct {
 	std::string textAfterShortcut;
 } cvui_label_t;
 
-struct TrackbarParams
-{
-	long double MinimumValue, MaximumValue;
-	long double SmallStep, LargeStep;
-	bool ForceValuesAsMultiplesOfSmallStep;
-	bool DrawValuesAtLargeSteps;
-	bool DrawSmallSteps;
-	std::string Printf_Format;
-	std::string Printf_Format_Steps;
-
-	inline TrackbarParams()
-		: MinimumValue(0.)
-		, MaximumValue(25.)
-		, SmallStep(1.)
-		, LargeStep(5.)
-		, ForceValuesAsMultiplesOfSmallStep(false)
-		, DrawValuesAtLargeSteps(true)
-		, DrawSmallSteps(true)
-		, Printf_Format("%.0lf")
-		, Printf_Format_Steps("")
-	{
-	}
-};
-
-// Internal namespace that contains all rendering functions.
-namespace render {
-	const int IDLE = 0;
-	const int OVER = 1;
-	const int PRESSED = 2;
-
-	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor);
-	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel);
-	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize);
-	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage);
-	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue);
-	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const TrackbarParams &theParams, bool theMouseIsOver);
-	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
-	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor);
-	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape);
-	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle);
-	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theBorderColor, unsigned int theFillingColor);
-	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
-
-	int putText(cvui_block_t& theBlock, int theState, cv::Scalar aColor, const std::string& theText, const cv::Point & thePosition);
-}
 
 // Internal namespace with all code that is shared among components/functions
 namespace internal
 {
+	struct TrackbarParams
+	{
+		long double MinimumValue, MaximumValue;
+		long double SmallStep, LargeStep;
+		bool ForceValuesAsMultiplesOfSmallStep;
+		bool DrawValuesAtLargeSteps;
+		bool DrawSmallSteps;
+		std::string Printf_Format;
+		std::string Printf_Format_Steps;
+
+		inline TrackbarParams()
+			: MinimumValue(0.)
+			, MaximumValue(25.)
+			, SmallStep(1.)
+			, LargeStep(5.)
+			, ForceValuesAsMultiplesOfSmallStep(false)
+			, DrawValuesAtLargeSteps(true)
+			, DrawSmallSteps(true)
+			, Printf_Format("%.0lf")
+			, Printf_Format_Steps("")
+		{
+		}
+	};
+
 	static cvui_block_t gStack[100]; // TODO: make it dynamic?
 	static int gStackCount = -1;
 	static const int trackbar_XMargin = 14;
@@ -836,161 +815,180 @@ namespace internal
 	inline double clamp01(double value);
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
-}
 
-template <typename T> // T can be any floating point type (float, double, long double)
-TrackbarParams trackbarParams(
-	T min, T max,
-	int nbDecimals = 1,
-	int nbLargeSteps = 1,
-	T smallStep = -1.,
-	bool forceValuesAsMultiplesOfSmallStep = false);
+	template <typename T> // T can be any floating point type (float, double, long double)
+	TrackbarParams trackbarParams(
+		T min, T max,
+		int nbDecimals = 1,
+		int nbLargeSteps = 1,
+		T smallStep = -1.,
+		bool forceValuesAsMultiplesOfSmallStep = false);
 
-/**
-Display a trackbar
+	/**
+	Display a trackbar
 
-\param theValue : pointer to the variable that will hold the value
-\param theParams : trackbar parameters : their names are self-explanatory
-Returns true when the value was modified, false otherwise
+	\param theValue : pointer to the variable that will hold the value
+	\param theParams : trackbar parameters : their names are self-explanatory
+	Returns true when the value was modified, false otherwise
 
-Quick info about the Tracbar params
-double MinimumValue, MaximumValue : self-explanatory
-double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
-bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
-bool DrawValuesAtLargeSteps : draw value at large steps
-bool DrawSmallSteps : draw ticks at small steps
-string Printf_Format : printf format string of the value
-string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
+	Quick info about the Tracbar params
+	double MinimumValue, MaximumValue : self-explanatory
+	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+	bool DrawValuesAtLargeSteps : draw value at large steps
+	bool DrawSmallSteps : draw ticks at small steps
+	string Printf_Format : printf format string of the value
+	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
 
-IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
-\sa printf()
-\sa beginColumn()
-\sa beginRow()
-\sa endRow()
-\sa endColumn()
-*/
-template<typename T>
-bool trackbar(T *theValue, const TrackbarParams & theParams);
+	\sa printf()
+	\sa beginColumn()
+	\sa beginRow()
+	\sa endRow()
+	\sa endColumn()
+	*/
+	template<typename T>
+	bool trackbar(T *theValue, const TrackbarParams & theParams);
 
-/**
-Display a trackbar
-\param theWhere the image/frame where the component should be rendered.
-\param theX position X where the component should be placed.
-\param theY position Y where the component should be placed.
-\param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
-\param theParams : trackbar parameters : their names are self-explanatory
+	/**
+	Display a trackbar
+	\param theWhere the image/frame where the component should be rendered.
+	\param theX position X where the component should be placed.
+	\param theY position Y where the component should be placed.
+	\param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+	\param theParams : trackbar parameters : their names are self-explanatory
 
-Returns true when the value was modified, false otherwise
+	Returns true when the value was modified, false otherwise
 
-This is the fully customizable version of the trackbar.
+	This is the fully customizable version of the trackbar.
 
-Quick info about the Tracbar params
-double MinimumValue, MaximumValue : self-explanatory
-double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
-bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
-bool DrawValuesAtLargeSteps : draw value at large steps
-bool DrawSmallSteps : draw ticks at small steps
-string Printf_Format : printf format string of the value
-string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
+	Quick info about the Tracbar params
+	double MinimumValue, MaximumValue : self-explanatory
+	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+	bool DrawValuesAtLargeSteps : draw value at large steps
+	bool DrawSmallSteps : draw ticks at small steps
+	string Printf_Format : printf format string of the value
+	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
 
-\sa printf()
-\sa beginColumn()
-\sa beginRow()
-\sa endRow()
-\sa endColumn()
-*/
-template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
-bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams & theParams);
+	\sa printf()
+	\sa beginColumn()
+	\sa beginRow()
+	\sa endRow()
+	\sa endColumn()
+	*/
+	template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
+	bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams & theParams);
 
-template<typename num_type>
-TrackbarParams trackbarParams(
+	template<typename num_type>
+	TrackbarParams trackbarParams(
 		num_type min, num_type max,
 		int nbDecimals,
 		int nbLargeSteps,
 		num_type smallStep,
 		bool forceValuesAsMultiplesOfSmallStep) {
-	TrackbarParams params;
-	params.MinimumValue = (long double) min;
-	params.MaximumValue = (long double) max;
-	params.DrawValuesAtLargeSteps = true;
-	params.LargeStep = (long double)(max - min) / (long double) nbLargeSteps;
-	params.SmallStep = (long double) smallStep;
-	if ( smallStep < 0 )
-		params.SmallStep = pow(10., -nbDecimals);
-	int nbSmallSteps =
-			(int)( (params.MaximumValue - params.MinimumValue) / params.SmallStep );
-	if ( (params.SmallStep > 0) && (nbSmallSteps < 50) )
-		params.DrawSmallSteps = true;
-	else
-		params.DrawSmallSteps = false;
-	params.ForceValuesAsMultiplesOfSmallStep
+		TrackbarParams params;
+		params.MinimumValue = (long double)min;
+		params.MaximumValue = (long double)max;
+		params.DrawValuesAtLargeSteps = true;
+		params.LargeStep = (long double)(max - min) / (long double)nbLargeSteps;
+		params.SmallStep = (long double)smallStep;
+		if (smallStep < 0)
+			params.SmallStep = pow(10., -nbDecimals);
+		int nbSmallSteps =
+			(int)((params.MaximumValue - params.MinimumValue) / params.SmallStep);
+		if ((params.SmallStep > 0) && (nbSmallSteps < 50))
+			params.DrawSmallSteps = true;
+		else
+			params.DrawSmallSteps = false;
+		params.ForceValuesAsMultiplesOfSmallStep
 			= forceValuesAsMultiplesOfSmallStep;
 
-	{
-		int nbSignsBeforeDecimals = (int) ( log((double) max) / log(10.)) + 1;
-		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
-		std::stringstream format;
-		format << "%" << totalSigns << "." << nbDecimals << "lf";
-		params.Printf_Format = format.str();
+		{
+			int nbSignsBeforeDecimals = (int)(log((double)max) / log(10.)) + 1;
+			int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
+			std::stringstream format;
+			format << "%" << totalSigns << "." << nbDecimals << "lf";
+			params.Printf_Format = format.str();
+		}
+		return params;
 	}
-	return params;
+
+	template <typename num_type>
+	bool trackbar(num_type *theValue, const TrackbarParams & theParams) {
+		cvui_block_t& aBlock = internal::topBlock();
+		long double theValue_asdouble = static_cast<long double>(*theValue);
+		bool result = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, &theValue_asdouble, theParams);
+		*theValue = static_cast<num_type>(theValue_asdouble);
+		return result;
+	}
+
+	template <typename num_type>
+	bool trackbar(cv::Mat& theWhere, int theX, int theY, num_type *theValue, const TrackbarParams & theParams) {
+		gScreen.where = theWhere;
+		long double theValue_asdouble = static_cast<long double>(*theValue);
+		bool result = internal::trackbar(gScreen, theX, theY, &theValue_asdouble, theParams);
+		*theValue = static_cast<num_type>(theValue_asdouble);
+		return result;
+	}
 }
 
+// Internal namespace that contains all rendering functions.
+namespace render {
+	const int IDLE = 0;
+	const int OVER = 1;
+	const int PRESSED = 2;
 
-template <typename num_type>
-bool trackbar(num_type *theValue, const TrackbarParams & theParams) {
-	cvui_block_t& aBlock = internal::topBlock();
-	long double theValue_asdouble = static_cast<long double>(*theValue);
-	bool result  = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, & theValue_asdouble, theParams);
-	*theValue = static_cast<num_type>(theValue_asdouble);
-	return result;
+	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor);
+	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel);
+	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize);
+	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage);
+	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue);
+	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, bool theMouseIsOver);
+	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
+	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor);
+	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape);
+	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle);
+	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theBorderColor, unsigned int theFillingColor);
+	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
+
+	int putText(cvui_block_t& theBlock, int theState, cv::Scalar aColor, const std::string& theText, const cv::Point & thePosition);
 }
 
 template <typename num_type>
-bool trackbar(cv::Mat& theWhere, int theX, int theY, num_type *theValue, const TrackbarParams & theParams) {
-	gScreen.where = theWhere;
-	long double theValue_asdouble = static_cast<long double>(*theValue);
-	bool result = internal::trackbar(gScreen, theX, theY, & theValue_asdouble, theParams);
-	*theValue = static_cast<num_type>(theValue_asdouble);
-	return result;
-}
-
-
-
-template <typename num_type>
-bool trackbar(  cv::Mat& theWhere, int theX, int theY,
-				num_type *theValue,
-				num_type theMin, num_type theMax,
-				int theNumberOfDecimals,
-				int theNumberOfLargeSteps,
-				num_type theSmallStep,
-				bool flagForceValuesAsMultiplesOfSmallStep) {
-	TrackbarParams params =
-			trackbarParams(
-					theMin, theMax,
-					theNumberOfDecimals, theNumberOfLargeSteps,
-					theSmallStep,
-					flagForceValuesAsMultiplesOfSmallStep);
+bool trackbar(cv::Mat& theWhere, int theX, int theY,
+	num_type *theValue,
+	num_type theMin, num_type theMax,
+	int theNumberOfDecimals,
+	int theNumberOfLargeSteps,
+	num_type theSmallStep,
+	bool flagForceValuesAsMultiplesOfSmallStep) {
+	internal::TrackbarParams params =
+		internal::trackbarParams(
+			theMin, theMax,
+			theNumberOfDecimals, theNumberOfLargeSteps,
+			theSmallStep,
+			flagForceValuesAsMultiplesOfSmallStep);
 	return trackbar<num_type>(
-			theWhere, theX, theY,
-			theValue, params);
+		theWhere, theX, theY,
+		theValue, params);
 }
 
 template <typename num_type>
 bool trackbar(
-		num_type *theValue,
-		num_type theMin, num_type theMax,
-		int theNumberOfDecimals,
-		int theNumberOfLargeSteps,
-		num_type theSmallStep,
-		bool flagForceValuesAsMultiplesOfSmallStep) {
-	TrackbarParams params =
-			trackbarParams(
-					theMin, theMax,
-					theNumberOfDecimals, theNumberOfLargeSteps,
-					theSmallStep,
-					flagForceValuesAsMultiplesOfSmallStep);
+	num_type *theValue,
+	num_type theMin, num_type theMax,
+	int theNumberOfDecimals,
+	int theNumberOfLargeSteps,
+	num_type theSmallStep,
+	bool flagForceValuesAsMultiplesOfSmallStep) {
+	internal::TrackbarParams params =
+		internal::trackbarParams(
+			theMin, theMax,
+			theNumberOfDecimals, theNumberOfLargeSteps,
+			theSmallStep,
+			flagForceValuesAsMultiplesOfSmallStep);
 	return trackbar<num_type>(theValue, params);
 }
 

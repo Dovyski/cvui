@@ -524,7 +524,6 @@ namespace render {
 
 		if (!aLabel.hasShortcut) {
 			putText(theBlock, theState, aColor, theLabel, aPos);
-
 		} else {
 			int aWidth = putText(theBlock, theState, aColor, aLabel.textBeforeShortcut, aPos);
 			int aStart = aPos.x + aWidth;
@@ -556,7 +555,7 @@ namespace render {
 		cv::putText(theBlock.where, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
 	}
 
-	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const TrackbarParams &theParams, bool theMouseIsOver) {
+	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, bool theMouseIsOver) {
 		auto drawTextCentered = [&](const cv::Point & position, const std::string &text) {
 			auto fontFace = cv::FONT_HERSHEY_SIMPLEX;
 			auto fontScale = 0.3;
