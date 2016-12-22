@@ -600,11 +600,9 @@ namespace render {
 			cv::line(theBlock.where, pt1, pt2, color);
 
 			if (theParams.showSegmentLabels) {
-				char legend[100];
-				std::string printFormat = theParams.Printf_Format_Steps.empty() ? theParams.Printf_Format : theParams.Printf_Format_Steps;
-				sprintf_s(legend, printFormat.c_str(), value);
-				cv::Point textPos(xPixel, barTopLeft.y - 11);
-				drawTextCentered(textPos, legend);
+				sprintf_s(gBuffer, theParams.labelFormat.c_str(), value);
+				cv::Point aTextPos(xPixel, barTopLeft.y - 11);
+				drawTextCentered(aTextPos, gBuffer);
 			}
 		}
 
@@ -620,10 +618,9 @@ namespace render {
 			cv::rectangle(theBlock.where, cv::Rect(pt1, pt2), contrastedColor, -1);
 
 			// Draw current value as text
-			cv::Point textPos(xPixel, pt2.y + 11);
-			char legend[100];
-			sprintf_s(legend, theParams.Printf_Format.c_str(), theValue);
-			drawTextCentered(textPos, legend);
+			cv::Point aTextPos(xPixel, pt2.y + 11);
+			sprintf_s(gBuffer, theParams.labelFormat.c_str(), theValue);
+			drawTextCentered(aTextPos, gBuffer);
 		}
 	}
 

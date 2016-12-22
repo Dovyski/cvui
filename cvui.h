@@ -758,15 +758,15 @@ typedef struct {
 // Internal namespace with all code that is shared among components/functions
 namespace internal
 {
-	struct TrackbarParams
-	{
-		long double min, max, step;
+	struct TrackbarParams {
+		long double min;
+		long double max;
+		long double step;
 		int segments;
 		bool discrete;
 		bool showSegmentLabels;
 		bool showSteps;
-		std::string Printf_Format;
-		std::string Printf_Format_Steps;
+		std::string labelFormat;
 
 		inline TrackbarParams()
 			: min(0.)
@@ -776,10 +776,8 @@ namespace internal
 			, discrete(false)
 			, showSegmentLabels(true)
 			, showSteps(true)
-			, Printf_Format("%.0lf")
-			, Printf_Format_Steps("")
-		{
-		}
+			, labelFormat("%.0lf")
+		{}
 	};
 
 	static cvui_block_t gStack[100]; // TODO: make it dynamic?
@@ -838,16 +836,16 @@ namespace internal
 			params.step = pow(10., -nbDecimals);
 		}
 
-		int nbSmallSteps = (int)((params.max - params.min) / params.step);
+		int aStepsCount = (int)((params.max - params.min) / params.step);
 
-		params.showSteps = (params.step > 0) && (nbSmallSteps < 50);
+		params.showSteps = (params.step > 0) && (aStepsCount < 50);
 		params.discrete = forceValuesAsMultiplesOfSmallStep;
 	
 		int nbSignsBeforeDecimals = (int)(log((double)max) / log(10.)) + 1;
 		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
 		std::stringstream format;
 		format << "%" << totalSigns << "." << nbDecimals << "lf";
-		params.Printf_Format = format.str();
+		params.labelFormat = format.str();
 		
 		return params;
 	}
