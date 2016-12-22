@@ -760,8 +760,8 @@ namespace internal
 {
 	struct TrackbarParams
 	{
-		long double MinimumValue, MaximumValue;
-		long double SmallStep, LargeStep;
+		long double min, max, step;
+		long double LargeStep;
 		bool ForceValuesAsMultiplesOfSmallStep;
 		bool DrawValuesAtLargeSteps;
 		bool DrawSmallSteps;
@@ -769,9 +769,9 @@ namespace internal
 		std::string Printf_Format_Steps;
 
 		inline TrackbarParams()
-			: MinimumValue(0.)
-			, MaximumValue(25.)
-			, SmallStep(1.)
+			: min(0.)
+			, max(25.)
+			, step(1.)
 			, LargeStep(5.)
 			, ForceValuesAsMultiplesOfSmallStep(false)
 			, DrawValuesAtLargeSteps(true)
@@ -811,107 +811,44 @@ namespace internal
 	inline void trackbar_ForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue);
 	inline long double trackbar_XPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int xPixel);
 	inline int trackbar_ValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double value);
-
 	inline double clamp01(double value);
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
 
 	template <typename T> // T can be any floating point type (float, double, long double)
-	TrackbarParams trackbarParams(
-		T min, T max,
-		int nbDecimals = 1,
-		int nbLargeSteps = 1,
-		T smallStep = -1.,
-		bool forceValuesAsMultiplesOfSmallStep = false);
+	TrackbarParams trackbarParams(T min, T max, int nbDecimals = 1, int nbLargeSteps = 1, T smallStep = -1., bool forceValuesAsMultiplesOfSmallStep = false);
 
-	/**
-	Display a trackbar
-
-	\param theValue : pointer to the variable that will hold the value
-	\param theParams : trackbar parameters : their names are self-explanatory
-	Returns true when the value was modified, false otherwise
-
-	Quick info about the Tracbar params
-	double MinimumValue, MaximumValue : self-explanatory
-	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
-	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
-	bool DrawValuesAtLargeSteps : draw value at large steps
-	bool DrawSmallSteps : draw ticks at small steps
-	string Printf_Format : printf format string of the value
-	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
-
-	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
-
-	\sa printf()
-	\sa beginColumn()
-	\sa beginRow()
-	\sa endRow()
-	\sa endColumn()
-	*/
 	template<typename T>
-	bool trackbar(T *theValue, const TrackbarParams & theParams);
+	bool trackbar(T *theValue, const TrackbarParams& theParams);
 
-	/**
-	Display a trackbar
-	\param theWhere the image/frame where the component should be rendered.
-	\param theX position X where the component should be placed.
-	\param theY position Y where the component should be placed.
-	\param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
-	\param theParams : trackbar parameters : their names are self-explanatory
-
-	Returns true when the value was modified, false otherwise
-
-	This is the fully customizable version of the trackbar.
-
-	Quick info about the Tracbar params
-	double MinimumValue, MaximumValue : self-explanatory
-	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
-	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
-	bool DrawValuesAtLargeSteps : draw value at large steps
-	bool DrawSmallSteps : draw ticks at small steps
-	string Printf_Format : printf format string of the value
-	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
-
-	\sa printf()
-	\sa beginColumn()
-	\sa beginRow()
-	\sa endRow()
-	\sa endColumn()
-	*/
 	template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
-	bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams & theParams);
+	bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams& theParams);
 
 	template<typename num_type>
-	TrackbarParams trackbarParams(
-		num_type min, num_type max,
-		int nbDecimals,
-		int nbLargeSteps,
-		num_type smallStep,
-		bool forceValuesAsMultiplesOfSmallStep) {
+	TrackbarParams trackbarParams(num_type min, num_type max, int nbDecimals, int nbLargeSteps, num_type smallStep, bool forceValuesAsMultiplesOfSmallStep) {
 		TrackbarParams params;
-		params.MinimumValue = (long double)min;
-		params.MaximumValue = (long double)max;
+
+		params.min = (long double)min;
+		params.max = (long double)max;
 		params.DrawValuesAtLargeSteps = true;
 		params.LargeStep = (long double)(max - min) / (long double)nbLargeSteps;
-		params.SmallStep = (long double)smallStep;
-		if (smallStep < 0)
-			params.SmallStep = pow(10., -nbDecimals);
-		int nbSmallSteps =
-			(int)((params.MaximumValue - params.MinimumValue) / params.SmallStep);
-		if ((params.SmallStep > 0) && (nbSmallSteps < 50))
-			params.DrawSmallSteps = true;
-		else
-			params.DrawSmallSteps = false;
-		params.ForceValuesAsMultiplesOfSmallStep
-			= forceValuesAsMultiplesOfSmallStep;
+		params.step = (long double)smallStep;
 
-		{
-			int nbSignsBeforeDecimals = (int)(log((double)max) / log(10.)) + 1;
-			int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
-			std::stringstream format;
-			format << "%" << totalSigns << "." << nbDecimals << "lf";
-			params.Printf_Format = format.str();
+		if (smallStep < 0) {
+			params.step = pow(10., -nbDecimals);
 		}
+
+		int nbSmallSteps = (int)((params.max - params.min) / params.step);
+
+		params.DrawSmallSteps = (params.step > 0) && (nbSmallSteps < 50);
+		params.ForceValuesAsMultiplesOfSmallStep = forceValuesAsMultiplesOfSmallStep;
+	
+		int nbSignsBeforeDecimals = (int)(log((double)max) / log(10.)) + 1;
+		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
+		std::stringstream format;
+		format << "%" << totalSigns << "." << nbDecimals << "lf";
+		params.Printf_Format = format.str();
+		
 		return params;
 	}
 
@@ -921,6 +858,7 @@ namespace internal
 		long double theValue_asdouble = static_cast<long double>(*theValue);
 		bool result = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, &theValue_asdouble, theParams);
 		*theValue = static_cast<num_type>(theValue_asdouble);
+		
 		return result;
 	}
 
@@ -930,6 +868,7 @@ namespace internal
 		long double theValue_asdouble = static_cast<long double>(*theValue);
 		bool result = internal::trackbar(gScreen, theX, theY, &theValue_asdouble, theParams);
 		*theValue = static_cast<num_type>(theValue_asdouble);
+		
 		return result;
 	}
 }

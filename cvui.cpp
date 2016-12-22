@@ -211,11 +211,11 @@ namespace internal
 
 	inline void trackbar_ForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue)
 	{
-		if ( (theParams.ForceValuesAsMultiplesOfSmallStep) && (theParams.SmallStep != 0.) )
+		if ( (theParams.ForceValuesAsMultiplesOfSmallStep) && (theParams.step != 0.) )
 		{
-			long double k = (*theValue - theParams.MinimumValue) / theParams.SmallStep;
+			long double k = (*theValue - theParams.min) / theParams.step;
 			k = (long double) cvRound( (double)k );
-			*theValue = theParams.MinimumValue + theParams.SmallStep * k;
+			*theValue = theParams.min + theParams.step * k;
 		}
 	}
 
@@ -223,13 +223,13 @@ namespace internal
 	{
 		long double ratio = (xPixel - (long double)(theBounding.x + trackbar_XMargin) ) / (long double)( theBounding.width - 2 * trackbar_XMargin);
 		ratio = clamp01(ratio);
-		long double value = theParams.MinimumValue + ratio * (theParams.MaximumValue - theParams.MinimumValue);
+		long double value = theParams.min + ratio * (theParams.max - theParams.min);
 		return value;
 	}
 
 	inline int trackbar_ValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double value)
 	{
-		long double ratio = (value - theParams.MinimumValue) / (theParams.MaximumValue - theParams.MinimumValue);
+		long double ratio = (value - theParams.min) / (theParams.max - theParams.min);
 		ratio = clamp01(ratio);
 		long double xPixels = (long double)theBounding.x + trackbar_XMargin + ratio * (long double)(theBounding.width - 2 * trackbar_XMargin);
 		return (int)xPixels;
@@ -581,7 +581,7 @@ namespace render {
 		//Draw small steps
 		if (theParams.DrawSmallSteps)
 		{
-			for (double value = theParams.MinimumValue; value <= theParams.MaximumValue; value += theParams.SmallStep)
+			for (double value = theParams.min; value <= theParams.max; value += theParams.step)
 			{
 				int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, value);
 				cv::Point pt1(xPixel, barTopLeft.y);
@@ -591,7 +591,7 @@ namespace render {
 		}
 
 		//Draw large steps and legends
-		for (double value = theParams.MinimumValue; value <= theParams.MaximumValue; value += theParams.LargeStep)
+		for (double value = theParams.min; value <= theParams.max; value += theParams.LargeStep)
 		{
 			int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, value);
 			cv::Point pt1(xPixel, barTopLeft.y);
