@@ -20,9 +20,9 @@ namespace cvui
  the components will be added.
  
  \param theWindowName name of the window where the components will be added
- \param theDelayWaitKey delay used by cv::waitKey at each call of cvui::update()
+ \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
 */
-void init(const cv::String& theWindowName, int theDelayWaitKey = 15);
+void init(const cv::String& theWindowName, int theDelayWaitKey = -1);
 
 /**
  Return the last key that was pressed

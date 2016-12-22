@@ -735,7 +735,7 @@ namespace render {
 void init(const cv::String& theWindowName, int theDelayWaitKey) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
 	gDelayWaitKey = theDelayWaitKey;
-	gLastKeyPressed = 0;
+	gLastKeyPressed = -1;
 	//TODO: init gScreen here?
 }
 
@@ -951,7 +951,11 @@ void update() {
 
 	gScreen.padding = 0;
 
-	gLastKeyPressed = cv::waitKey(gDelayWaitKey);
+	// If we were told to keep track of the keyboard shortcuts, we
+	// proceed to handle opencv event queue.
+	if (gDelayWaitKey > 0) {
+		gLastKeyPressed = cv::waitKey(gDelayWaitKey);
+	}
 
 	if (!internal::blockStackEmpty()) {
 		internal::error(2, "Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().");

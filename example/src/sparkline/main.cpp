@@ -51,11 +51,6 @@ int main(int argc, const char *argv[])
 		// Fill the frame with a nice color
 		frame = cv::Scalar(49, 52, 49);
 
-		// Check if ESC key was pressed
-    if (cvui::lastKeyPressed() == 27) {
-			break;
-		}
-
 		// Add 3 sparklines that are displaying the same data, but with
 		// different width/height/colors.
 		cvui::sparkline(frame, points, 0, 0, 800, 200);
@@ -68,6 +63,11 @@ int main(int argc, const char *argv[])
 
 		// Show everything on the screen
 		cv::imshow(WINDOW_NAME, frame);
+
+		// Check if ESC key was pressed
+		if (cv::waitKey(20) == 27) {
+			break;
+		}
 	}
 
 	return 0;

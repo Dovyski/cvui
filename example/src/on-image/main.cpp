@@ -25,11 +25,21 @@ int main(int argc, const char *argv[])
 	// If cv::namedWindow() is not used, mouse events will
 	// not be captured by cvui.
 	cv::namedWindow(WINDOW_NAME);
-	cvui::init(WINDOW_NAME);
+	
+	// Tell cvui to use a value of 20 for cv::waitKey()
+	// because we want to enable keyboard shortcut for
+	// all components, e.g. button with label "&Quit".
+	// If cvui has a value for waitKey, it will call
+	// waitKey() automatically for us within cvui::update().
+	cvui::init(WINDOW_NAME, 20);
 
 	while (true) {
 		doubleBuffer.copyTo(frame);
 
+		// Exit the application if the quit button was pressed.
+		// It can be pressed because of a mouse click or because 
+		// the user pressed the "q" key on the keyboard, which is
+		// marked as a shortcut in the button label ("&Quit").
 		if (cvui::button(frame, frame.cols - 100, frame.rows - 30, "&Quit")) {
 			break;
 		}
@@ -121,6 +131,10 @@ int main(int argc, const char *argv[])
 
 		// This function must be called *AFTER* all UI components. It does
 		// all the behind the scenes magic to handle mouse clicks, etc.
+		//
+		// Since cvui::init() received a param regarding waitKey,
+		// there is no need to call cv::waitKey() anymore. cvui::update()
+		// will do it automatically.
 		cvui::update();
 
 		// Show everything on the screen
