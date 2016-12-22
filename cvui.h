@@ -168,75 +168,6 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 
 */
 double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
 
-
-struct TrackbarParams
-{
-	long double MinimumValue, MaximumValue;
-	long double SmallStep, LargeStep;
-	bool ForceValuesAsMultiplesOfSmallStep;
-	bool DrawValuesAtLargeSteps;
-	bool DrawSmallSteps;
-	std::string Printf_Format;
-	std::string Printf_Format_Steps;
-
-	inline TrackbarParams()
-			: MinimumValue(0.)
-			, MaximumValue(25.)
-			, SmallStep(1.)
-			, LargeStep(5.)
-			, ForceValuesAsMultiplesOfSmallStep(false)
-			, DrawValuesAtLargeSteps(true)
-			, DrawSmallSteps(true)
-			, Printf_Format("%.0lf")
-			, Printf_Format_Steps("")
-	{
-	}
-};
-
-
-template <typename T> // T can be any floating point type (float, double, long double)
-TrackbarParams trackbarParams(
-	T min, T max,
-	int nbDecimals = 1,
-	int nbLargeSteps = 1,
-	T smallStep = -1.,
-	bool forceValuesAsMultiplesOfSmallStep = false);
-
-
-
-
-
-/**
-Display a trackbar
- \param theWhere the image/frame where the component should be rendered.
- \param theX position X where the component should be placed.
- \param theY position Y where the component should be placed.
- \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
- \param theParams : trackbar parameters : their names are self-explanatory
-
-   Returns true when the value was modified, false otherwise
-
-   This is the fully customizable version of the trackbar.
-
-   Quick info about the Tracbar params
- 	double MinimumValue, MaximumValue : self-explanatory
- 	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
- 	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
-	bool DrawValuesAtLargeSteps : draw value at large steps
-	bool DrawSmallSteps : draw ticks at small steps
-	string Printf_Format : printf format string of the value
-	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
-
- \sa printf()
- \sa beginColumn()
- \sa beginRow()
- \sa endRow()
- \sa endColumn()
-*/
-template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
-bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams & theParams);
-
-
 /**
 trackbar_float : Display a trackbar
  \param theWhere the image/frame where the component should be rendered.
@@ -691,35 +622,6 @@ int counter(int *theValue, int theStep = 1, const char *theFormat = "%d");
 */
 double counter(double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
 
-
-/**
-Display a trackbar
-
- \param theValue : pointer to the variable that will hold the value
- \param theParams : trackbar parameters : their names are self-explanatory
- Returns true when the value was modified, false otherwise
-
-    Quick info about the Tracbar params
- 	double MinimumValue, MaximumValue : self-explanatory
- 	double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
- 	bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
-	bool DrawValuesAtLargeSteps : draw value at large steps
-	bool DrawSmallSteps : draw ticks at small steps
-	string Printf_Format : printf format string of the value
-	string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
-
-  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
-
- \sa printf()
- \sa beginColumn()
- \sa beginRow()
- \sa endRow()
- \sa endColumn()
-*/
-template<typename T>
-bool trackbar(T *theValue, const TrackbarParams & theParams);
-
-
 /**
 trackbar : Display a trackbar
  \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
@@ -852,6 +754,30 @@ typedef struct {
 	std::string textAfterShortcut;
 } cvui_label_t;
 
+struct TrackbarParams
+{
+	long double MinimumValue, MaximumValue;
+	long double SmallStep, LargeStep;
+	bool ForceValuesAsMultiplesOfSmallStep;
+	bool DrawValuesAtLargeSteps;
+	bool DrawSmallSteps;
+	std::string Printf_Format;
+	std::string Printf_Format_Steps;
+
+	inline TrackbarParams()
+		: MinimumValue(0.)
+		, MaximumValue(25.)
+		, SmallStep(1.)
+		, LargeStep(5.)
+		, ForceValuesAsMultiplesOfSmallStep(false)
+		, DrawValuesAtLargeSteps(true)
+		, DrawSmallSteps(true)
+		, Printf_Format("%.0lf")
+		, Printf_Format_Steps("")
+	{
+	}
+};
+
 // Internal namespace that contains all rendering functions.
 namespace render {
 	const int IDLE = 0;
@@ -911,6 +837,71 @@ namespace internal
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
 }
+
+template <typename T> // T can be any floating point type (float, double, long double)
+TrackbarParams trackbarParams(
+	T min, T max,
+	int nbDecimals = 1,
+	int nbLargeSteps = 1,
+	T smallStep = -1.,
+	bool forceValuesAsMultiplesOfSmallStep = false);
+
+/**
+Display a trackbar
+
+\param theValue : pointer to the variable that will hold the value
+\param theParams : trackbar parameters : their names are self-explanatory
+Returns true when the value was modified, false otherwise
+
+Quick info about the Tracbar params
+double MinimumValue, MaximumValue : self-explanatory
+double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+bool DrawValuesAtLargeSteps : draw value at large steps
+bool DrawSmallSteps : draw ticks at small steps
+string Printf_Format : printf format string of the value
+string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
+
+IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+\sa printf()
+\sa beginColumn()
+\sa beginRow()
+\sa endRow()
+\sa endColumn()
+*/
+template<typename T>
+bool trackbar(T *theValue, const TrackbarParams & theParams);
+
+/**
+Display a trackbar
+\param theWhere the image/frame where the component should be rendered.
+\param theX position X where the component should be placed.
+\param theY position Y where the component should be placed.
+\param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
+\param theParams : trackbar parameters : their names are self-explanatory
+
+Returns true when the value was modified, false otherwise
+
+This is the fully customizable version of the trackbar.
+
+Quick info about the Tracbar params
+double MinimumValue, MaximumValue : self-explanatory
+double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
+bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
+bool DrawValuesAtLargeSteps : draw value at large steps
+bool DrawSmallSteps : draw ticks at small steps
+string Printf_Format : printf format string of the value
+string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
+
+\sa printf()
+\sa beginColumn()
+\sa beginRow()
+\sa endRow()
+\sa endColumn()
+*/
+template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
+bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams & theParams);
 
 template<typename num_type>
 TrackbarParams trackbarParams(
