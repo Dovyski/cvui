@@ -768,7 +768,7 @@ namespace internal
 
 	static cvui_block_t gStack[100]; // TODO: make it dynamic?
 	static int gStackCount = -1;
-	static const int trackbar_XMargin = 14;
+	static const int gTrackbarMarginX = 14;
 
 	void error(int theId, std::string theMessage);
 	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize);
@@ -880,6 +880,7 @@ namespace render {
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
 
 	int putText(cvui_block_t& theBlock, int theState, cv::Scalar aColor, const std::string& theText, const cv::Point & thePosition);
+	int putTextCentered(cvui_block_t& theBlock, const cv::Point & position, const std::string &text);
 }
 
 template <typename num_type>

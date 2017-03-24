@@ -209,7 +209,7 @@ namespace internal
 		return value;
 	}
 
-	inline void trackbar_ForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue)
+	inline void trackbarForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue)
 	{
 		if ( (theParams.discrete) && (theParams.step != 0.) )
 		{
@@ -219,20 +219,20 @@ namespace internal
 		}
 	}
 
-	inline long double trackbar_XPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int xPixel)
+	inline long double trackbarXPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int thePixelX)
 	{
-		long double ratio = (xPixel - (long double)(theBounding.x + trackbar_XMargin) ) / (long double)( theBounding.width - 2 * trackbar_XMargin);
+		long double ratio = (thePixelX - (long double)(theBounding.x + gTrackbarMarginX) ) / (long double)( theBounding.width - 2 * gTrackbarMarginX);
 		ratio = clamp01(ratio);
 		long double value = theParams.min + ratio * (theParams.max - theParams.min);
 		return value;
 	}
 
-	inline int trackbar_ValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double value)
+	inline int trackbarValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double theValue)
 	{
-		long double ratio = (value - theParams.min) / (theParams.max - theParams.min);
-		ratio = clamp01(ratio);
-		long double xPixels = (long double)theBounding.x + trackbar_XMargin + ratio * (long double)(theBounding.width - 2 * trackbar_XMargin);
-		return (int)xPixels;
+		long double aRatio = (theValue - theParams.min) / (theParams.max - theParams.min);
+		aRatio = clamp01(aRatio);
+		long double thePixelsX = (long double)theBounding.x + gTrackbarMarginX + aRatio * (long double)(theBounding.width - 2 * gTrackbarMarginX);
+		return (int)thePixelsX;
 	}
 
 	int iarea(int theX, int theY, int theWidth, int theHeight) {
@@ -437,9 +437,9 @@ namespace internal
 		bool aMouseIsOver = aContentArea.contains(gMouse);
 		render::trackbar(theBlock, aContentArea, *theValue, theParams, aMouseIsOver);
 		if (gMousePressed && aMouseIsOver) {
-			*theValue = internal::trackbar_XPixelToValue(theParams, aContentArea, gMouse.x);
+			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, gMouse.x);
 			if (theParams.discrete) {
-				internal::trackbar_ForceValuesAsMultiplesOfSmallStep(theParams, theValue);
+				internal::trackbarForceValuesAsMultiplesOfSmallStep(theParams, theValue);
 			}
 		}
 
@@ -516,6 +516,16 @@ namespace render {
 		return aSize.width;
 	}
 
+	int putTextCentered(cvui_block_t& theBlock, const cv::Point & position, const std::string &text) {
+		double aFontScale = 0.3;
+
+		auto size = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, aFontScale, 1, nullptr);
+		cv::Point positionDecentered(position.x - size.width / 2, position.y);
+		cv::putText(theBlock.where, text, positionDecentered, cv::FONT_HERSHEY_SIMPLEX, aFontScale, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
+
+		return size.width;
+	};
+
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize) {
 		cv::Point aPos(theRect.x + theRect.width / 2 - theTextSize.width / 2, theRect.y + theRect.height / 2 + theTextSize.height / 2);
 		cv::Scalar aColor = cv::Scalar(0xCE, 0xCE, 0xCE);
@@ -556,37 +566,23 @@ namespace render {
 	}
 
 	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, bool theMouseIsOver) {
-		auto drawTextCentered = [&](const cv::Point & position, const std::string &text) {
-			auto fontFace = cv::FONT_HERSHEY_SIMPLEX;
-			auto fontScale = 0.3;
-			int baseline;
-			auto size = cv::getTextSize(text, fontFace, fontScale, 1, &baseline);
-			cv::Point positionDecentered(position.x - size.width / 2, position.y);
-			cv::putText(theBlock.where, text, positionDecentered, fontFace, fontScale, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
-		};
-		cv::Rect internalShape(theShape.x + internal::trackbar_XMargin, theShape.y,
-							   theShape.width - 2 * internal::trackbar_XMargin, theShape.height);
-		auto color = cv::Scalar(150, 150, 150);
-		if (theMouseIsOver)
-			color = cv::Scalar(200, 200, 200);
+		cv::Rect aShape(theShape.x + internal::gTrackbarMarginX, theShape.y, theShape.width - 2 * internal::gTrackbarMarginX, theShape.height);
+		auto aColor = theMouseIsOver ? cv::Scalar(200, 200, 200) : cv::Scalar(150, 150, 150);
 
-		cv::Point barTopLeft(internalShape.x, internalShape.y + 20);
-		int barHeight = 7;
-		{
-			// Draw bar
-			cv::Rect bar(barTopLeft, cv::Size(internalShape.width, barHeight));
-			cv::rectangle(theBlock.where, bar, color, -1);
-		}
+		cv::Point aBarTopLeft(aShape.x, aShape.y + 20);
+		int aBarHeight = 7;
+
+		// Draw bar
+		cv::Rect aBar(aBarTopLeft, cv::Size(aShape.width, aBarHeight));
+		cv::rectangle(theBlock.where, aBar, aColor, -1);
 
 		//Draw small steps
-		if (theParams.showSteps)
-		{
-			for (double value = theParams.min; value <= theParams.max; value += theParams.step)
-			{
-				int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, value);
-				cv::Point pt1(xPixel, barTopLeft.y);
-				cv::Point pt2(xPixel, barTopLeft.y - 3);
-				cv::line(theBlock.where, pt1, pt2, color);
+		if (theParams.showSteps) {
+			for (double value = theParams.min; value <= theParams.max; value += theParams.step) {
+				int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, value);
+				cv::Point aPoint1(aPixelX, aBarTopLeft.y);
+				cv::Point aPoint2(aPixelX, aBarTopLeft.y - 3);
+				cv::line(theBlock.where, aPoint1, aPoint2, aColor);
 			}
 		}
 
@@ -594,34 +590,32 @@ namespace render {
 
 		//Draw large steps and legends
 		for (double value = theParams.min; value <= theParams.max; value += aSegmentLength) {
-			int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, value);
-			cv::Point pt1(xPixel, barTopLeft.y);
-			cv::Point pt2(xPixel, barTopLeft.y - 8);
-			cv::line(theBlock.where, pt1, pt2, color);
+			int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, value);
+			cv::Point aPoint1(aPixelX, aBarTopLeft.y);
+			cv::Point aPoint2(aPixelX, aBarTopLeft.y - 8);
+			cv::line(theBlock.where, aPoint1, aPoint2, aColor);
 
 			if (theParams.showSegmentLabels) {
 				sprintf_s(gBuffer, theParams.labelFormat.c_str(), value);
-				cv::Point aTextPos(xPixel, barTopLeft.y - 11);
-				drawTextCentered(aTextPos, gBuffer);
+				cv::Point aTextPos(aPixelX, aBarTopLeft.y - 11);
+				putTextCentered(theBlock, aTextPos, gBuffer);
 			}
 		}
 
 		// Draw current value indicator
-		{
-			cv::Scalar contrastedColor(100, 100, 100);
+		cv::Scalar aContrastedColor(100, 100, 100);
 
-			int xPixel = internal::trackbar_ValueToXPixel(theParams, theShape, theValue);
-			int indicatorWidth = 3;
-			int indicatorHeightAdd = 4;
-			cv::Point pt1(xPixel - indicatorWidth, barTopLeft.y - indicatorHeightAdd);
-			cv::Point pt2(xPixel + indicatorWidth, barTopLeft.y + barHeight + indicatorHeightAdd);
-			cv::rectangle(theBlock.where, cv::Rect(pt1, pt2), contrastedColor, -1);
+		int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, theValue);
+		int indicatorWidth = 3;
+		int indicatorHeightAdd = 4;
+		cv::Point aPoint1(aPixelX - indicatorWidth, aBarTopLeft.y - indicatorHeightAdd);
+		cv::Point aPoint2(aPixelX + indicatorWidth, aBarTopLeft.y + aBarHeight + indicatorHeightAdd);
+		cv::rectangle(theBlock.where, cv::Rect(aPoint1, aPoint2), aContrastedColor, -1);
 
-			// Draw current value as text
-			cv::Point aTextPos(xPixel, pt2.y + 11);
-			sprintf_s(gBuffer, theParams.labelFormat.c_str(), theValue);
-			drawTextCentered(aTextPos, gBuffer);
-		}
+		// Draw current value as text
+		cv::Point aTextPos(aPixelX, aPoint2.y + 11);
+		sprintf_s(gBuffer, theParams.labelFormat.c_str(), theValue);
+		putTextCentered(theBlock, aTextPos, gBuffer);
 	}
 
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape) {
