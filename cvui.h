@@ -169,18 +169,20 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 
 double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
 
 /**
-trackbar_float : Display a trackbar
+ Display a trackbar for numeric values that the user can increase/decrease
+ by clicking and draging the marker right or left. 
+
  \param theWhere the image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
  \param theMin : minimum value of the trackbar
  \param theMax : maximum value of the trackbar
- \param theNumberOfDecimals : number of decimal digits to be displayed
- \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
- \param theSmallStep : small steps at which ticks will be drawn (if not given,
- \                    theSmallStep is a calculated according to theNumberOfDecimals)
- \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+ \param theDecimals : number of decimal digits to be displayed
+ \param theSegments : number of large steps (at which a legend will be written, as on a ruler)
+ \param theStep : small steps at which ticks will be drawn (if not given,
+ \                    theStep is a calculated according to theDecimals)
+ \param theDiscrete : enforce values to be a multiple of theStep
 
    Returns true when the value was modified, false otherwise
 
@@ -193,19 +195,9 @@ trackbar_float : Display a trackbar
    cvui::trackbar_float(&myValue, (unsigned char)0, (unsigned char)255);
 
  \sa printf()
- \sa beginColumn()
- \sa beginRow()
- \sa endRow()
- \sa endColumn()
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(  cv::Mat& theWhere, int theX, int theY,
-				T *theValue,
-				T theMin, T theMax,
-				int theNumberOfDecimals = 1,
-				int theNumberOfLargeSteps = 1,
-				T theSmallStep = -1.,
-				bool flagForceValuesAsMultiplesOfSmallStep = false);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, T theMin, T theMax, int theDecimals = 1,	int theSegments = 1, T theStep = -1., bool theDiscrete = false);
 
 /**
  Display a window (a block with a title and a body).
@@ -623,15 +615,17 @@ int counter(int *theValue, int theStep = 1, const char *theFormat = "%d");
 double counter(double *theValue, double theStep = 0.5, const char *theFormat = "%.2f");
 
 /**
-trackbar : Display a trackbar
+ Display a trackbar for numeric values that the user can increase/decrease
+ by clicking and draging the marker right or left.
+
  \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
  \param theMin : minimum value of the trackbar
  \param theMax : maximum value of the trackbar
- \param theNumberOfDecimals : number of decimal digits to be displayed
- \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
- \param theSmallStep : small steps at which ticks will be drawn (if not given,
- \                    theSmallStep is a calculated according to theNumberOfDecimals)
- \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+ \param theDecimals : number of decimal digits to be displayed
+ \param theSegments : number of large steps (at which a legend will be written, as on a ruler)
+ \param theStep : small steps at which ticks will be drawn (if not given,
+ \                    theStep is a calculated according to theDecimals)
+ \param theDiscrete : enforce values to be a multiple of theStep
 
   Note : remember to cast the minimum and maximum values to your type
   See examples below :
@@ -644,15 +638,7 @@ trackbar : Display a trackbar
    Returns true when the value was modified, false otherwise
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(
-		T *theValue,
-		T theMin, T theMax,
-		int theNumberOfDecimals = 1,
-		int theNumberOfLargeSteps = 1,
-		T theSmallStep = -1.,
-		bool flagForceValuesAsMultiplesOfSmallStep = true);
-
-
+bool trackbar(T *theValue, T theMin, T theMax, int theDecimals = 1, int theSegments = 1, T theStep = -1., bool theDiscrete = true);
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
@@ -814,7 +800,7 @@ namespace internal
 	cv::Scalar hexToScalar(unsigned int theColor);
 
 	template <typename T> // T can be any floating point type (float, double, long double)
-	TrackbarParams trackbarParams(T min, T max, int nbDecimals = 1, int nbLargeSteps = 1, T smallStep = -1., bool forceValuesAsMultiplesOfSmallStep = false);
+	TrackbarParams trackbarParams(T min, T max, int theDecimals = 1, int theSegments = 1, T theStep = -1., bool theDiscrete = false);
 
 	template<typename T>
 	bool trackbar(T *theValue, const TrackbarParams& theParams);
@@ -823,51 +809,54 @@ namespace internal
 	bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams& theParams);
 
 	template<typename num_type>
-	TrackbarParams trackbarParams(num_type min, num_type max, int nbDecimals, int nbLargeSteps, num_type smallStep, bool forceValuesAsMultiplesOfSmallStep) {
-		TrackbarParams params;
+	TrackbarParams trackbarParams(num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, bool theDiscrete) {
+		TrackbarParams aParams;
 
-		params.min = (long double)min;
-		params.max = (long double)max;
-		params.step = (long double)smallStep;
-		params.showSegmentLabels = true;
-		params.segments = nbLargeSteps;
+		aParams.min = (long double)theMin;
+		aParams.max = (long double)theMax;
+		aParams.step = (long double)theStep;
+		aParams.showSegmentLabels = true;
+		aParams.segments = theSegments;
 
-		if (smallStep < 0) {
-			params.step = pow(10., -nbDecimals);
+		if (theStep < 0) {
+			aParams.step = pow(10., -theDecimals);
 		}
 
-		int aStepsCount = (int)((params.max - params.min) / params.step);
+		int aStepsCount = (int)((aParams.max - aParams.min) / aParams.step);
 
-		params.showSteps = (params.step > 0) && (aStepsCount < 50);
-		params.discrete = forceValuesAsMultiplesOfSmallStep;
+		aParams.showSteps = (aParams.step > 0) && (aStepsCount < 50);
+		aParams.discrete = theDiscrete;
 	
-		int nbSignsBeforeDecimals = (int)(log((double)max) / log(10.)) + 1;
-		int totalSigns = nbSignsBeforeDecimals + 1 + nbDecimals;
-		std::stringstream format;
-		format << "%" << totalSigns << "." << nbDecimals << "lf";
-		params.labelFormat = format.str();
+		int nbSignsBeforeDecimals = (int)(log((double)theMax) / log(10.)) + 1;
+		int totalSigns = nbSignsBeforeDecimals + 1 + theDecimals;
 		
-		return params;
+		std::stringstream aFormat;
+		aFormat << "%" << totalSigns << "." << theDecimals << "lf";
+		aParams.labelFormat = aFormat.str();
+		
+		return aParams;
 	}
 
 	template <typename num_type>
 	bool trackbar(num_type *theValue, const TrackbarParams & theParams) {
 		cvui_block_t& aBlock = internal::topBlock();
-		long double theValue_asdouble = static_cast<long double>(*theValue);
-		bool result = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, &theValue_asdouble, theParams);
-		*theValue = static_cast<num_type>(theValue_asdouble);
 		
-		return result;
+		long double aValueAsDouble = static_cast<long double>(*theValue);
+		bool aResult = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, &aValueAsDouble, theParams);
+		*theValue = static_cast<num_type>(aValueAsDouble);
+		
+		return aResult;
 	}
 
 	template <typename num_type>
 	bool trackbar(cv::Mat& theWhere, int theX, int theY, num_type *theValue, const TrackbarParams & theParams) {
 		gScreen.where = theWhere;
-		long double theValue_asdouble = static_cast<long double>(*theValue);
-		bool result = internal::trackbar(gScreen, theX, theY, &theValue_asdouble, theParams);
-		*theValue = static_cast<num_type>(theValue_asdouble);
 		
-		return result;
+		long double aValueAsDouble = static_cast<long double>(*theValue);
+		bool aResult = internal::trackbar(gScreen, theX, theY, &aValueAsDouble, theParams);
+		*theValue = static_cast<num_type>(aValueAsDouble);
+		
+		return aResult;
 	}
 }
 
@@ -894,39 +883,15 @@ namespace render {
 }
 
 template <typename num_type>
-bool trackbar(cv::Mat& theWhere, int theX, int theY,
-	num_type *theValue,
-	num_type theMin, num_type theMax,
-	int theNumberOfDecimals,
-	int theNumberOfLargeSteps,
-	num_type theSmallStep,
-	bool flagForceValuesAsMultiplesOfSmallStep) {
-	internal::TrackbarParams params =
-		internal::trackbarParams(
-			theMin, theMax,
-			theNumberOfDecimals, theNumberOfLargeSteps,
-			theSmallStep,
-			flagForceValuesAsMultiplesOfSmallStep);
-	return trackbar<num_type>(
-		theWhere, theX, theY,
-		theValue, params);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, bool theDiscrete) {
+	internal::TrackbarParams aParams = internal::trackbarParams(theMin, theMax, theDecimals, theSegments, theStep, theDiscrete);
+	return trackbar<num_type>(theWhere, theX, theY, theValue, aParams);
 }
 
 template <typename num_type>
-bool trackbar(
-	num_type *theValue,
-	num_type theMin, num_type theMax,
-	int theNumberOfDecimals,
-	int theNumberOfLargeSteps,
-	num_type theSmallStep,
-	bool flagForceValuesAsMultiplesOfSmallStep) {
-	internal::TrackbarParams params =
-		internal::trackbarParams(
-			theMin, theMax,
-			theNumberOfDecimals, theNumberOfLargeSteps,
-			theSmallStep,
-			flagForceValuesAsMultiplesOfSmallStep);
-	return trackbar<num_type>(theValue, params);
+bool trackbar(num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, bool theDiscrete) {
+	internal::TrackbarParams aParams = internal::trackbarParams(theMin, theMax, theDecimals, theSegments, theStep, theDiscrete);
+	return trackbar<num_type>(theValue, aParams);
 }
 
 } // namespace cvui
