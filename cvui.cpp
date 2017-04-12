@@ -44,6 +44,10 @@ cvui_block_t gScreen;
 // that is shared among components/functions
 namespace internal
 {
+	bool bitsetHas(unsigned int theBitset, unsigned int theValue) {
+		return (theBitset & theValue) != 0;
+	}
+
 	void error(int theId, std::string theMessage) {
 		std::cout << "[CVUI] Fatal error (code " << theId << "): " << theMessage << "\n";
 		cv::waitKey(100000);
@@ -211,8 +215,7 @@ namespace internal
 
 	inline void trackbarForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue)
 	{
-		if ( (theParams.discrete) && (theParams.step != 0.) )
-		{
+		if (bitsetHas(theParams.options, TRACKBAR_DISCRETE) && theParams.step != 0.) {
 			long double k = (*theValue - theParams.min) / theParams.step;
 			k = (long double) cvRound( (double)k );
 			*theValue = theParams.min + theParams.step * k;
@@ -433,12 +436,14 @@ namespace internal
 
 	bool trackbar(cvui_block_t& theBlock, int theX, int theY, long double *theValue, const TrackbarParams & theParams) {
 		cv::Rect aContentArea(theX, theY, 150, 45);
-		long double valueOrig = *theValue;
+		long double aValue = *theValue;
 		bool aMouseIsOver = aContentArea.contains(gMouse);
+
 		render::trackbar(theBlock, aContentArea, *theValue, theParams, aMouseIsOver);
+
 		if (gMousePressed && aMouseIsOver) {
 			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, gMouse.x);
-			if (theParams.discrete) {
+			if (bitsetHas(theParams.options, TRACKBAR_DISCRETE)) {
 				internal::trackbarForceValuesAsMultiplesOfSmallStep(theParams, theValue);
 			}
 		}
@@ -447,7 +452,7 @@ namespace internal
 		cv::Size aSize = aContentArea.size();
 		updateLayoutFlow(theBlock, aSize);
 
-		return (*theValue != valueOrig);
+		return (*theValue != aValue);
 	}
 
 
@@ -595,7 +600,9 @@ namespace render {
 			cv::Point aPoint2(aPixelX, aBarTopLeft.y - 8);
 			cv::line(theBlock.where, aPoint1, aPoint2, aColor);
 
-			if (theParams.showSegmentLabels) {
+			bool aShowSegmentLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_SEGMENT_LABELS) == false;
+
+			if (aShowSegmentLabels) {
 				sprintf_s(gBuffer, theParams.labelFormat.c_str(), value);
 				cv::Point aTextPos(aPixelX, aBarTopLeft.y - 11);
 				putTextCentered(theBlock, aTextPos, gBuffer);
@@ -606,10 +613,10 @@ namespace render {
 		cv::Scalar aContrastedColor(100, 100, 100);
 
 		int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, theValue);
-		int indicatorWidth = 3;
-		int indicatorHeightAdd = 4;
-		cv::Point aPoint1(aPixelX - indicatorWidth, aBarTopLeft.y - indicatorHeightAdd);
-		cv::Point aPoint2(aPixelX + indicatorWidth, aBarTopLeft.y + aBarHeight + indicatorHeightAdd);
+		int aIndicatorWidth = 3;
+		int aIndicatorHeight = 4;
+		cv::Point aPoint1(aPixelX - aIndicatorWidth, aBarTopLeft.y - aIndicatorHeight);
+		cv::Point aPoint2(aPixelX + aIndicatorWidth, aBarTopLeft.y + aBarHeight + aIndicatorHeight);
 		cv::rectangle(theBlock.where, cv::Rect(aPoint1, aPoint2), aContrastedColor, -1);
 
 		// Draw current value as text
