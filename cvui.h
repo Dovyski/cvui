@@ -735,8 +735,11 @@ const int IDLE = 6;
 
 // Constants regarding components
 const unsigned int TRACKBAR_HIDE_SEGMENT_LABELS = 1;
-const unsigned int TRACKBAR_HIDE_STEPS = 2;
+const unsigned int TRACKBAR_HIDE_STEP_SCALE = 2;
 const unsigned int TRACKBAR_DISCRETE = 4;
+const unsigned int TRACKBAR_HIDE_MIN_MAX_LABELS = 8;
+const unsigned int TRACKBAR_HIDE_VALUE_LABEL = 16;
+const unsigned int TRACKBAR_HIDE_LABELS = 32;
 
 // Describes the block structure used by the lib to handle `begin*()` and `end*()` calls.
 typedef struct {

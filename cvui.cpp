@@ -574,10 +574,14 @@ namespace render {
 		aRect.x += 1; aRect.y += 1; aRect.width -= 2; aRect.height -= 2;
 		rect(theBlock, aRect, 0x515151, aFillColor);
 
+		bool aShowLabel = internal::bitsetHas(theParams.options, cvui::TRACKBAR_HIDE_VALUE_LABEL) == false;
+
 		// Draw the handle label
-		cv::Point aTextPos(aPixelX, aPoint2.y + 11);
-		sprintf_s(gBuffer, theParams.labelFormat.c_str(), theValue);
-		putTextCentered(theBlock, aTextPos, gBuffer);
+		if (aShowLabel) {
+			cv::Point aTextPos(aPixelX, aPoint2.y + 11);
+			sprintf_s(gBuffer, theParams.labelFormat.c_str(), theValue);
+			putTextCentered(theBlock, aTextPos, gBuffer);
+		}
 	}
 
 	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
@@ -618,9 +622,14 @@ namespace render {
 			cv::Point aPoint2(aPixelX, aBarTopLeft.y - 8);
 			cv::line(theBlock.where, aPoint1, aPoint2, aColor);
 
-			bool aShowSegmentLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_SEGMENT_LABELS) == false;
+			// TODO: better compare doubles. E.g.  fabs(a - b) < EPSILON
+			bool aIsFirst = aValue <= theParams.min;
+			bool aIsLast = aValue + aSegmentLength > theParams.max;
+		
+			bool aHasSegmentLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_SEGMENT_LABELS) == false;
+			bool aHasMinMaxLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_MIN_MAX_LABELS) == false;
 
-			if (aShowSegmentLabels) {
+			if (((aIsFirst || aIsLast) && aHasMinMaxLabels) || (aHasSegmentLabels && !aIsFirst && !aIsLast)) {
 				sprintf_s(gBuffer, theParams.labelFormat.c_str(), aValue);
 				cv::Point aTextPos(aPixelX, aBarTopLeft.y - 11);
 				putTextCentered(theBlock, aTextPos, gBuffer);
@@ -633,12 +642,17 @@ namespace render {
 
 		trackbarPath(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
 
-		bool aShowSteps = internal::bitsetHas(theParams.options, cvui::TRACKBAR_HIDE_STEPS) == false;
-		if (aShowSteps) {
+		bool aHideAllLabels = internal::bitsetHas(theParams.options, cvui::TRACKBAR_HIDE_LABELS);
+		bool aShowSteps = internal::bitsetHas(theParams.options, cvui::TRACKBAR_HIDE_STEP_SCALE) == false;
+
+		if (aShowSteps && !aHideAllLabels) {
 			trackbarSteps(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
 		}
 
-		trackbarSegments(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
+		if (!aHideAllLabels) {
+			trackbarSegments(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
+		}
+
 		trackbarHandle(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
 	}
 
