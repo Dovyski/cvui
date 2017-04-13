@@ -197,7 +197,7 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
  \sa printf()
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, T theMin, T theMax, int theDecimals = 1,	int theSegments = 1, T theStep = -1., unsigned int theOptions = 0);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, int theDecimals = 1,	int theSegments = 1, T theStep = -1., unsigned int theOptions = 0);
 
 /**
  Display a window (a block with a title and a body).
@@ -638,7 +638,7 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
    Returns true when the value was modified, false otherwise
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(T *theValue, T theMin, T theMax, int theDecimals = 1, int theSegments = 1, T theStep = -1., unsigned int theOptions = 0);
+bool trackbar(int theWidth, T *theValue, T theMin, T theMax, int theDecimals = 1, int theSegments = 1, T theStep = -1., unsigned int theOptions = 0);
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
@@ -796,10 +796,10 @@ namespace internal
 	void window(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle);
 	void rect(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor);
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor);
-	bool trackbar(cvui_block_t &theBlock, int theX, int theY, long double *theValue, const TrackbarParams& theParams);
+	bool trackbar(cvui_block_t &theBlock, int theX, int theY, int theWidth, long double *theValue, const TrackbarParams& theParams);
 	inline void trackbarForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue);
-	inline long double trackbarXPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int xPixel);
-	inline int trackbarValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double value);
+	inline long double trackbarXPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int thePixelX);
+	inline int trackbarValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double theValue);
 	inline double clamp01(double value);
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
@@ -811,7 +811,7 @@ namespace internal
 	bool trackbar(T *theValue, const TrackbarParams& theParams);
 
 	template <typename T> // T can be any numeric type (int, double, unsigned int, etc)
-	bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, const TrackbarParams& theParams);
+	bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, const TrackbarParams& theParams);
 
 	template<typename num_type>
 	TrackbarParams makeTrackbarParams(num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, unsigned int theOptions) {
@@ -842,22 +842,22 @@ namespace internal
 	}
 
 	template <typename num_type>
-	bool trackbar(num_type *theValue, const TrackbarParams & theParams) {
+	bool trackbar(int theWidth, num_type *theValue, const TrackbarParams & theParams) {
 		cvui_block_t& aBlock = internal::topBlock();
 		
 		long double aValueAsDouble = static_cast<long double>(*theValue);
-		bool aResult = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, &aValueAsDouble, theParams);
+		bool aResult = internal::trackbar(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, &aValueAsDouble, theParams);
 		*theValue = static_cast<num_type>(aValueAsDouble);
 		
 		return aResult;
 	}
 
 	template <typename num_type>
-	bool trackbar(cv::Mat& theWhere, int theX, int theY, num_type *theValue, const TrackbarParams & theParams) {
+	bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, const TrackbarParams & theParams) {
 		gScreen.where = theWhere;
 		
 		long double aValueAsDouble = static_cast<long double>(*theValue);
-		bool aResult = internal::trackbar(gScreen, theX, theY, &aValueAsDouble, theParams);
+		bool aResult = internal::trackbar(gScreen, theX, theY, theWidth, &aValueAsDouble, theParams);
 		*theValue = static_cast<num_type>(aValueAsDouble);
 		
 		return aResult;
@@ -888,15 +888,15 @@ namespace render {
 }
 
 template <typename num_type>
-bool trackbar(cv::Mat& theWhere, int theX, int theY, num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, unsigned int theOptions) {
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, unsigned int theOptions) {
 	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDecimals, theSegments, theStep, theOptions);
-	return trackbar<num_type>(theWhere, theX, theY, theValue, aParams);
+	return trackbar<num_type>(theWhere, theX, theY, theWidth, theValue, aParams);
 }
 
 template <typename num_type>
-bool trackbar(num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, unsigned int theOptions) {
+bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, unsigned int theOptions) {
 	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDecimals, theSegments, theStep, theOptions);
-	return trackbar<num_type>(theValue, aParams);
+	return trackbar<num_type>(theWidth, theValue, aParams);
 }
 
 } // namespace cvui

@@ -75,36 +75,36 @@ int main(int argc, const char *argv[])
 			*/
 
 			cvui::text("Simple int trackbar, no ticks");
-			cvui::trackbar(&intValue1, 0, 100, 0);
+			cvui::trackbar(150, &intValue1, 0, 100, 0);
 			cvui::text("");
 
 			cvui::text("Simple uchar trackbar");
-			cvui::trackbar(&ucharValue2, (uchar)0, (uchar)255, 0);
+			cvui::trackbar(150, &ucharValue2, (uchar)0, (uchar)255, 0);
 			cvui::text("");
 
 			cvui::text("Simple signed char trackbar, no large");
-			cvui::trackbar(&charValue3, (char)-128, (char)127, 0);
+			cvui::trackbar(150, &charValue3, (char)-128, (char)127, 0);
 			cvui::text("");
 
 			cvui::text("Simple float trackbar");
 			cvui::text("1 decimal, no large step");
-			cvui::trackbar(&floatValue1, 10.f, 15.f, 1);
+			cvui::trackbar(150, &floatValue1, 10.f, 15.f, 1);
 			cvui::text("");
 
 			cvui::text("Simple float trackbar");
 			cvui::text(" 2 decimals, 4 large Steps");
-			cvui::trackbar(&doubleValue1, 10., 20., 2, 4);
+			cvui::trackbar(150, &doubleValue1, 10., 20., 2, 4);
 			cvui::text("");
 
 			cvui::text("Simple float trackbar, 1 decimal");
 			cvui::text("no larges steps");
 			cvui::text("edited value forced to 1 decimal");
-			cvui::trackbar(&doubleValue2, 10., 10.5, 1, 1, 0.1);
+			cvui::trackbar(150, &doubleValue2, 10., 10.5, 1, 1, 0.1);
 
 			cvui::text("float trackbar, 2 decimal");
 			cvui::text("value multiples of 0.25");
 			cvui::text("2 large steps");
-			cvui::trackbar(&doubleValue3, 0., 4., 2, 2, 0.25, cvui::TRACKBAR_DISCRETE);
+			cvui::trackbar(150, &doubleValue3, 0., 4., 2, 2, 0.25, cvui::TRACKBAR_DISCRETE);
 
 			// Exit the application if the quit button was pressed.
 			// It can be pressed because of a mouse click or because 

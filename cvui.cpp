@@ -434,8 +434,8 @@ namespace internal
 		return *theValue;
 	}
 
-	bool trackbar(cvui_block_t& theBlock, int theX, int theY, long double *theValue, const TrackbarParams & theParams) {
-		cv::Rect aContentArea(theX, theY, 150, 45);
+	bool trackbar(cvui_block_t& theBlock, int theX, int theY, int theWidth, long double *theValue, const TrackbarParams & theParams) {
+		cv::Rect aContentArea(theX, theY, theWidth, 45);
 		long double aValue = *theValue;
 		bool aMouseIsOver = aContentArea.contains(gMouse);
 
