@@ -570,6 +570,37 @@ namespace render {
 		cv::putText(theBlock.where, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
 	}
 
+	void trackbarHandle(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + 20);
+		int aBarHeight = 7;
+
+		// Draw the rectangle representing the handle
+		int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, theValue);
+		int aIndicatorWidth = 3;
+		int aIndicatorHeight = 4;
+		cv::Point aPoint1(aPixelX - aIndicatorWidth, aBarTopLeft.y - aIndicatorHeight);
+		cv::Point aPoint2(aPixelX + aIndicatorWidth, aBarTopLeft.y + aBarHeight + aIndicatorHeight);
+		cv::Rect aRect(aPoint1, aPoint2);
+
+		rect(theBlock, aRect, 0x212121, 0x212121);
+		aRect.x += 1; aRect.y += 1; aRect.width -= 2; aRect.height -= 2;
+		rect(theBlock, aRect, 0x515151, 0x424242);
+
+		// Draw the handle label
+		cv::Point aTextPos(aPixelX, aPoint2.y + 11);
+		sprintf_s(gBuffer, theParams.labelFormat.c_str(), theValue);
+		putTextCentered(theBlock, aTextPos, gBuffer);
+	}
+
+	void trackbarPath(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+		int aBarHeight = 7;
+		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + 20);
+		cv::Rect aRect(aBarTopLeft, cv::Size(theWorkingArea.width, aBarHeight));
+
+		rect(theBlock, aRect, 0x3e3e3e, 0x292929);
+		cv::line(theBlock.where, cv::Point(aRect.x + 1, aRect.y + aBarHeight - 2), cv::Point(aRect.x + aRect.width - 2, aRect.y + aBarHeight - 2), cv::Scalar(0x0e, 0x0e, 0x0e));
+	}
+
 	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, bool theMouseIsOver) {
 		cv::Rect aShape(theShape.x + internal::gTrackbarMarginX, theShape.y, theShape.width - 2 * internal::gTrackbarMarginX, theShape.height);
 		auto aColor = theMouseIsOver ? cv::Scalar(200, 200, 200) : cv::Scalar(150, 150, 150);
@@ -578,8 +609,7 @@ namespace render {
 		int aBarHeight = 7;
 
 		// Draw bar
-		cv::Rect aBar(aBarTopLeft, cv::Size(aShape.width, aBarHeight));
-		cv::rectangle(theBlock.where, aBar, aColor, -1);
+		trackbarPath(theBlock, theShape, theValue, theParams, aShape);
 
 		//Draw small steps
 		if (theParams.showSteps) {
@@ -611,20 +641,7 @@ namespace render {
 			}
 		}
 
-		// Draw current value indicator
-		cv::Scalar aContrastedColor(100, 100, 100);
-
-		int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, theValue);
-		int aIndicatorWidth = 3;
-		int aIndicatorHeight = 4;
-		cv::Point aPoint1(aPixelX - aIndicatorWidth, aBarTopLeft.y - aIndicatorHeight);
-		cv::Point aPoint2(aPixelX + aIndicatorWidth, aBarTopLeft.y + aBarHeight + aIndicatorHeight);
-		cv::rectangle(theBlock.where, cv::Rect(aPoint1, aPoint2), aContrastedColor, -1);
-
-		// Draw current value as text
-		cv::Point aTextPos(aPixelX, aPoint2.y + 11);
-		sprintf_s(gBuffer, theParams.labelFormat.c_str(), theValue);
-		putTextCentered(theBlock, aTextPos, gBuffer);
+		trackbarHandle(theBlock, theShape, theValue, theParams, aShape);
 	}
 
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape) {
