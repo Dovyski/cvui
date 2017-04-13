@@ -104,7 +104,7 @@ int main(int argc, const char *argv[])
 			cvui::text("float trackbar, 2 decimal");
 			cvui::text("value multiples of 0.25");
 			cvui::text("2 large steps");
-			cvui::trackbar(&doubleValue3, 0., 4., 2, 2, 0.25);
+			cvui::trackbar(&doubleValue3, 0., 4., 2, 2, 0.25, cvui::TRACKBAR_DISCRETE);
 
 			// Exit the application if the quit button was pressed.
 			// It can be pressed because of a mouse click or because 

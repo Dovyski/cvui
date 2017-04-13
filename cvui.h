@@ -181,8 +181,8 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
  \param theDecimals : number of decimal digits to be displayed
  \param theSegments : number of large steps (at which a legend will be written, as on a ruler)
  \param theStep : small steps at which ticks will be drawn (if not given,
- \                    theStep is a calculated according to theDecimals)
- \param theDiscrete : enforce values to be a multiple of theStep
+ \param theStep is a calculated according to theDecimals
+ \param theOptions : TODO
 
    Returns true when the value was modified, false otherwise
 
@@ -190,14 +190,14 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
   See examples below :
 
    float myValue;
-   cvui::trackbar_float(&myValue, 0.f, 100.f);
+   cvui::trackbarfloat(&myValue, 0.f, 100.f);
    unsigned char myValue;
-   cvui::trackbar_float(&myValue, (unsigned char)0, (unsigned char)255);
+   cvui::trackbarfloat(&myValue, (unsigned char)0, (unsigned char)255);
 
  \sa printf()
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, T theMin, T theMax, int theDecimals = 1,	int theSegments = 1, T theStep = -1., bool theDiscrete = false);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, T *theValue, T theMin, T theMax, int theDecimals = 1,	int theSegments = 1, T theStep = -1., unsigned int theOptions = 0);
 
 /**
  Display a window (a block with a title and a body).
@@ -631,9 +631,9 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
   See examples below :
 
    float myValue;
-   cvui::trackbar_float(&myValue, 0.f, 100.f);
+   cvui::trackbarfloat(&myValue, 0.f, 100.f);
    unsigned char myValue;
-   cvui::trackbar_float(&myValue, (unsigned char)0, (unsigned char)255);
+   cvui::trackbarfloat(&myValue, (unsigned char)0, (unsigned char)255);
 
    Returns true when the value was modified, false otherwise
 */
@@ -797,9 +797,9 @@ namespace internal
 	void rect(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor);
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor);
 	bool trackbar(cvui_block_t &theBlock, int theX, int theY, long double *theValue, const TrackbarParams& theParams);
-	inline void trackbar_ForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue);
-	inline long double trackbar_XPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int xPixel);
-	inline int trackbar_ValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double value);
+	inline void trackbarForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue);
+	inline long double trackbarXPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int xPixel);
+	inline int trackbarValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double value);
 	inline double clamp01(double value);
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
