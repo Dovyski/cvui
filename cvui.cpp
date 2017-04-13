@@ -583,8 +583,9 @@ namespace render {
 
 		//Draw small steps
 		if (theParams.showSteps) {
-			for (double value = theParams.min; value <= theParams.max; value += theParams.step) {
-				int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, value);
+			// TODO: check min, max and step to prevent infinite loop.
+			for (long double aValue = theParams.min; aValue <= theParams.max; aValue += theParams.step) {
+				int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, aValue);
 				cv::Point aPoint1(aPixelX, aBarTopLeft.y);
 				cv::Point aPoint2(aPixelX, aBarTopLeft.y - 3);
 				cv::line(theBlock.where, aPoint1, aPoint2, aColor);
@@ -594,8 +595,9 @@ namespace render {
 		long double aSegmentLength = (long double)(theParams.max - theParams.min) / (long double)theParams.segments;
 
 		//Draw large steps and legends
-		for (double value = theParams.min; value <= theParams.max; value += aSegmentLength) {
-			int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, value);
+		for (long double aValue = theParams.min; aValue <= theParams.max; aValue += aSegmentLength) {
+			// TODO: check min, max and step to prevent infinite loop.
+			int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, aValue);
 			cv::Point aPoint1(aPixelX, aBarTopLeft.y);
 			cv::Point aPoint2(aPixelX, aBarTopLeft.y - 8);
 			cv::line(theBlock.where, aPoint1, aPoint2, aColor);
@@ -603,7 +605,7 @@ namespace render {
 			bool aShowSegmentLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_SEGMENT_LABELS) == false;
 
 			if (aShowSegmentLabels) {
-				sprintf_s(gBuffer, theParams.labelFormat.c_str(), value);
+				sprintf_s(gBuffer, theParams.labelFormat.c_str(), aValue);
 				cv::Point aTextPos(aPixelX, aBarTopLeft.y - 11);
 				putTextCentered(theBlock, aTextPos, gBuffer);
 			}
