@@ -701,10 +701,25 @@ void update();
 // Internally used to handle mouse events
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 
+// Compatibility macros to allow compilation with either OpenCV 2.x or OpenCV 3.x
+#if (CV_MAJOR_VERSION < 3)
+	#define CVUI_ANTIALISED CV_AA
+#else
+	#define CVUI_ANTIALISED cv::LINE_AA
+#endif
+#define CVUI_FILLED -1
+
+// Check for Windows-specific functions and react accordingly
+#if !defined(_MSC_VER)
+	#define vsprintf_s vsprintf
+	#define sprintf_s sprintf
+#endif
+
+// Check for Unix stuff
 #ifdef __GNUC__
-// just to remove the warning under gcc that is introduced by the VERSION variable below
-// (needed for those who compile with -Werror (make warning as errors)
-#pragma GCC diagnostic ignored "-Wunused-variable"
+	// just to remove the warning under gcc that is introduced by the VERSION variable below
+	// (needed for those who compile with -Werror (make warning as errors)
+	#pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
 // Lib version
@@ -716,6 +731,7 @@ const int DOWN = 2;
 const int CLICK = 3;
 const int OVER = 4;
 const int OUT = 5;
+const int IDLE = 6;
 
 // Constants regarding components
 const unsigned int TRACKBAR_HIDE_SEGMENT_LABELS = 1;
@@ -744,7 +760,6 @@ typedef struct {
 	std::string textBeforeShortcut;
 	std::string textAfterShortcut;
 } cvui_label_t;
-
 
 // Internal namespace with all code that is shared among components/functions
 namespace internal
@@ -849,16 +864,16 @@ namespace internal
 
 // Internal namespace that contains all rendering functions.
 namespace render {
-	const int IDLE = 0;
-	const int OVER = 1;
-	const int PRESSED = 2;
-
 	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor);
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel);
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize);
 	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage);
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue);
-	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, bool theMouseIsOver);
+	void trackbarHandle(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
+	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
+	void trackbarSteps(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
+	void trackbarSegments(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
+	void trackbar(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams);
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor);
 	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape);

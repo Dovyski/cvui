@@ -39,7 +39,7 @@ int main(int argc, const char *argv[])
 	cvui::init(WINDOW_NAME, 20);
 
 	while (true) {
-		frame = cv::Scalar(50, 50, 50);
+		frame = cv::Scalar(49, 52, 49);
 
 		cvui::beginColumn(frame, 20, 20, -1, -1, 6);
 			/**

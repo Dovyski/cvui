@@ -13,21 +13,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "cvui.h"
 
-// Compatibility macros : this enables to compile the code with either Opencv 2 or Opencv 3
-#define CVUI_Filled -1
-#if (CV_MAJOR_VERSION < 3)
-#define CVUI_Antialiased CV_AA
-#else
-#define CVUI_Antialiased cv::LINE_AA
-#endif
-
-
-#if !defined(_MSC_VER)
-// sprintf_s and vsprintf_s only work with Visual Studio !
-#define vsprintf_s vsprintf
-#define sprintf_s sprintf
-#endif
-
 namespace cvui
 {
 
@@ -273,17 +258,17 @@ namespace internal
 
 		if (aMouseIsOver) {
 			if (gMousePressed) {
-				render::button(theBlock, render::PRESSED, aRect, theLabel);
-				render::buttonLabel(theBlock, render::PRESSED, aRect, theLabel, aTextSize);
+				render::button(theBlock, cvui::DOWN, aRect, theLabel);
+				render::buttonLabel(theBlock, cvui::DOWN, aRect, theLabel, aTextSize);
 			}
 			else {
-				render::button(theBlock, render::OVER, aRect, theLabel);
-				render::buttonLabel(theBlock, render::OVER, aRect, theLabel, aTextSize);
+				render::button(theBlock, cvui::OVER, aRect, theLabel);
+				render::buttonLabel(theBlock, cvui::OVER, aRect, theLabel, aTextSize);
 			}
 		}
 		else {
-			render::button(theBlock, render::IDLE, aRect, theLabel);
-			render::buttonLabel(theBlock, render::IDLE, aRect, theLabel, aTextSize);
+			render::button(theBlock, cvui::IDLE, aRect, theLabel);
+			render::buttonLabel(theBlock, cvui::IDLE, aRect, theLabel, aTextSize);
 		}
 
 		// Update the layout flow according to button size
@@ -355,14 +340,14 @@ namespace internal
 		bool aMouseIsOver = aHitArea.contains(gMouse);
 
 		if (aMouseIsOver) {
-			render::checkbox(theBlock, render::OVER, aRect);
+			render::checkbox(theBlock, cvui::OVER, aRect);
 
 			if (gMouseJustReleased) {
 				*theState = !(*theState);
 			}
 		}
 		else {
-			render::checkbox(theBlock, render::IDLE, aRect);
+			render::checkbox(theBlock, cvui::IDLE, aRect);
 		}
 
 		render::checkboxLabel(theBlock, aRect, theLabel, aTextSize, theColor);
@@ -439,10 +424,11 @@ namespace internal
 		long double aValue = *theValue;
 		bool aMouseIsOver = aContentArea.contains(gMouse);
 
-		render::trackbar(theBlock, aContentArea, *theValue, theParams, aMouseIsOver);
+		render::trackbar(theBlock, aMouseIsOver ? OVER : OUT, aContentArea, *theValue, theParams);
 
 		if (gMousePressed && aMouseIsOver) {
 			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, gMouse.x);
+
 			if (bitsetHas(theParams.options, TRACKBAR_DISCRETE)) {
 				internal::trackbarForceValuesAsMultiplesOfSmallStep(theParams, theValue);
 			}
@@ -493,7 +479,7 @@ namespace internal
 // that actually render each one of the UI components
 namespace render {
 	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor) {
-		cv::putText(theBlock.where, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, internal::hexToScalar(theColor), 1, CVUI_Antialiased);
+		cv::putText(theBlock.where, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, internal::hexToScalar(theColor), 1, CVUI_ANTIALISED);
 	}
 
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, const cv::String& theLabel) {
@@ -506,15 +492,15 @@ namespace render {
 
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, theState == IDLE ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), CVUI_Filled);
+		cv::rectangle(theBlock.where, theShape, theState == IDLE ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), CVUI_FILLED);
 	}
 
 	int putText(cvui_block_t& theBlock, int theState, cv::Scalar aColor, const std::string& theText, const cv::Point & thePosition) {
-		double aFontSize = theState == PRESSED ? 0.39 : 0.4;
+		double aFontSize = theState == cvui::DOWN ? 0.39 : 0.4;
 		cv::Size aSize;
 
 		if (theText != "") {
-			cv::putText(theBlock.where, theText, thePosition, cv::FONT_HERSHEY_SIMPLEX, aFontSize, aColor, 1, CVUI_Antialiased);
+			cv::putText(theBlock.where, theText, thePosition, cv::FONT_HERSHEY_SIMPLEX, aFontSize, aColor, 1, CVUI_ANTIALISED);
 			aSize = cv::getTextSize(theText, cv::FONT_HERSHEY_SIMPLEX, aFontSize, 1, nullptr);
 		}
 
@@ -526,7 +512,7 @@ namespace render {
 
 		auto size = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, aFontScale, 1, nullptr);
 		cv::Point positionDecentered(position.x - size.width / 2, position.y);
-		cv::putText(theBlock.where, text, positionDecentered, cv::FONT_HERSHEY_SIMPLEX, aFontScale, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
+		cv::putText(theBlock.where, text, positionDecentered, cv::FONT_HERSHEY_SIMPLEX, aFontScale, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED);
 
 		return size.width;
 	};
@@ -552,7 +538,7 @@ namespace render {
 			aPos.x += aWidth;
 
 			putText(theBlock, theState, aColor, aLabel.textAfterShortcut, aPos);
-			cv::line(theBlock.where, cv::Point(aStart, aPos.y + 3), cv::Point(aEnd, aPos.y + 3), aColor, 1, CVUI_Antialiased);
+			cv::line(theBlock.where, cv::Point(aStart, aPos.y + 3), cv::Point(aEnd, aPos.y + 3), aColor, 1, CVUI_ANTIALISED);
 		}
 	}
 
@@ -561,17 +547,17 @@ namespace render {
 	}
 
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue) {
-		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29), CVUI_Filled); // fill
+		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29), CVUI_FILLED); // fill
 		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x45, 0x45, 0x45)); // border
 
 		cv::Size aTextSize = getTextSize(theValue, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 
 		cv::Point aPos(theShape.x + theShape.width / 2 - aTextSize.width / 2, theShape.y + aTextSize.height / 2 + theShape.height / 2);
-		cv::putText(theBlock.where, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
+		cv::putText(theBlock.where, theValue, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED);
 	}
 
-	void trackbarHandle(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
-		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + 20);
+	void trackbarHandle(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 		int aBarHeight = 7;
 
 		// Draw the rectangle representing the handle
@@ -582,9 +568,11 @@ namespace render {
 		cv::Point aPoint2(aPixelX + aIndicatorWidth, aBarTopLeft.y + aBarHeight + aIndicatorHeight);
 		cv::Rect aRect(aPoint1, aPoint2);
 
+		int aFillColor = theState == OVER ? 0x525252 : 0x424242;
+
 		rect(theBlock, aRect, 0x212121, 0x212121);
 		aRect.x += 1; aRect.y += 1; aRect.width -= 2; aRect.height -= 2;
-		rect(theBlock, aRect, 0x515151, 0x424242);
+		rect(theBlock, aRect, 0x515151, aFillColor);
 
 		// Draw the handle label
 		cv::Point aTextPos(aPixelX, aPoint2.y + 11);
@@ -592,17 +580,19 @@ namespace render {
 		putTextCentered(theBlock, aTextPos, gBuffer);
 	}
 
-	void trackbarPath(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
 		int aBarHeight = 7;
-		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + 20);
+		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 		cv::Rect aRect(aBarTopLeft, cv::Size(theWorkingArea.width, aBarHeight));
 
-		rect(theBlock, aRect, 0x3e3e3e, 0x292929);
+		int aBorderColor = theState == OVER ? 0x4e4e4e : 0x3e3e3e;
+
+		rect(theBlock, aRect, aBorderColor, 0x292929);
 		cv::line(theBlock.where, cv::Point(aRect.x + 1, aRect.y + aBarHeight - 2), cv::Point(aRect.x + aRect.width - 2, aRect.y + aBarHeight - 2), cv::Scalar(0x0e, 0x0e, 0x0e));
 	}
 
-	void trackbarSteps(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
-		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + 20);
+	void trackbarSteps(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 		cv::Scalar aColor(0x51, 0x51, 0x51);
 		long double aFixedStep = (theParams.max - theParams.min) / 20;
 
@@ -615,9 +605,9 @@ namespace render {
 		}
 	}
 
-	void trackbarSegments(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+	void trackbarSegments(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
 		long double aSegmentLength = (long double)(theParams.max - theParams.min) / (long double)theParams.segments;
-		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + 20);
+		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 		cv::Scalar aColor(0x51, 0x51, 0x51);
 
 		//Draw large steps and legends
@@ -638,21 +628,18 @@ namespace render {
 		}
 	}
 
-	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, bool theMouseIsOver) {
-		cv::Rect aShape(theShape.x + internal::gTrackbarMarginX, theShape.y, theShape.width - 2 * internal::gTrackbarMarginX, theShape.height);
-		cv::Point aBarTopLeft(aShape.x, aShape.y + 20);
-		int aBarHeight = 7;
+	void trackbar(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams) {
+		cv::Rect aWorkingArea(theShape.x + internal::gTrackbarMarginX, theShape.y, theShape.width - 2 * internal::gTrackbarMarginX, theShape.height);
 
-		trackbarPath(theBlock, theShape, theValue, theParams, aShape);
+		trackbarPath(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
 
 		bool aShowSteps = internal::bitsetHas(theParams.options, cvui::TRACKBAR_HIDE_STEPS) == false;
-
 		if (aShowSteps) {
-			trackbarSteps(theBlock, theShape, theValue, theParams, aShape);
+			trackbarSteps(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
 		}
 
-		trackbarSegments(theBlock, theShape, theValue, theParams, aShape);
-		trackbarHandle(theBlock, theShape, theValue, theParams, aShape);
+		trackbarSegments(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
+		trackbarHandle(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
 	}
 
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape) {
@@ -665,7 +652,7 @@ namespace render {
 
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29), CVUI_Filled);
+		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29), CVUI_FILLED);
 	}
 
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor) {
@@ -675,7 +662,7 @@ namespace render {
 
 	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape) {
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, cv::Scalar(0xFF, 0xBF, 0x75), CVUI_Filled);
+		cv::rectangle(theBlock.where, theShape, cv::Scalar(0xFF, 0xBF, 0x75), CVUI_FILLED);
 	}
 
 	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle) {
@@ -688,11 +675,11 @@ namespace render {
 		cv::rectangle(theBlock.where, theTitleBar, cv::Scalar(0x4A, 0x4A, 0x4A));
 		// then the inside
 		theTitleBar.x++; theTitleBar.y++; theTitleBar.width -= 2; theTitleBar.height -= 2;
-		cv::rectangle(theBlock.where, theTitleBar, cv::Scalar(0x21, 0x21, 0x21), CVUI_Filled);
+		cv::rectangle(theBlock.where, theTitleBar, cv::Scalar(0x21, 0x21, 0x21), CVUI_FILLED);
 
 		// Render title text.
 		cv::Point aPos(theTitleBar.x + 5, theTitleBar.y + 12);
-		cv::putText(theBlock.where, theTitle, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_Antialiased);
+		cv::putText(theBlock.where, theTitle, aPos, cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED);
 
 		// Render the body.
 		// First the border.
@@ -700,15 +687,15 @@ namespace render {
 
 		// Then the filling.
 		theContent.x++; theContent.y++; theContent.width -= 2; theContent.height -= 2;
-		cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_Filled);
+		cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_FILLED);
 
 		if (aTransparecy) {
 			theBlock.where.copyTo(aOverlay);
-			cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_Filled);
+			cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_FILLED);
 			cv::addWeighted(aOverlay, aAlpha, theBlock.where, 1.0 - aAlpha, 0.0, theBlock.where);
 
 		} else {
-			cv::rectangle(theBlock.where, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_Filled);
+			cv::rectangle(theBlock.where, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_FILLED);
 		}
 	}
 
@@ -719,11 +706,11 @@ namespace render {
 		bool aHasFilling = aFilling[3] != 0xff;
 
 		if (aHasFilling) {
-			cv::rectangle(theBlock.where, thePos, aFilling, CVUI_Filled, CVUI_Antialiased);
+			cv::rectangle(theBlock.where, thePos, aFilling, CVUI_FILLED, CVUI_ANTIALISED);
 		}
 
 		// Render the border
-		cv::rectangle(theBlock.where, thePos, aBorder, 1, CVUI_Antialiased);
+		cv::rectangle(theBlock.where, thePos, aBorder, 1, CVUI_ANTIALISED);
 	}
 
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor) {
@@ -991,7 +978,5 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 		gMousePressed = false;
 	}
 }
-
-
 
 } // namespace cvui
