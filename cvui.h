@@ -197,7 +197,7 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
  \sa printf()
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, int theDecimals = 1,	int theSegments = 1, T theStep = -1., unsigned int theOptions = 0);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, int theDecimals = 1, int theSegments = 1, T theStep = -1., const char *theLabelFormat = "%.1lf", unsigned int theOptions = 0);
 
 /**
  Display a window (a block with a title and a body).
@@ -638,7 +638,7 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
    Returns true when the value was modified, false otherwise
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(int theWidth, T *theValue, T theMin, T theMax, int theDecimals = 1, int theSegments = 1, T theStep = -1., unsigned int theOptions = 0);
+bool trackbar(int theWidth, T *theValue, T theMin, T theMax, int theDecimals = 1, int theSegments = 1, T theStep = -1., const char *theLabelFormat = "%.1lf", unsigned int theOptions = 0);
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
@@ -805,7 +805,7 @@ namespace internal
 	cv::Scalar hexToScalar(unsigned int theColor);
 
 	template <typename T> // T can be any floating point type (float, double, long double)
-	TrackbarParams makeTrackbarParams(T min, T max, int theDecimals = 1, int theSegments = 1, T theStep = -1., unsigned int theOptions = 0);
+	TrackbarParams makeTrackbarParams(T min, T max, int theDecimals = 1, int theSegments = 1, T theStep = -1., unsigned int theOptions = 0, const char *theFormat = "%.1lf");
 
 	template<typename T>
 	bool trackbar(T *theValue, const TrackbarParams& theParams);
@@ -814,7 +814,7 @@ namespace internal
 	bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, const TrackbarParams& theParams);
 
 	template<typename num_type>
-	TrackbarParams makeTrackbarParams(num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, unsigned int theOptions) {
+	TrackbarParams makeTrackbarParams(num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, unsigned int theOptions, const char *theLabelFormat) {
 		TrackbarParams aParams;
 
 		aParams.min = (long double)theMin;
@@ -822,6 +822,7 @@ namespace internal
 		aParams.step = (long double)theStep;
 		aParams.options = theOptions;
 		aParams.segments = theSegments;
+		aParams.labelFormat = theLabelFormat;
 
 		if (theStep < 0) {
 			aParams.step = pow(10., -theDecimals);
@@ -830,13 +831,6 @@ namespace internal
 		int aStepsCount = (int)((aParams.max - aParams.min) / aParams.step);
 
 		// TODO: force show steps here by testing aParams.step > 0 && aStepsCount < 50
-
-		int nbSignsBeforeDecimals = (int)(log((double)theMax) / log(10.)) + 1;
-		int totalSigns = nbSignsBeforeDecimals + 1 + theDecimals;
-		
-		std::stringstream aFormat;
-		aFormat << "%" << totalSigns << "." << theDecimals << "lf";
-		aParams.labelFormat = aFormat.str();
 		
 		return aParams;
 	}
@@ -888,14 +882,14 @@ namespace render {
 }
 
 template <typename num_type>
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, unsigned int theOptions) {
-	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDecimals, theSegments, theStep, theOptions);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, const char *theLabelFormat, unsigned int theOptions) {
+	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDecimals, theSegments, theStep, theOptions, theLabelFormat);
 	return trackbar<num_type>(theWhere, theX, theY, theWidth, theValue, aParams);
 }
 
 template <typename num_type>
-bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, unsigned int theOptions) {
-	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDecimals, theSegments, theStep, theOptions);
+bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theDecimals, int theSegments, num_type theStep, const char *theLabelFormat, unsigned int theOptions) {
+	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDecimals, theSegments, theStep, theOptions, theLabelFormat);
 	return trackbar<num_type>(theWidth, theValue, aParams);
 }
 
