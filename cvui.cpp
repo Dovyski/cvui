@@ -601,28 +601,24 @@ namespace render {
 		cv::line(theBlock.where, cv::Point(aRect.x + 1, aRect.y + aBarHeight - 2), cv::Point(aRect.x + aRect.width - 2, aRect.y + aBarHeight - 2), cv::Scalar(0x0e, 0x0e, 0x0e));
 	}
 
-	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, bool theMouseIsOver) {
-		cv::Rect aShape(theShape.x + internal::gTrackbarMarginX, theShape.y, theShape.width - 2 * internal::gTrackbarMarginX, theShape.height);
-		auto aColor = theMouseIsOver ? cv::Scalar(200, 200, 200) : cv::Scalar(150, 150, 150);
+	void trackbarSteps(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + 20);
+		cv::Scalar aColor(0x51, 0x51, 0x51);
+		long double aFixedStep = (theParams.max - theParams.min) / 20;
 
-		cv::Point aBarTopLeft(aShape.x, aShape.y + 20);
-		int aBarHeight = 7;
-
-		// Draw bar
-		trackbarPath(theBlock, theShape, theValue, theParams, aShape);
-
-		//Draw small steps
-		if (theParams.showSteps) {
-			// TODO: check min, max and step to prevent infinite loop.
-			for (long double aValue = theParams.min; aValue <= theParams.max; aValue += theParams.step) {
-				int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, aValue);
-				cv::Point aPoint1(aPixelX, aBarTopLeft.y);
-				cv::Point aPoint2(aPixelX, aBarTopLeft.y - 3);
-				cv::line(theBlock.where, aPoint1, aPoint2, aColor);
-			}
+		// TODO: check min, max and step to prevent infinite loop.
+		for (long double aValue = theParams.min; aValue <= theParams.max; aValue += aFixedStep) {
+			int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, aValue);
+			cv::Point aPoint1(aPixelX, aBarTopLeft.y);
+			cv::Point aPoint2(aPixelX, aBarTopLeft.y - 3);
+			cv::line(theBlock.where, aPoint1, aPoint2, aColor);
 		}
+	}
 
+	void trackbarSegments(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
 		long double aSegmentLength = (long double)(theParams.max - theParams.min) / (long double)theParams.segments;
+		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + 20);
+		cv::Scalar aColor(0x51, 0x51, 0x51);
 
 		//Draw large steps and legends
 		for (long double aValue = theParams.min; aValue <= theParams.max; aValue += aSegmentLength) {
@@ -640,7 +636,22 @@ namespace render {
 				putTextCentered(theBlock, aTextPos, gBuffer);
 			}
 		}
+	}
 
+	void trackbar(cvui_block_t& theBlock, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, bool theMouseIsOver) {
+		cv::Rect aShape(theShape.x + internal::gTrackbarMarginX, theShape.y, theShape.width - 2 * internal::gTrackbarMarginX, theShape.height);
+		cv::Point aBarTopLeft(aShape.x, aShape.y + 20);
+		int aBarHeight = 7;
+
+		trackbarPath(theBlock, theShape, theValue, theParams, aShape);
+
+		bool aShowSteps = internal::bitsetHas(theParams.options, cvui::TRACKBAR_HIDE_STEPS) == false;
+
+		if (aShowSteps) {
+			trackbarSteps(theBlock, theShape, theValue, theParams, aShape);
+		}
+
+		trackbarSegments(theBlock, theShape, theValue, theParams, aShape);
 		trackbarHandle(theBlock, theShape, theValue, theParams, aShape);
 	}
 

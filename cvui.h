@@ -755,9 +755,6 @@ namespace internal
 		long double step;
 		int segments;
 		unsigned int options;
-		bool discrete;
-		bool showSegmentLabels;
-		bool showSteps;
 		std::string labelFormat;
 
 		inline TrackbarParams()
@@ -823,11 +820,7 @@ namespace internal
 		aParams.options = theOptions;
 		aParams.segments = theSegments;
 		aParams.labelFormat = theLabelFormat;
-
-		//int aStepsCount = (int)((aParams.max - aParams.min) / aParams.step);
-
-		// TODO: force show steps here by testing aParams.step > 0 && aStepsCount < 50
-		
+	
 		return aParams;
 	}
 
