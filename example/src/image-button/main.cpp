@@ -37,6 +37,7 @@ int main(int argc, const char *argv[])
 		if (cvui::button(frame, 200, 80, out, over, down)) {
 			std::cout << "Image button clicked!" << std::endl;
 		}
+		cvui::text(frame, 150, 200, "This image behaves as a button");
 
 		// Render a regular button.
 		if (cvui::button(frame, 360, 80, "Button")) {
