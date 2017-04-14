@@ -605,7 +605,9 @@ namespace render {
 	void trackbarSteps(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
 		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 		cv::Scalar aColor(0x51, 0x51, 0x51);
-		long double aFixedStep = (theParams.max - theParams.min) / 20;
+
+		bool aDiscrete = internal::bitsetHas(theParams.options, cvui::TRACKBAR_DISCRETE);
+		long double aFixedStep = aDiscrete ? theParams.step : (theParams.max - theParams.min) / 20;
 
 		// TODO: check min, max and step to prevent infinite loop.
 		for (long double aValue = theParams.min; aValue <= theParams.max; aValue += aFixedStep) {
