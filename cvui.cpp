@@ -16,15 +16,6 @@
 namespace cvui
 {
 
-// Variables to keep track of mouse events and stuff
-static bool gMouseJustReleased = false;
-static bool gMousePressed = false;
-static cv::Point gMouse;
-static char gBuffer[1024];
-static int gLastKeyPressed;
-static int gDelayWaitKey;
-cvui_block_t gScreen;
-
 // This is an internal namespace with all code
 // that is shared among components/functions
 namespace internal
@@ -190,6 +181,22 @@ namespace internal
 		return cv::Scalar(aBlue, aGreen, aRed, aAlpha);
 	}
 
+	void resetRenderingBuffer(cvui_block_t& theScreen) {
+		theScreen.rect.x = 0;
+		theScreen.rect.y = 0;
+		theScreen.rect.width = 0;
+		theScreen.rect.height = 0;
+
+		theScreen.fill = theScreen.rect;
+		theScreen.fill.width = 0;
+		theScreen.fill.height = 0;
+
+		theScreen.anchor.x = 0;
+		theScreen.anchor.y = 0;
+
+		theScreen.padding = 0;
+	}
+
 
 	inline double clamp01(double value)
 	{
@@ -228,10 +235,10 @@ namespace internal
 		int aRet = cvui::OUT;
 
 		// Check if the mouse is over the interaction area.
-		bool aMouseIsOver = cv::Rect(theX, theY, theWidth, theHeight).contains(gMouse);
+		bool aMouseIsOver = cv::Rect(theX, theY, theWidth, theHeight).contains(internal::gMouse);
 
 		if (aMouseIsOver) {
-			if (gMousePressed) {
+			if (internal::gMousePressed) {
 				aRet = cvui::DOWN;
 			} else {
 				aRet = cvui::OVER;
@@ -239,7 +246,7 @@ namespace internal
 		}
 
 		// Tell if the button was clicked or not
-		if (aMouseIsOver && gMouseJustReleased) {
+		if (aMouseIsOver && internal::gMouseJustReleased) {
 			aRet = cvui::CLICK;
 		}
 
@@ -254,10 +261,10 @@ namespace internal
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
 
 		// Check the state of the button (idle, pressed, etc.)
-		bool aMouseIsOver = aRect.contains(gMouse);
+		bool aMouseIsOver = aRect.contains(internal::gMouse);
 
 		if (aMouseIsOver) {
-			if (gMousePressed) {
+			if (internal::gMousePressed) {
 				render::button(theBlock, cvui::DOWN, aRect, theLabel);
 				render::buttonLabel(theBlock, cvui::DOWN, aRect, theLabel, aTextSize);
 			}
@@ -281,16 +288,16 @@ namespace internal
 		bool wasShortcutPressed = false;
 
 		//Handle keyboard shortcuts
-		if (gLastKeyPressed != -1) {
+		if (internal::gLastKeyPressed != -1) {
 			// TODO: replace with something like strpos(). I think it has better performance.
 			auto aLabel = internal::createLabel(theLabel);
-			if (aLabel.hasShortcut && (tolower(aLabel.shortcut) == tolower((char)gLastKeyPressed))) {
+			if (aLabel.hasShortcut && (tolower(aLabel.shortcut) == tolower((char)internal::gLastKeyPressed))) {
 				wasShortcutPressed = true;
 			}
 		}
 
 		// Tell if the button was clicked or not
-		return ( aMouseIsOver && gMouseJustReleased ) || wasShortcutPressed;
+		return ( aMouseIsOver && internal::gMouseJustReleased ) || wasShortcutPressed;
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel) {
@@ -337,12 +344,12 @@ namespace internal
 		cv::Rect aRect(theX, theY, 15, 15);
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 		cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width + 6, aRect.height);
-		bool aMouseIsOver = aHitArea.contains(gMouse);
+		bool aMouseIsOver = aHitArea.contains(internal::gMouse);
 
 		if (aMouseIsOver) {
 			render::checkbox(theBlock, cvui::OVER, aRect);
 
-			if (gMouseJustReleased) {
+			if (internal::gMouseJustReleased) {
 				*theState = !(*theState);
 			}
 		}
@@ -384,8 +391,8 @@ namespace internal
 			*theValue -= theStep;
 		}
 
-		sprintf_s(gBuffer, theFormat, *theValue);
-		render::counter(theBlock, aContentArea, gBuffer);
+		sprintf_s(internal::gBuffer, theFormat, *theValue);
+		render::counter(theBlock, aContentArea, internal::gBuffer);
 
 		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, 22, 22, "+", false)) {
 			*theValue += theStep;
@@ -405,8 +412,8 @@ namespace internal
 			*theValue -= theStep;
 		}
 
-		sprintf_s(gBuffer, theFormat, *theValue);
-		render::counter(theBlock, aContentArea, gBuffer);
+		sprintf_s(internal::gBuffer, theFormat, *theValue);
+		render::counter(theBlock, aContentArea, internal::gBuffer);
 
 		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, 22, 22, "+", false)) {
 			*theValue += theStep;
@@ -422,12 +429,12 @@ namespace internal
 	bool trackbar(cvui_block_t& theBlock, int theX, int theY, int theWidth, long double *theValue, const TrackbarParams & theParams) {
 		cv::Rect aContentArea(theX, theY, theWidth, 45);
 		long double aValue = *theValue;
-		bool aMouseIsOver = aContentArea.contains(gMouse);
+		bool aMouseIsOver = aContentArea.contains(internal::gMouse);
 
 		render::trackbar(theBlock, aMouseIsOver ? OVER : OUT, aContentArea, *theValue, theParams);
 
-		if (gMousePressed && aMouseIsOver) {
-			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, gMouse.x);
+		if (internal::gMousePressed && aMouseIsOver) {
+			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, internal::gMouse.x);
 
 			if (bitsetHas(theParams.options, TRACKBAR_DISCRETE)) {
 				internal::trackbarForceValuesAsMultiplesOfSmallStep(theParams, theValue);
@@ -579,8 +586,8 @@ namespace render {
 		// Draw the handle label
 		if (aShowLabel) {
 			cv::Point aTextPos(aPixelX, aPoint2.y + 11);
-			sprintf_s(gBuffer, theParams.labelFormat.c_str(), theValue);
-			putTextCentered(theBlock, aTextPos, gBuffer);
+			sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), theValue);
+			putTextCentered(theBlock, aTextPos, internal::gBuffer);
 		}
 	}
 
@@ -630,9 +637,9 @@ namespace render {
 			bool aHasMinMaxLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_MIN_MAX_LABELS) == false;
 
 			if (((aIsFirst || aIsLast) && aHasMinMaxLabels) || (aHasSegmentLabels && !aIsFirst && !aIsLast)) {
-				sprintf_s(gBuffer, theParams.labelFormat.c_str(), aValue);
+				sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), aValue);
 				cv::Point aTextPos(aPixelX, aBarTopLeft.y - 11);
-				putTextCentered(theBlock, aTextPos, gBuffer);
+				putTextCentered(theBlock, aTextPos, internal::gBuffer);
 			}
 		}
 	}
@@ -752,90 +759,90 @@ namespace render {
 
 void init(const cv::String& theWindowName, int theDelayWaitKey) {
 	cv::setMouseCallback(theWindowName, handleMouse, NULL);
-	gDelayWaitKey = theDelayWaitKey;
-	gLastKeyPressed = -1;
+	internal::gDelayWaitKey = theDelayWaitKey;
+	internal::gLastKeyPressed = -1;
 	//TODO: init gScreen here?
 }
 
 int lastKeyPressed() {
-	return gLastKeyPressed;
+	return internal::gLastKeyPressed;
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
-	gScreen.where = theWhere;
-	return internal::button(gScreen, theX, theY, theLabel);
+	internal::gScreen.where = theWhere;
+	return internal::button(internal::gScreen, theX, theY, theLabel);
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel) {
-	gScreen.where = theWhere;
-	return internal::button(gScreen, theX, theY, theWidth, theHeight, theLabel, true);
+	internal::gScreen.where = theWhere;
+	return internal::button(internal::gScreen, theX, theY, theWidth, theHeight, theLabel, true);
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown) {
-	gScreen.where = theWhere;
-	return internal::button(gScreen, theX, theY, theIdle, theOver, theDown, true);
+	internal::gScreen.where = theWhere;
+	return internal::button(internal::gScreen, theX, theY, theIdle, theOver, theDown, true);
 }
 
 void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage) {
-	gScreen.where = theWhere;
-	return internal::image(gScreen, theX, theY, theImage);
+	internal::gScreen.where = theWhere;
+	return internal::image(internal::gScreen, theX, theY, theImage);
 }
 
 bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
-	gScreen.where = theWhere;
-	return internal::checkbox(gScreen, theX, theY, theLabel, theState, theColor);
+	internal::gScreen.where = theWhere;
+	return internal::checkbox(internal::gScreen, theX, theY, theLabel, theState, theColor);
 }
 
 void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor) {
-	gScreen.where = theWhere;
-	internal::text(gScreen, theX, theY, theText, theFontScale, theColor, true);
+	internal::gScreen.where = theWhere;
+	internal::text(internal::gScreen, theX, theY, theText, theFontScale, theColor, true);
 }
 
 void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned int theColor, const char *theFmt, ...) {
 	va_list aArgs;
 
 	va_start(aArgs, theFmt);
-	vsprintf_s(gBuffer, theFmt, aArgs);
+	vsprintf_s(internal::gBuffer, theFmt, aArgs);
 	va_end(aArgs);
 
-	gScreen.where = theWhere;
-	internal::text(gScreen, theX, theY, gBuffer, theFontScale, theColor, true);
+	internal::gScreen.where = theWhere;
+	internal::text(internal::gScreen, theX, theY, internal::gBuffer, theFontScale, theColor, true);
 }
 
 void printf(cv::Mat& theWhere, int theX, int theY, const char *theFmt, ...) {
 	va_list aArgs;
 
 	va_start(aArgs, theFmt);
-	vsprintf_s(gBuffer, theFmt, aArgs);
+	vsprintf_s(internal::gBuffer, theFmt, aArgs);
 	va_end(aArgs);
 
-	gScreen.where = theWhere;
-	internal::text(gScreen, theX, theY, gBuffer, 0.4, 0xCECECE, true);
+	internal::gScreen.where = theWhere;
+	internal::text(internal::gScreen, theX, theY, internal::gBuffer, 0.4, 0xCECECE, true);
 }
 
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep, const char *theFormat) {
-	gScreen.where = theWhere;
-	return internal::counter(gScreen, theX, theY, theValue, theStep, theFormat);
+	internal::gScreen.where = theWhere;
+	return internal::counter(internal::gScreen, theX, theY, theValue, theStep, theFormat);
 }
 
 double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep, const char *theFormat) {
-	gScreen.where = theWhere;
-	return internal::counter(gScreen, theX, theY, theValue, theStep, theFormat);
+	internal::gScreen.where = theWhere;
+	return internal::counter(internal::gScreen, theX, theY, theValue, theStep, theFormat);
 }
 
 void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle) {
-	gScreen.where = theWhere;
-	internal::window(gScreen, theX, theY, theWidth, theHeight, theTitle);
+	internal::gScreen.where = theWhere;
+	internal::window(internal::gScreen, theX, theY, theWidth, theHeight, theTitle);
 }
 
 void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor) {
-	gScreen.where = theWhere;
-	internal::rect(gScreen, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor);
+	internal::gScreen.where = theWhere;
+	internal::rect(internal::gScreen, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor);
 }
 
 void sparkline(cv::Mat& theWhere, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
-	gScreen.where = theWhere;
-	internal::sparkline(gScreen, theValues, theX, theY, theWidth, theHeight, theColor);
+	internal::gScreen.where = theWhere;
+	internal::sparkline(internal::gScreen, theValues, theX, theY, theWidth, theHeight, theColor);
 }
 
 int iarea(int theX, int theY, int theWidth, int theHeight) {
@@ -910,10 +917,10 @@ void printf(double theFontScale, unsigned int theColor, const char *theFmt, ...)
 	va_list aArgs;
 
 	va_start(aArgs, theFmt);
-	vsprintf_s(gBuffer, theFmt, aArgs);
+	vsprintf_s(internal::gBuffer, theFmt, aArgs);
 	va_end(aArgs);
 
-	internal::text(aBlock, aBlock.anchor.x, aBlock.anchor.y, gBuffer, theFontScale, theColor, true);
+	internal::text(aBlock, aBlock.anchor.x, aBlock.anchor.y, internal::gBuffer, theFontScale, theColor, true);
 }
 
 void printf(const char *theFmt, ...) {
@@ -921,10 +928,10 @@ void printf(const char *theFmt, ...) {
 	va_list aArgs;
 
 	va_start(aArgs, theFmt);
-	vsprintf_s(gBuffer, theFmt, aArgs);
+	vsprintf_s(internal::gBuffer, theFmt, aArgs);
 	va_end(aArgs);
 
-	internal::text(aBlock, aBlock.anchor.x, aBlock.anchor.y, gBuffer, 0.4, 0xCECECE, true);
+	internal::text(aBlock, aBlock.anchor.x, aBlock.anchor.y, internal::gBuffer, 0.4, 0xCECECE, true);
 }
 
 int counter(int *theValue, int theStep, const char *theFormat) {
@@ -953,26 +960,14 @@ void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsi
 }
 
 void update() {
-	gMouseJustReleased = false;
+	internal::gMouseJustReleased = false;
 
-	gScreen.rect.x = 0;
-	gScreen.rect.y = 0;
-	gScreen.rect.width = 0;
-	gScreen.rect.height = 0;
-
-	gScreen.fill = gScreen.rect;
-	gScreen.fill.width = 0;
-	gScreen.fill.height = 0;
-
-	gScreen.anchor.x = 0;
-	gScreen.anchor.y = 0;
-
-	gScreen.padding = 0;
+	internal::resetRenderingBuffer(internal::gScreen);
 
 	// If we were told to keep track of the keyboard shortcuts, we
 	// proceed to handle opencv event queue.
-	if (gDelayWaitKey > 0) {
-		gLastKeyPressed = cv::waitKey(gDelayWaitKey);
+	if (internal::gDelayWaitKey > 0) {
+		internal::gLastKeyPressed = cv::waitKey(internal::gDelayWaitKey);
 	}
 
 	if (!internal::blockStackEmpty()) {
@@ -981,15 +976,15 @@ void update() {
 }
 
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
-	gMouse.x = theX;
-	gMouse.y = theY;
+	internal::gMouse.x = theX;
+	internal::gMouse.y = theY;
 
 	if (theEvent == cv::EVENT_LBUTTONDOWN || theEvent == cv::EVENT_RBUTTONDOWN)	{
-		gMousePressed = true;
+		internal::gMousePressed = true;
 
 	} else if (theEvent == cv::EVENT_LBUTTONUP || theEvent == cv::EVENT_RBUTTONUP)	{
-		gMouseJustReleased = true;
-		gMousePressed = false;
+		internal::gMouseJustReleased = true;
+		internal::gMousePressed = false;
 	}
 }
 

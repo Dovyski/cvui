@@ -764,9 +764,19 @@ typedef struct {
 	std::string textAfterShortcut;
 } cvui_label_t;
 
-// Internal namespace with all code that is shared among components/functions
+// Internal namespace with all code that is shared among components/functions.
+// You should probably not be using anything from here.
 namespace internal
 {
+	// Variables to keep track of mouse events and stuff
+	static bool gMouseJustReleased = false;
+	static bool gMousePressed = false;
+	static cv::Point gMouse;
+	static char gBuffer[1024];
+	static int gLastKeyPressed;
+	static int gDelayWaitKey;
+	static cvui_block_t gScreen;
+
 	struct TrackbarParams {
 		long double min;
 		long double max;
@@ -818,6 +828,7 @@ namespace internal
 	inline double clamp01(double value);
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
+	void resetRenderingBuffer(cvui_block_t& theScreen);
 
 	template <typename T> // T can be any floating point type (float, double, long double)
 	TrackbarParams makeTrackbarParams(T min, T max, int theDecimals = 1, int theSegments = 1, T theStep = -1., unsigned int theOptions = 0, const char *theFormat = "%.1lf");
@@ -843,7 +854,7 @@ namespace internal
 	}
 
 	template <typename num_type>
-	bool trackbar(int theWidth, num_type *theValue, const TrackbarParams & theParams) {
+	bool trackbar(int theWidth, num_type *theValue, const TrackbarParams& theParams) {
 		cvui_block_t& aBlock = internal::topBlock();
 
 		long double aValueAsDouble = static_cast<long double>(*theValue);
@@ -854,9 +865,9 @@ namespace internal
 	}
 
 	template <typename num_type>
-	bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, const TrackbarParams & theParams) {
+	bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, const TrackbarParams& theParams) {
 		gScreen.where = theWhere;
-		
+
 		long double aValueAsDouble = static_cast<long double>(*theValue);
 		bool aResult = internal::trackbar(gScreen, theX, theY, theWidth, &aValueAsDouble, theParams);
 		*theValue = static_cast<num_type>(aValueAsDouble);
