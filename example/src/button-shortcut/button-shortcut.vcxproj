@@ -14,6 +14,9 @@
     <ClCompile Include="..\..\..\cvui.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGUID>{2CDEA893-4F0A-42CF-8052-4FC7F64B754E}</ProjectGUID>
     <RootNamespace>facedetect</RootNamespace>
