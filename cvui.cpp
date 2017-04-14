@@ -616,31 +616,44 @@ namespace render {
 		}
 	}
 
-	void trackbarSegments(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
-		long double aSegmentLength = (long double)(theParams.max - theParams.min) / (long double)theParams.segments;
-		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
+	void trackbarSegmentLabel(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, long double theValue, cv::Rect& theWorkingArea) {
 		cv::Scalar aColor(0x51, 0x51, 0x51);
+		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 
-		//Draw large steps and legends
-		for (long double aValue = theParams.min; aValue <= theParams.max; aValue += aSegmentLength) {
-			// TODO: check min, max and step to prevent infinite loop.
-			int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, aValue);
-			cv::Point aPoint1(aPixelX, aBarTopLeft.y);
-			cv::Point aPoint2(aPixelX, aBarTopLeft.y - 8);
-			cv::line(theBlock.where, aPoint1, aPoint2, aColor);
+		int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, theValue);
 
-			// TODO: better compare doubles. E.g.  fabs(a - b) < EPSILON
-			bool aIsFirst = aValue <= theParams.min;
-			bool aIsLast = aValue + aSegmentLength > theParams.max;
+		cv::Point aPoint1(aPixelX, aBarTopLeft.y);
+		cv::Point aPoint2(aPixelX, aBarTopLeft.y - 8);
+		cv::line(theBlock.where, aPoint1, aPoint2, aColor);
+
+		sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), theValue);
+		cv::Point aTextPos(aPixelX, aBarTopLeft.y - 11);
+		putTextCentered(theBlock, aTextPos, internal::gBuffer);
+	}
+
+	void trackbarSegments(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+		int aSegments = theParams.segments < 1 ? 1 : theParams.segments;
+		long double aSegmentLength = (long double)(theParams.max - theParams.min) / (long double)aSegments;
 		
-			bool aHasSegmentLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_SEGMENT_LABELS) == false;
-			bool aHasMinMaxLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_MIN_MAX_LABELS) == false;
+		bool aHasMinMaxLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_MIN_MAX_LABELS) == false;
 
-			if (((aIsFirst || aIsLast) && aHasMinMaxLabels) || (aHasSegmentLabels && !aIsFirst && !aIsLast)) {
-				sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), aValue);
-				cv::Point aTextPos(aPixelX, aBarTopLeft.y - 11);
-				putTextCentered(theBlock, aTextPos, internal::gBuffer);
+		// Render the min value label
+		if (aHasMinMaxLabels) {
+			trackbarSegmentLabel(theBlock, theShape, theParams, theParams.min, theWorkingArea);
+		}
+
+		//Draw large steps and labels
+		bool aHasSegmentLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_SEGMENT_LABELS) == false;
+		if (aHasSegmentLabels) {
+			// TODO: check min, max and step to prevent infinite loop.
+			for (long double aValue = theParams.min; aValue <= theParams.max; aValue += aSegmentLength) {
+				trackbarSegmentLabel(theBlock, theShape, theParams, aValue, theWorkingArea);
 			}
+		}
+
+		// Render the min value label
+		if (aHasMinMaxLabels) {
+			trackbarSegmentLabel(theBlock, theShape, theParams, theParams.max, theWorkingArea);
 		}
 	}
 

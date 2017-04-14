@@ -886,6 +886,7 @@ namespace render {
 	void trackbarHandle(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
 	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
 	void trackbarSteps(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
+	void trackbarSegmentLabel(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, long double theValue, cv::Rect& theWorkingArea);
 	void trackbarSegments(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
 	void trackbar(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams);
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
