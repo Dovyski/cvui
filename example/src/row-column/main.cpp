@@ -37,7 +37,7 @@ int main(int argc, const char *argv[])
 	// Create variables used by some components
 	std::vector<double> values;
 	bool checked = false;
-	double value = 1.0;
+	double value = 1.0, value2 = 1.0, value3 = 1.0;
 	int padding = 10;
 	cv::Mat img = cv::imread("./lena-face.jpg", cv::IMREAD_COLOR);
 	cv::Mat imgRed = cv::imread("./lena-face-red.jpg", cv::IMREAD_COLOR);
@@ -92,10 +92,19 @@ int main(int argc, const char *argv[])
 			cvui::printf("with 50px padding.");
 		cvui::endRow();
 
+		// Another row mixing several components 
+		cvui::beginRow(frame, 10, 250, 100, 50);
+			cvui::text("This is ");
+			cvui::printf("another row with a trackbar ");
+			cvui::trackbar(150, &value2, 0., 5., 0.1);
+			cvui::printf(" and a button ");
+			cvui::button(100, 30, "button");
+		cvui::endRow();
+
 		// In a column, all added elements are vertically placed,
 		// one below the other, from top to bottom. Let's create
 		// a column at (50, 300) with width 100 and height 200.
-		cvui::beginColumn(frame, 50, 300, 100, 200);
+		cvui::beginColumn(frame, 50, 330, 100, 200);
 			cvui::text("Column 1 (no padding)");
 			cvui::button("button1");
 			cvui::button("button2");
@@ -105,20 +114,12 @@ int main(int argc, const char *argv[])
 		// Here is another column, using a padding value of 10,
 		// which will add an space of 10px between each component.
 		padding = 10;
-		cvui::beginColumn(frame, 300, 300, 100, 200, padding);
+		cvui::beginColumn(frame, 300, 330, 100, 200, padding);
 			cvui::text("Column 2 (padding = 10)");
 			cvui::button("button1");
 			cvui::button("button2");
-
-			static double value = 2.25;
-			cvui::TrackbarParams params;
-			params.MinimumValue = 0.; params.MaximumValue = 5;
-			params.LargeStep = 1.; params.SmallStep = 0.25;
-			params.Printf_Format = "%3.2lf";
-			params.ForceValuesAsMultiplesOfSmallStep = true;
-			cvui::trackbar(&value, params);
-
-		cvui::text("End of column 2");
+			cvui::trackbar(150, &value3, 0., 5., 0.25, 2, "%3.2lf", cvui::TRACKBAR_DISCRETE);
+			cvui::text("End of column 2");
 		cvui::endColumn();
 
 		// You can also add an arbitrary amount of space between
@@ -128,7 +129,7 @@ int main(int argc, const char *argv[])
 		// within a beginColumn()/endColumn() block, the space will
 		// be vertical. If it is used within a beginRow()/endRow()
 		// block, space will be horizontal.
-		cvui::beginColumn(frame, 550, 300, 100, 200);
+		cvui::beginColumn(frame, 550, 330, 100, 200);
 			cvui::text("Column 3 (use space)");
 			// Add 5 pixels of (vertical) space.
 			cvui::space(5);

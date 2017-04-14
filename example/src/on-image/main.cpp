@@ -1,8 +1,6 @@
 /*
 This is a demo application to showcase the UI components of cvui.
-
-Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
-Licensed under the MIT license.
+Author: Pascal Thomet
 */
 
 #include <iostream>
@@ -17,9 +15,10 @@ Licensed under the MIT license.
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat frame_orig = cv::imread("lena.jpg");
-	cv::Mat frame = frame_orig.clone();
+	cv::Mat lena = cv::imread("lena.jpg");
+	cv::Mat frame = lena.clone();
 	cv::Mat doubleBuffer = frame.clone();
+	int trackbarWidth = 130;
 
 	// Init a OpenCV window and tell cvui to use it.
 	// If cv::namedWindow() is not used, mouse events will
@@ -44,83 +43,77 @@ int main(int argc, const char *argv[])
 			break;
 		}
 
-		//Quick info about the Tracbar params
-		//double MinimumValue, MaximumValue : self-explanatory
-		//double SmallStep, LargeStep : steps at which smaller and larger ticks are drawn
-		//bool ForceValuesAsMultiplesOfSmallStep : we can enforce the value to be a multiple of the small step
-		//bool DrawValuesAtLargeSteps : draw value at large steps
-		//string Printf_Format : printf format string of the value
-		//string Printf_Format_Steps : printf format string of the steps (will be replaced by Printf_Format if empty)
-		cvui::TrackbarParams colorTrackbarParams;
-		colorTrackbarParams.MinimumValue = 0.;
-		colorTrackbarParams.MaximumValue = 2.;
-		colorTrackbarParams.LargeStep = 0.5;
-		colorTrackbarParams.SmallStep = 0.1;
-		colorTrackbarParams.Printf_Format = "%3.02lf";
-		colorTrackbarParams.Printf_Format_Steps = "%3.02lf";
-		colorTrackbarParams.ForceValuesAsMultiplesOfSmallStep = false;
-
-		//
 		// RGB HUD
-		//
+		cvui::window(frame, 20, 50, 180, 240, "RGB adjust");
 
-		// Window components are useful to create HUDs and similars. At the
-		// moment, there is no implementation to constraint content within a
-		// a window.
-		cvui::window(frame, 20, 50, 180, 220, "RGB adjust");
-
-		// In a columns, all added elements are
-		// vertically placed, one under the other (from top to bottom)
-		//
 		// Within the cvui::beginColumns() and cvui::endColumn(),
 		// all elements will be automatically positioned by cvui.
+		// In a columns, all added elements are vertically placed,
+		// one under the other (from top to bottom).
 		//
 		// Notice that all component calls within the begin/end block
-		// DO NOT have (x,y) coordinates.
+		// below DO NOT have (x,y) coordinates.
 		//
-		// Let's create a row at position (35,80) with automatic width and height, and a padding of 10
+		// Let's create a row at position (35,80) with automatic
+		// width and height, and a padding of 10
 		cvui::beginColumn(frame, 35, 80, -1, -1, 10);
 			static double rgb[3] {1., 1., 1};
 			bool rgbModified = false;
+
 			// Trackbar accept a pointer to a variable that controls their value
 			// They return true upon edition
-			if (cvui::trackbar(&rgb[0], colorTrackbarParams))
+			if (cvui::trackbar(trackbarWidth, &rgb[0], (double)0., (double)2., (double).1, 2, "%3.02lf")) {
 				rgbModified = true;
-			if (cvui::trackbar(&rgb[1], colorTrackbarParams))
+			}
+			if (cvui::trackbar(trackbarWidth, &rgb[1], (double)0., (double)2., (double).1, 2, "%3.02lf")) {
 				rgbModified = true;
-			if (cvui::trackbar(&rgb[2], colorTrackbarParams))
+			}
+			if (cvui::trackbar(trackbarWidth, &rgb[2], (double)0., (double)2., (double).1, 2, "%3.02lf")) {
 				rgbModified = true;
+			}
+			
+			cvui::space(2);
 			cvui::printf(0.35, 0xcccccc, "   RGB: %3.02lf,%3.02lf,%3.02lf", rgb[0], rgb[1], rgb[2]);
 
 			if (rgbModified) {
-				std::vector<cv::Mat> channels;
-				cv::split(frame_orig, channels);
-				for (int c = 0; c < 3; c++)
+				std::vector<cv::Mat> channels(3);
+				cv::split(lena, channels);
+				for (int c = 0; c < 3; c++) {
 					channels[c] = channels[c] * rgb[c];
+				}
 				cv::merge(channels, doubleBuffer);
 			}
 		cvui::endColumn();
 
 		// HSV
-		cvui::window(frame, frame_orig.cols - 180, 50, 180, 220, "HSV adjust");
-		cvui::beginColumn(frame, frame_orig.cols - 180, 80, -1, -1, 10);
+		cvui::window(frame, lena.cols - 200, 50, 180, 240, "HSV adjust");
+		cvui::beginColumn(frame, lena.cols - 180, 80, -1, -1, 10);
 			static double hsv[3] {1., 1., 1};
 			bool hsvModified = false;
-			if (cvui::trackbar(&hsv[0], colorTrackbarParams))
+			
+			if (cvui::trackbar(trackbarWidth, &hsv[0], (double)0., (double)2., (double).1, 2, "%3.02lf")) {
 				hsvModified = true;
-			if (cvui::trackbar(&hsv[1], colorTrackbarParams))
+			}
+			if (cvui::trackbar(trackbarWidth, &hsv[1], (double)0., (double)2., (double).1, 2, "%3.02lf")) {
 				hsvModified = true;
-			if (cvui::trackbar(&hsv[2], colorTrackbarParams))
+			}
+			if (cvui::trackbar(trackbarWidth, &hsv[2], (double)0., (double)2., (double).1, 2, "%3.02lf")) {
 				hsvModified = true;
+			}
+
+			cvui::space(2);
 			cvui::printf(0.35, 0xcccccc, "   HSV: %3.02lf,%3.02lf,%3.02lf", hsv[0], hsv[1], hsv[2]);
 
 			if (hsvModified) {
 				cv::Mat hsvMat;
-				cv::cvtColor(frame_orig, hsvMat, cv::COLOR_BGR2HSV);
-				std::vector<cv::Mat> channels;
+				cv::cvtColor(lena, hsvMat, cv::COLOR_BGR2HSV);
+				std::vector<cv::Mat> channels(3);
 				cv::split(hsvMat, channels);
-				for (int c = 0; c < 3; c++)
+
+				for (int c = 0; c < 3; c++) {
 					channels[c] = channels[c] * hsv[c];
+				}
+
 				cv::merge(channels, hsvMat);
 				cv::cvtColor(hsvMat, doubleBuffer, cv::COLOR_HSV2BGR);
 			}

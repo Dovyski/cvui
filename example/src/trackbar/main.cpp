@@ -1,8 +1,6 @@
 /*
-This is a demo application to showcase the sparkline components of cvui.
-Sparklines are quite useful to display data, e.g. FPS charts.
-
-Code licensed under the MIT license, check LICENSE file.
+This is a demo application to showcase the trackbar component.
+Authors: Pascal Thomet, Fernando Bevilacqua
 */
 
 #include <iostream>
