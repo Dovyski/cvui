@@ -21,106 +21,79 @@ Code licensed under the MIT license, check LICENSE file.
 
 int main(int argc, const char *argv[])
 {
-	int intValue1 = 30;
-	uchar ucharValue2 = 30;
-	char charValue3 = 30;
-	float floatValue1 = 12.;
-	double doubleValue1 = 15., doubleValue2 = 10.3, doubleValue3 = 2.25;
-	cv::Mat frame = cv::Mat(cv::Size(250, 750), CV_8UC3);
+	int intValue = 30;
+	uchar ucharValue = 30;
+	char charValue = 30;
+	float floatValue = 12.;
+	double doubleValue = 45., doubleValue2 = 15., doubleValue3 = 10.3;
+	cv::Mat frame = cv::Mat(770, 350, CV_8UC3);
 
-	// Create an OpenCV window
+	// The width of all trackbars used in this example.
+	int width = 300;
+
+	// The x position of all trackbars used in this example
+	int x = 10;
+
+	// Init a OpenCV window and tell cvui to use it.
+	// If cv::namedWindow() is not used, mouse events will
+	// not be captured by cvui.
 	cv::namedWindow(WINDOW_NAME);
-	
-	// Tell cvui to use a value of 20 for cv::waitKey()
-	// because we want to enable keyboard shortcut for
-	// all components, e.g. button with label "&Quit".
-	// If cvui has a value for waitKey, it will call
-	// waitKey() automatically for us within cvui::update().
-	cvui::init(WINDOW_NAME, 20);
+	cvui::init(WINDOW_NAME);
 
 	while (true) {
+		// Fill the frame with a nice color
 		frame = cv::Scalar(49, 52, 49);
 
-		cvui::beginColumn(frame, 20, 20, -1, -1, 6);
-			/**
-			The API of the tracbkar is shown here for reference (extract from cvui.h)
-			trackbar : Display a trackbar
-			 \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
-			 \param theMin : minimum value of the trackbar
-			 \param theMax : maximum value of the trackbar
-			 \param theNumberOfDecimals : number of decimal digits to be displayed
-			 \param theNumberOfLargeSteps : number of large steps (at which a legend will be written, as on a ruler)
-			 \param theSmallStep : small steps at which ticks will be drawn (if not given,
-			 \                    theSmallStep is a calculated according to theNumberOfDecimals)
-			 \param flagForceValuesAsMultiplesOfSmallStep : enforce values to be a multiple of theSmallStep
+		// The trackbar component uses templates to guess the type of its arguments.
+		// You have to be very explicit about the type of the value, the min and
+		// the max params. For instance, if they are double, use 100.0 instead of 100.
+		cvui::text(frame, x, 10, "double, step 1.0 (default)");
+		cvui::trackbar(frame, x, 40, width, &doubleValue, (double)0., (double)100.);
 
-			 template <typename T> // T can be any float type (float, double, long double)
-				bool trackbar(
-						T *theValue,
-						T theMin, T theMax,
-						int theNumberOfDecimals = 1,
-						int theNumberOfLargeSteps = 1,
-						T theSmallStep = -1.,
-						bool flagForceValuesAsMultiplesOfSmallStep = true);
+		cvui::text(frame, x, 120, "float, step 1.0 (default)");
+		cvui::trackbar(frame, x, 150, width, &floatValue, (float)10., (float)15.);
 
-			   Note : remember to cast the minimum and maximum values to your type
-			  See examples below :
+		// You can specify segments and custom labels. Segments are visual marks in
+		// the trackbar scale. Internally the value for the trackbar is stored as
+		// long double, so the custom labels must always format long double numbers, no
+		// matter the type of the numbers being used for the trackbar. E.g. %.2lf
+		cvui::text(frame, x, 230, "double, 4 segments, custom label %.2f");
+		cvui::trackbar(frame, x, 260, width, &doubleValue2, (double)0., (double)20., (double)1., 3, "%.2f");
 
-			   float myValue;
-			   cvui::trackbar_float(&myValue, 0.f, 100.f);
-			   unsigned char myValue;
-			   cvui::trackbar_float(&myValue, (unsigned char)0, (unsigned char)255);
+		// Again: you have to be very explicit about the value, the min and the max params.
+		// Below is a uchar trackbar. Observe the uchar cast for the min, the max and 
+		// the step parameters.
+		cvui::text(frame, x, 340, "uchar, custom label %.0f");
+		cvui::trackbar(frame, x, 370, width, &ucharValue, (uchar)0, (uchar)255, (uchar)1, 0, "%.0f");
 
-			   Returns true when the value was modified, false otherwise
-			*/
+		// You can change the behavior of any tracker by using the options parameter.
+		// Options are defined as a bitfield, so you can combine them.
+		// E.g.
+		//	TRACKBAR_DISCRETE							// value changes are discrete
+		//  TRACKBAR_DISCRETE | TRACKBAR_HIDE_LABELS	// discrete changes and no labels
+		cvui::text(frame, x, 450, "double, step 0.5, option TRACKBAR_DISCRETE");
+		cvui::trackbar(frame, x, 480, width, &doubleValue3, (double)10., (double)10.5, (double)0.1, 1, "%.1f", cvui::TRACKBAR_DISCRETE);
 
-			cvui::text("Simple int trackbar, no ticks");
-			cvui::trackbar(150, &intValue1, 0, 100);
-			cvui::text("");
+		// More customizations using options.
+		unsigned int options = cvui::TRACKBAR_DISCRETE | cvui::TRACKBAR_HIDE_SEGMENT_LABELS;
+		cvui::text(frame, x, 560, "int, 3 segments, DISCRETE | HIDE_SEGMENT_LABELS");
+		cvui::trackbar(frame, x, 590, width, &intValue, (int)10, (int)50, (int)2, 3, "%.0f", options);
 
-			cvui::text("Simple uchar trackbar");
-			cvui::trackbar(150, &ucharValue2, (uchar)0, (uchar)255);
-			cvui::text("");
+		// Trackbar using char type.
+		cvui::text(frame, x, 670, "char, 2 segments, custom label %.0f");
+		cvui::trackbar(frame, x, 700, width, &charValue, (char)-128, (char)127, (char)1, 2, "%.0f");
 
-			cvui::text("Simple signed char trackbar, no large");
-			cvui::trackbar(150, &charValue3, (char)-128, (char)127);
-			cvui::text("");
-
-			cvui::text("Simple float trackbar");
-			cvui::text("1 decimal, no large step");
-			cvui::trackbar(150, &floatValue1, 10.f, 15.f);
-			cvui::text("");
-
-			cvui::text("Simple float trackbar");
-			cvui::text(" 2 decimals, 4 large Steps");
-			cvui::trackbar(150, &doubleValue1, 10., 20., 1.0, 4);
-			cvui::text("");
-
-			cvui::text("Simple float trackbar, 1 decimal");
-			cvui::text("no larges steps");
-			cvui::text("edited value forced to 1 decimal");
-			cvui::trackbar(150, &doubleValue2, 10., 10.5, 0.1);
-
-			cvui::text("float trackbar, 2 decimal");
-			cvui::text("value multiples of 0.25");
-			cvui::text("2 large steps");
-			cvui::trackbar(150, &doubleValue3, 0., 4., 0.25, 2, "%.3f", cvui::TRACKBAR_DISCRETE);
-
-			// Exit the application if the quit button was pressed.
-			// It can be pressed because of a mouse click or because 
-			// the user pressed the "q" key on the keyboard, which is
-			// marked as a shortcut in the button label ("&Quit").
-			if (cvui::button("&Quit")) {
-				break;
-			}
-		cvui::endColumn();
-
-		// Since cvui::init() received a param regarding waitKey,
-		// there is no need to call cv::waitKey() anymore. cvui::update()
-		// will do it automatically.
+		// This function must be called *AFTER* all UI components. It does
+		// all the behind the scenes magic to handle mouse clicks, etc.
 		cvui::update();
-		
+
+		// Show everything on the screen
 		cv::imshow(WINDOW_NAME, frame);
+
+		// Check if ESC key was pressed
+		if (cv::waitKey(20) == 27) {
+			break;
+		}
 	}
 
 	return 0;
