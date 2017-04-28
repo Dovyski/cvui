@@ -7,7 +7,7 @@ A (very) simple UI lib built on top of OpenCV drawing primitives. Other UI libs,
 Features
 --------
 - Lightweight and simple to use user interface.
-- No external dependencies (except OpenCV).
+- Header-only with no external dependencies (except OpenCV).
 - Based on OpenCV drawing primitives only (OpenGL or Qt are not required).
 - Friendly and C-like API (no classes/objects, etc).
 - Easily render components without worrying about their position (using rows/columns).
@@ -15,7 +15,7 @@ Features
 
 Build
 -----
-The only dependency is OpenCV (version 3.0), which you are probably already using. Just add `cvui.h` and `cvui.cpp` to your project and you are ready to go.
+The only dependency is OpenCV (version `2.x` or `3.x`), which you are probably already using. Just add `cvui.h` to your project and you are ready to go.
 
 Usage
 -----
@@ -55,12 +55,7 @@ int main(int argc, const char *argv[])
 		cvui::update();
 
 		cv::imshow(WINDOW_NAME, frame);
-		
-        // Check if ESC key was pressed
-        if (cvui::lastKeyPressed() == 27) {
-            break;
-        }
-
+        cv::waitKey(30);
 	}
 
 	return 0;
