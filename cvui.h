@@ -968,7 +968,7 @@ namespace render {
 	void trackbarHandle(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
 	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
 	void trackbarSteps(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
-	void trackbarSegmentLabel(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, long double theValue, cv::Rect& theWorkingArea);
+	void trackbarSegmentLabel(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, long double theValue, cv::Rect& theWorkingArea, bool theShowLabel);
 	void trackbarSegments(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
 	void trackbar(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams);
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
@@ -1613,7 +1613,7 @@ namespace render
 		}
 	}
 
-	void trackbarSegmentLabel(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, long double theValue, cv::Rect& theWorkingArea) {
+	void trackbarSegmentLabel(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, long double theValue, cv::Rect& theWorkingArea, bool theShowLabel) {
 		cv::Scalar aColor(0x51, 0x51, 0x51);
 		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 
@@ -1623,10 +1623,13 @@ namespace render
 		cv::Point aPoint2(aPixelX, aBarTopLeft.y - 8);
 		cv::line(theBlock.where, aPoint1, aPoint2, aColor);
 
-		sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), theValue);
-		cv::Point aTextPos(aPixelX, aBarTopLeft.y - 11);
-		putTextCentered(theBlock, aTextPos, internal::gBuffer);
-	}
+		if (theShowLabel)
+		{
+			sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), theValue);
+			cv::Point aTextPos(aPixelX, aBarTopLeft.y - 11);
+			putTextCentered(theBlock, aTextPos, internal::gBuffer);
+		}
+  }
 
 	void trackbarSegments(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
 		int aSegments = theParams.segments < 1 ? 1 : theParams.segments;
@@ -1635,23 +1638,17 @@ namespace render
 		bool aHasMinMaxLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_MIN_MAX_LABELS) == false;
 
 		// Render the min value label
-		if (aHasMinMaxLabels) {
-			trackbarSegmentLabel(theBlock, theShape, theParams, theParams.min, theWorkingArea);
-		}
+		trackbarSegmentLabel(theBlock, theShape, theParams, theParams.min, theWorkingArea, aHasMinMaxLabels);
 
 		//Draw large steps and labels
 		bool aHasSegmentLabels = internal::bitsetHas(theParams.options, TRACKBAR_HIDE_SEGMENT_LABELS) == false;
-		if (aHasSegmentLabels) {
-			// TODO: check min, max and step to prevent infinite loop.
-			for (long double aValue = theParams.min; aValue <= theParams.max; aValue += aSegmentLength) {
-				trackbarSegmentLabel(theBlock, theShape, theParams, aValue, theWorkingArea);
-			}
+		// TODO: check min, max and step to prevent infinite loop.
+		for (long double aValue = theParams.min; aValue <= theParams.max; aValue += aSegmentLength) {
+			trackbarSegmentLabel(theBlock, theShape, theParams, aValue, theWorkingArea, aHasSegmentLabels);
 		}
 
-		// Render the min value label
-		if (aHasMinMaxLabels) {
-			trackbarSegmentLabel(theBlock, theShape, theParams, theParams.max, theWorkingArea);
-		}
+		// Render the max value label
+		trackbarSegmentLabel(theBlock, theShape, theParams, theParams.max, theWorkingArea, aHasMinMaxLabels);
 	}
 
 	void trackbar(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams) {
