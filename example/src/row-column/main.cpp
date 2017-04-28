@@ -37,6 +37,7 @@ int main(int argc, const char *argv[])
 	// Create variables used by some components
 	std::vector<double> values;
 	bool checked = false;
+	bool checked2 = false;
 	double value = 1.0, value2 = 1.0, value3 = 1.0;
 	int padding = 10;
 	cv::Mat img = cv::imread("./lena-face.jpg", cv::IMREAD_COLOR);
@@ -86,10 +87,10 @@ int main(int argc, const char *argv[])
 		cvui::beginRow(frame, 10, 150, 100, 50, padding);
 			cvui::text("This is ");
 			cvui::printf("another row");
-			cvui::checkbox("checkbox", &checked);
+			cvui::checkbox("checkbox", &checked2);
 			cvui::window(80, 80, "window");
 			cvui::button(100, 30, "Fixed");
-			cvui::printf("with 50px padding.");
+			cvui::printf("with 50px paddin7hg.");
 		cvui::endRow();
 
 		// Another row mixing several components 

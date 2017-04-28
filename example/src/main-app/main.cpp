@@ -20,8 +20,8 @@ int main(int argc, const char *argv[])
 	bool checked = false;
 	bool checked2 = true;
 	int count = 0;
-	double countFloat = 0;
-	double trackbarValue = 0;
+	double countFloat = 0.0;
+	double trackbarValue = 0.0;
 
 	// Init a OpenCV window and tell cvui to use it.
 	// If cv::namedWindow() is not used, mouse events will
