@@ -69,12 +69,34 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel);
 bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel);
 
 /**
-TODO: add docs
+ Display a button whose graphics are images (cv::Mat). The button accepts three images to describe its states,
+ which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
+ The button size will be defined by the width and height of the images. 
+
+ \param theWhere the image/frame where the component should be rendered.
+ \param theX position X where the component should be placed.
+ \param theY position Y where the component should be placed.
+ \param theIdle an image that will be rendered when the button is not interacting with the mouse cursor.
+ \param theOver an image that will be rendered when the mouse cursor is over the button.
+ \param theDown an image that will be rendered when the mouse cursor clicked the button (or is clicking).
+ \return `true` everytime the user clicks the button.
+
+ \sa button()
+ \sa image()
+ \sa iarea()
 */
 bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown);
 
 /**
- TODO: add docs.
+ Display an image (cv::Mat). 
+
+ \param theWhere the image/frame where the provded image should be rendered.
+ \param theX position X where the image should be placed.
+ \param theY position Y where the image should be placed.
+ \param theImage an image to be rendered in the specified destination.
+
+ \sa button()
+ \sa iarea()
 */
 void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage);
 
@@ -174,33 +196,39 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
 
 /**
  Display a trackbar for numeric values that the user can increase/decrease
- by clicking and draging the marker right or left. 
+ by clicking and/or dragging the marker right or left. This component uses templates
+ so it is imperative that you make it very explicit the type of `theValue`, `theMin`, `theMax` and `theStep`,
+ otherwise you might end up with weird compilation errors. 
+ 
+ Example:
+
+ ```
+ // using double
+ trackbar(where, x, y, width, 10.0, 0.0, 50.0, 0.5);
+
+ // using float
+ trackbar(where, x, y, width, 10.0f, 0.0f, 50.0f, 0.5f);
+
+ // using char
+ trackbar(where, x, y, width, (char)3, (char)1, (char)10, (char)1);
+ ```
 
  \param theWhere the image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
- \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
- \param theMin : minimum value of the trackbar
- \param theMax : maximum value of the trackbar
- \param theDecimals : number of decimal digits to be displayed
- \param theSegments : number of large steps (at which a legend will be written, as on a ruler)
- \param theStep : small steps at which ticks will be drawn (if not given,
- \param theStep is a calculated according to theDecimals
- \param theOptions : TODO
+ \param theWidth the width of the trackbar.
+ \param theValue the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, double, long double, int, char, uchar.
+ \param theMin the minimum value allowed for the trackbar.
+ \param theMax the maximum value allowed for the trackbar.
+ \param theStep the amount that the trackbar marker will increase/decrease when the marker is dragged right/left.
+ \param theSegments number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
+ \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2lf`. No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress use a formating string as `%.0lf` to format your labels.
+ \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of informed step param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
+ \return `true` when the value of the trackbar changed.
 
-   Returns true when the value was modified, false otherwise
-
-   Note : remember to cast the minimum and maximum values to your type
-  See examples below :
-
-   float myValue;
-   cvui::trackbarfloat(&myValue, 0.f, 100.f);
-   unsigned char myValue;
-   cvui::trackbarfloat(&myValue, (unsigned char)0, (unsigned char)255);
-
- \sa printf()
+ \sa counter()
 */
-template <typename T> // T can be any float type (float, double, long double)
+template <typename T>
 bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, T theStep = 1., int theSegments = 1, const char *theLabelFormat = "%.1lf", unsigned int theOptions = 0);
 
 /**
@@ -227,6 +255,8 @@ void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
  \param theHeight height of the rectangle.
  \param theBorderColor color of rectangle's border in the format `0xRRGGBB`, e.g. `0xff0000` for red.
  \param theFillingColor color of rectangle's filling in the format `0xAARRGGBB`, e.g. `0x00ff0000` for red, `0xff000000` for transparent filling.
+
+ \sa image()
 */
 void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor = 0xff000000);
 
@@ -240,11 +270,31 @@ void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, un
  \param theWidth width of the sparkline.
  \param theHeight height of the sparkline.
  \param theColor color of sparkline in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+
+ \sa trackbar()
 */
 void sparkline(cv::Mat& theWhere, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
 
 /**
- TODO: add docs 
+ Create an interaction area that reports activity with the mouse cursor.
+ The tracked interactions are returned by the function and they are:
+
+ `OUT` when the cursor is not over the iarea.
+ `OVER` when the cursor is over the iarea.
+ `DOWN` when the cursor is pressed over the iarea, but not released yet.
+ `CLICK` when the cursor clicked (pressed and released) within the iarea.
+
+ This function creates no visual output on the screen. It is intended to
+ be used as an auxiliary tool to create interactions.
+
+ \param theX position X where the interactive area should be placed.
+ \param theY position Y where the interactive area should be placed.
+ \param theWidth width of the interactive area.
+ \param theHeight height of the interactive area.
+ \return an integer value representing the current state of interaction with the mouse cursor. It can be `OUT` (cursor is not over the area), `OVER` (cursor is over the area), `DOWN` (cursor is pressed over the area, but not released yet) and `CLICK` (cursor clicked, i.e. pressed and released, within the area).
+
+ \sa button()
+ \sa image()
 */
 int iarea(int theX, int theY, int theWidth, int theHeight);
 
@@ -486,32 +536,45 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel);
 bool button(const cv::String& theLabel);
 
 /**
-TODO: add docs
+ Display a button whose graphics are images (cv::Mat).
 
-IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+ IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
-\param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
-\return `true` everytime the user clicks the button.
+ The button accepts three images to describe its states,
+ which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
+ The button size will be defined by the width and height of the images.
 
-\sa beginColumn()
-\sa beginRow()
-\sa endRow()
-\sa endColumn()
+ \param theIdle an image that will be rendered when the button is not interacting with the mouse cursor.
+ \param theOver an image that will be rendered when the mouse cursor is over the button.
+ \param theDown an image that will be rendered when the mouse cursor clicked the button (or is clicking).
+ \return `true` everytime the user clicks the button.
+
+ \sa button()
+ \sa image()
+ \sa iarea()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
 */
 bool button(cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown);
 
 /**
-TODO: add docs
+ Display an image (cv::Mat) within a `begin*()` and `end*()` block
 
-IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+ IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
-\param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
-\return `true` everytime the user clicks the button.
+ \param theWhere the image/frame where the provded image should be rendered.
+ \param theX position X where the image should be placed.
+ \param theY position Y where the image should be placed.
+ \param theImage an image to be rendered in the specified destination.
 
-\sa beginColumn()
-\sa beginRow()
-\sa endRow()
-\sa endColumn()
+ \sa button()
+ \sa iarea()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
 */
 void image(cv::Mat& theImage);
 
@@ -620,26 +683,42 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
 
 /**
  Display a trackbar for numeric values that the user can increase/decrease
- by clicking and draging the marker right or left.
+ by clicking and/or dragging the marker right or left.
 
- \param theValue : pointer to the variable that will hold the value. Will be modified when the user interacts
- \param theMin : minimum value of the trackbar
- \param theMax : maximum value of the trackbar
- \param theDecimals : number of decimal digits to be displayed
- \param theSegments : number of large steps (at which a legend will be written, as on a ruler)
- \param theStep : small steps at which ticks will be drawn (if not given,
- \                    theStep is a calculated according to theDecimals)
- \param theOptions : TODO
+ IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
-  Note : remember to cast the minimum and maximum values to your type
-  See examples below :
+ This component uses templates so it is imperative that you make it very explicit
+ the type of `theValue`, `theMin`, `theMax` and `theStep`, otherwise you might end up with
+ weird compilation errors.
 
-   float myValue;
-   cvui::trackbarfloat(&myValue, 0.f, 100.f);
-   unsigned char myValue;
-   cvui::trackbarfloat(&myValue, (unsigned char)0, (unsigned char)255);
+ Example:
 
-   Returns true when the value was modified, false otherwise
+ ```
+ // using double
+ trackbar(width, 10.0, 0.0, 50.0, 0.5);
+
+ // using float
+ trackbar(width, 10.0f, 0.0f, 50.0f, 0.5f);
+
+ // using char
+ trackbar(width, (char)3, (char)1, (char)10, (char)1);
+ ```
+
+ \param theWidth the width of the trackbar.
+ \param theValue the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, double, long double, int, char, uchar.
+ \param theMin the minimum value allowed for the trackbar.
+ \param theMax the maximum value allowed for the trackbar.
+ \param theStep the amount that the trackbar marker will increase/decrease when the marker is dragged right/left.
+ \param theSegments number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
+ \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2lf`. No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress use a formating string as `%.0lf` to format your labels.
+ \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of informed step param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
+ \return `true` when the value of the trackbar changed.
+
+ \sa counter()
+ \sa beginColumn()
+ \sa beginRow()
+ \sa endRow()
+ \sa endColumn()
 */
 template <typename T> // T can be any float type (float, double, long double)
 bool trackbar(int theWidth, T *theValue, T theMin, T theMax, T theStep = 1., int theSegments = 1, const char *theLabelFormat = "%.1lf", unsigned int theOptions = 0);
@@ -735,7 +814,6 @@ const int DOWN = 2;
 const int CLICK = 3;
 const int OVER = 4;
 const int OUT = 5;
-const int IDLE = 6;
 
 // Constants regarding components
 const unsigned int TRACKBAR_HIDE_SEGMENT_LABELS = 1;
@@ -1189,8 +1267,8 @@ namespace internal
 			}
 		}
 		else {
-			render::button(theBlock, cvui::IDLE, aRect, theLabel);
-			render::buttonLabel(theBlock, cvui::IDLE, aRect, theLabel, aTextSize);
+			render::button(theBlock, cvui::OUT, aRect, theLabel);
+			render::buttonLabel(theBlock, cvui::OUT, aRect, theLabel, aTextSize);
 		}
 
 		// Update the layout flow according to button size
@@ -1269,7 +1347,7 @@ namespace internal
 			}
 		}
 		else {
-			render::checkbox(theBlock, cvui::IDLE, aRect);
+			render::checkbox(theBlock, cvui::OUT, aRect);
 		}
 
 		render::checkboxLabel(theBlock, aRect, theLabel, aTextSize, theColor);
@@ -1415,7 +1493,7 @@ namespace render
 
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, theState == IDLE ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), CVUI_FILLED);
+		cv::rectangle(theBlock.where, theShape, theState == OUT ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), CVUI_FILLED);
 	}
 
 	int putText(cvui_block_t& theBlock, int theState, cv::Scalar aColor, const std::string& theText, const cv::Point & thePosition) {
@@ -1597,7 +1675,7 @@ namespace render
 
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape) {
 		// Outline
-		cv::rectangle(theBlock.where, theShape, theState == IDLE ? cv::Scalar(0x63, 0x63, 0x63) : cv::Scalar(0x80, 0x80, 0x80));
+		cv::rectangle(theBlock.where, theShape, theState == OUT ? cv::Scalar(0x63, 0x63, 0x63) : cv::Scalar(0x80, 0x80, 0x80));
 
 		// Border
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;

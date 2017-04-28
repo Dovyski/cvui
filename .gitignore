@@ -44,3 +44,4 @@ install
 #Save those, please
 !example/build/README.txt
 !example/build/data/*
+html
