@@ -56,7 +56,7 @@ int main(int argc, const char *argv[])
 		// long double, so the custom labels must always format long double numbers, no
 		// matter the type of the numbers being used for the trackbar. E.g. %.2Lf
 		cvui::text(frame, x, 230, "double, 4 segments, custom label %.2Lf");
-		cvui::trackbar(frame, x, 260, width, &doubleValue2, (double)0., (double)20., (double)1., 3, "%.2Lf");
+		cvui::trackbar(frame, x, 260, width, &doubleValue2, (double)0., (double)20., (double)1., 4, "%.2Lf");
 
 		// Again: you have to be very explicit about the value, the min and the max params.
 		// Below is a uchar trackbar. Observe the uchar cast for the min, the max and 
