@@ -1581,7 +1581,7 @@ namespace render
 		// Draw the handle label
 		if (aShowLabel) {
 			cv::Point aTextPos(aPixelX, aPoint2.y + 11);
-			sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), theValue);
+			sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), static_cast<long double>(theValue));
 			putTextCentered(theBlock, aTextPos, internal::gBuffer);
 		}
 	}
