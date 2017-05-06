@@ -54,15 +54,15 @@ int main(int argc, const char *argv[])
 		// You can specify segments and custom labels. Segments are visual marks in
 		// the trackbar scale. Internally the value for the trackbar is stored as
 		// long double, so the custom labels must always format long double numbers, no
-		// matter the type of the numbers being used for the trackbar. E.g. %.2lf
-		cvui::text(frame, x, 230, "double, 4 segments, custom label %.2f");
-		cvui::trackbar(frame, x, 260, width, &doubleValue2, (double)0., (double)20., (double)1., 3, "%.2f");
+		// matter the type of the numbers being used for the trackbar. E.g. %.2Lf
+		cvui::text(frame, x, 230, "double, 4 segments, custom label %.2Lf");
+		cvui::trackbar(frame, x, 260, width, &doubleValue2, (double)0., (double)20., (double)1., 4, "%.2Lf");
 
 		// Again: you have to be very explicit about the value, the min and the max params.
 		// Below is a uchar trackbar. Observe the uchar cast for the min, the max and 
 		// the step parameters.
-		cvui::text(frame, x, 340, "uchar, custom label %.0f");
-		cvui::trackbar(frame, x, 370, width, &ucharValue, (uchar)0, (uchar)255, (uchar)1, 0, "%.0f");
+		cvui::text(frame, x, 340, "uchar, custom label %.0Lf");
+		cvui::trackbar(frame, x, 370, width, &ucharValue, (uchar)0, (uchar)255, (uchar)1, 0, "%.0Lf");
 
 		// You can change the behavior of any tracker by using the options parameter.
 		// Options are defined as a bitfield, so you can combine them.
@@ -70,16 +70,16 @@ int main(int argc, const char *argv[])
 		//	TRACKBAR_DISCRETE							// value changes are discrete
 		//  TRACKBAR_DISCRETE | TRACKBAR_HIDE_LABELS	// discrete changes and no labels
 		cvui::text(frame, x, 450, "double, step 0.5, option TRACKBAR_DISCRETE");
-		cvui::trackbar(frame, x, 480, width, &doubleValue3, (double)10., (double)10.5, (double)0.1, 1, "%.1f", cvui::TRACKBAR_DISCRETE);
+		cvui::trackbar(frame, x, 480, width, &doubleValue3, (double)10., (double)10.5, (double)0.1, 1, "%.1Lf", cvui::TRACKBAR_DISCRETE);
 
 		// More customizations using options.
 		unsigned int options = cvui::TRACKBAR_DISCRETE | cvui::TRACKBAR_HIDE_SEGMENT_LABELS;
 		cvui::text(frame, x, 560, "int, 3 segments, DISCRETE | HIDE_SEGMENT_LABELS");
-		cvui::trackbar(frame, x, 590, width, &intValue, (int)10, (int)50, (int)2, 3, "%.0f", options);
+		cvui::trackbar(frame, x, 590, width, &intValue, (int)10, (int)50, (int)2, 3, "%.0Lf", options);
 
 		// Trackbar using char type.
-		cvui::text(frame, x, 670, "char, 2 segments, custom label %.0f");
-		cvui::trackbar(frame, x, 700, width, &charValue, (char)-128, (char)127, (char)1, 2, "%.0f");
+		cvui::text(frame, x, 670, "char, 2 segments, custom label %.0Lf");
+		cvui::trackbar(frame, x, 700, width, &charValue, (char)-128, (char)127, (char)1, 2, "%.0Lf");
 
 		// This function must be called *AFTER* all UI components. It does
 		// all the behind the scenes magic to handle mouse clicks, etc.

@@ -119,7 +119,7 @@ int main(int argc, const char *argv[])
 			cvui::text("Column 2 (padding = 10)");
 			cvui::button("button1");
 			cvui::button("button2");
-			cvui::trackbar(150, &value3, 0., 5., 0.25, 2, "%3.2lf", cvui::TRACKBAR_DISCRETE);
+			cvui::trackbar(150, &value3, 0., 5., 0.25, 2, "%3.2Lf", cvui::TRACKBAR_DISCRETE);
 			cvui::text("End of column 2");
 		cvui::endColumn();
 
