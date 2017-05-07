@@ -62,13 +62,13 @@ int main(int argc, const char *argv[])
 
 			// Trackbar accept a pointer to a variable that controls their value
 			// They return true upon edition
-			if (cvui::trackbar(trackbarWidth, &rgb[0], (double)0., (double)2., (double).1, 2, "%3.02Lf")) {
+			if (cvui::trackbar(trackbarWidth, &rgb[0], (double)0., (double)2., 2, "%3.02Lf")) {
 				rgbModified = true;
 			}
-			if (cvui::trackbar(trackbarWidth, &rgb[1], (double)0., (double)2., (double).1, 2, "%3.02Lf")) {
+			if (cvui::trackbar(trackbarWidth, &rgb[1], (double)0., (double)2., 2, "%3.02Lf")) {
 				rgbModified = true;
 			}
-			if (cvui::trackbar(trackbarWidth, &rgb[2], (double)0., (double)2., (double).1, 2, "%3.02Lf")) {
+			if (cvui::trackbar(trackbarWidth, &rgb[2], (double)0., (double)2., 2, "%3.02Lf")) {
 				rgbModified = true;
 			}
 			
@@ -91,13 +91,13 @@ int main(int argc, const char *argv[])
 			static double hsv[3] {1., 1., 1};
 			bool hsvModified = false;
 			
-			if (cvui::trackbar(trackbarWidth, &hsv[0], (double)0., (double)2., (double).1, 2, "%3.02Lf")) {
+			if (cvui::trackbar(trackbarWidth, &hsv[0], (double)0., (double)2., 2, "%3.02Lf")) {
 				hsvModified = true;
 			}
-			if (cvui::trackbar(trackbarWidth, &hsv[1], (double)0., (double)2., (double).1, 2, "%3.02Lf")) {
+			if (cvui::trackbar(trackbarWidth, &hsv[1], (double)0., (double)2., 2, "%3.02Lf")) {
 				hsvModified = true;
 			}
-			if (cvui::trackbar(trackbarWidth, &hsv[2], (double)0., (double)2., (double).1, 2, "%3.02Lf")) {
+			if (cvui::trackbar(trackbarWidth, &hsv[2], (double)0., (double)2., 2, "%3.02Lf")) {
 				hsvModified = true;
 			}
 
