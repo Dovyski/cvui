@@ -204,13 +204,13 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
 
  ```
  // using double
- trackbar(where, x, y, width, 10.0, 0.0, 50.0, 0.5);
+ trackbar(where, x, y, width, &doubleValue, 0.0, 50.0);
 
  // using float
- trackbar(where, x, y, width, 10.0f, 0.0f, 50.0f, 0.5f);
+ trackbar(where, x, y, width, &floatValue, 0.0f, 50.0f);
 
  // using char
- trackbar(where, x, y, width, (char)3, (char)1, (char)10, (char)1);
+ trackbar(where, x, y, width, &charValue, (char)1, (char)10);
  ```
 
  \param theWhere the image/frame where the component should be rendered.
@@ -220,16 +220,16 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
  \param theValue the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, double, long double, int, char, uchar.
  \param theMin the minimum value allowed for the trackbar.
  \param theMax the maximum value allowed for the trackbar.
- \param theStep the amount that the trackbar marker will increase/decrease when the marker is dragged right/left.
  \param theSegments number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
- \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2lf`. No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress use a formating string as `%.0lf` to format your labels.
- \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of informed step param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
+ \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2Lf` (Lf *not lf). No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string such as `%.0Lf` to format your labels.
+ \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of theDiscreteStep param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
+ \param theDiscreteStep the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
  \return `true` when the value of the trackbar changed.
 
  \sa counter()
 */
 template <typename T>
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, T theStep = 1., int theSegments = 1, const char *theLabelFormat = "%.1lf", unsigned int theOptions = 0);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = static_cast<T>(1.));
 
 /**
  Display a window (a block with a title and a body).
@@ -695,23 +695,23 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
 
  ```
  // using double
- trackbar(width, 10.0, 0.0, 50.0, 0.5);
+ trackbar(width, &doubleValue, 0.0, 50.0);
 
  // using float
- trackbar(width, 10.0f, 0.0f, 50.0f, 0.5f);
+ trackbar(width, &floatValue, 0.0f, 50.0f);
 
  // using char
- trackbar(width, (char)3, (char)1, (char)10, (char)1);
+ trackbar(width, &charValue, (char)1, (char)10);
  ```
 
  \param theWidth the width of the trackbar.
  \param theValue the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, double, long double, int, char, uchar.
  \param theMin the minimum value allowed for the trackbar.
  \param theMax the maximum value allowed for the trackbar.
- \param theStep the amount that the trackbar marker will increase/decrease when the marker is dragged right/left.
  \param theSegments number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
- \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2lf`. No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress use a formating string as `%.0lf` to format your labels.
+ \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2Lf`. No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string as `%.0Lf` to format your labels.
  \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of informed step param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
+ \param theDiscreteStep the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
  \return `true` when the value of the trackbar changed.
 
  \sa counter()
@@ -721,7 +721,7 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
  \sa endColumn()
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(int theWidth, T *theValue, T theMin, T theMax, T theStep = 1., int theSegments = 1, const char *theLabelFormat = "%.1lf", unsigned int theOptions = 0);
+bool trackbar(int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = static_cast<T>(1.));
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
@@ -873,7 +873,7 @@ namespace internal
 			, step(1.)
 			, segments(0)
 			, options(0)
-			, labelFormat("%.0lf")
+			, labelFormat("%.0Lf")
 		{}
 	};
 
@@ -913,7 +913,7 @@ namespace internal
 	void resetRenderingBuffer(cvui_block_t& theScreen);
 
 	template <typename T> // T can be any floating point type (float, double, long double)
-	TrackbarParams makeTrackbarParams(T min, T max, int theDecimals = 1, int theSegments = 1, T theStep = -1., unsigned int theOptions = 0, const char *theFormat = "%.1lf");
+	TrackbarParams makeTrackbarParams(T min, T max, int theDecimals = 1, int theSegments = 1, T theStep = -1., unsigned int theOptions = 0, const char *theFormat = "%.1Lf");
 
 	template<typename T>
 	bool trackbar(T *theValue, const TrackbarParams& theParams);
@@ -983,14 +983,14 @@ namespace render {
 }
 
 template <typename num_type>
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, num_type theMin, num_type theMax, num_type theStep, int theSegments, const char *theLabelFormat, unsigned int theOptions) {
-	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theStep, theSegments, theLabelFormat, theOptions);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep) {
+	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments, theLabelFormat, theOptions);
 	return trackbar<num_type>(theWhere, theX, theY, theWidth, theValue, aParams);
 }
 
 template <typename num_type>
-bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax, num_type theStep, int theSegments, const char *theLabelFormat, unsigned int theOptions) {
-	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theStep, theSegments, theLabelFormat, theOptions);
+bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep) {
+	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments, theLabelFormat, theOptions);
 	return trackbar<num_type>(theWidth, theValue, aParams);
 }
 
@@ -1581,7 +1581,7 @@ namespace render
 		// Draw the handle label
 		if (aShowLabel) {
 			cv::Point aTextPos(aPixelX, aPoint2.y + 11);
-			sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), theValue);
+			sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), static_cast<long double>(theValue));
 			putTextCentered(theBlock, aTextPos, internal::gBuffer);
 		}
 	}
