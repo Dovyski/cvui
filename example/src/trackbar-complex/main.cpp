@@ -56,15 +56,15 @@ int main(int argc, const char *argv[])
 			cvui::space(5);
 
 			cvui::text("float trackbar, 4 segments");
-			cvui::trackbar(width, &doubleValue1, 10., 20., 1.0, 4);
+			cvui::trackbar(width, &doubleValue1, 10., 20., 4);
 			cvui::space(5);
 
-			cvui::text("double trackbar, label %.1f, TRACKBAR_DISCRETE");
-			cvui::trackbar(width, &doubleValue2, 10., 10.5, 0.1, 1, "%.1f", cvui::TRACKBAR_DISCRETE);
+			cvui::text("double trackbar, label %.1Lf, TRACKBAR_DISCRETE");
+			cvui::trackbar(width, &doubleValue2, 10., 10.5, 1, "%.1Lf", cvui::TRACKBAR_DISCRETE, 0.1);
 			cvui::space(5);
 
-			cvui::text("double trackbar, label %.2f, 2 segments, TRACKBAR_DISCRETE");
-			cvui::trackbar(width, &doubleValue3, 0., 4., 0.25, 2, "%.2f", cvui::TRACKBAR_DISCRETE);
+			cvui::text("double trackbar, label %.2Lf, 2 segments, TRACKBAR_DISCRETE");
+			cvui::trackbar(width, &doubleValue3, 0., 4., 2, "%.2Lf", cvui::TRACKBAR_DISCRETE, 0.25);
 			cvui::space(10);
 
 			// Exit the application if the quit button was pressed.

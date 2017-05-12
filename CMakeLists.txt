@@ -13,15 +13,18 @@ endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_subdirectory(example/src/main-app)
+add_subdirectory(example/src/button-shortcut)
 add_subdirectory(example/src/complext-layout)
+add_subdirectory(example/src/image-button)
+add_subdirectory(example/src/interaction-area)
+add_subdirectory(example/src/main-app)
 add_subdirectory(example/src/nested-rows-columns)
+add_subdirectory(example/src/on-image)
 add_subdirectory(example/src/row-column)
 add_subdirectory(example/src/sparkline)
-add_subdirectory(example/src/on-image)
 add_subdirectory(example/src/trackbar)
-add_subdirectory(example/src/interaction-area)
-add_subdirectory(example/src/image-button)
+add_subdirectory(example/src/trackbar-complex)
+add_subdirectory(example/src/trackbar-sparkline)
 
 # Copy all data files
 file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)
