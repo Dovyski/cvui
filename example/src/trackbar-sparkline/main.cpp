@@ -37,13 +37,11 @@ int main(int argc, const char *argv[])
 		// Notice that all component calls within the begin/end block
 		// DO NOT have (x,y) coordinates.
 		//
-		// Let's create a row at position (50,230) with automatic width and height, and a padding of 10
+		// Let's create a row at position (20,80) with automatic width and height, and a padding of 10
 		cvui::beginRow(frame, 20, 80, -1, -1, 10);
-			// trackbar_float accept a pointer to a variable that controls their value
-			// here we define a float trackbar between 0 and 5, with 2 digits, 5 large steps
-		    //and a precision of 0.25 (i.e the user can only enter values ending in .25, .5, .75 or .0
-			
-			if (cvui::trackbar(150, &value, 0., 5., 0.25)) {
+			// trackbar accepts a pointer to a variable that controls their value.
+			// Here we define a double trackbar between 0. and 5.
+			if (cvui::trackbar(150, &value, 0., 5.)) {
 				std::cout << "Trackbar was modified, value : " << value << std::endl;
 				values.push_back(value);
 			}
