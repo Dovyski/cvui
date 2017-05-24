@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/iarea
-id: iarea
+title: iarea
 ---
 
 # iarea

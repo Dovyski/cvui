@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /usage
-id: usage
+title: usage
 ---
 
 # Usage

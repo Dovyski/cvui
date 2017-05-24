@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/rect
-id: rect
+title: rect
 ---
 
 # Rect

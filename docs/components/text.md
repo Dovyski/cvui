@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/text
-id: text
+title: text
 ---
 
 # Text

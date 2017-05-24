@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/image
-id: image
+title: image
 ---
 
 # Image

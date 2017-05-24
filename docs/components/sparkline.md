@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/sparkline
-id: sparkline
+title: sparkline
 ---
 
 # Sparkline

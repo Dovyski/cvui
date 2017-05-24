@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /examples
-id: examples
+title: examples
 ---
 
 # Examples

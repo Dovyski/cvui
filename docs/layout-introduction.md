@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /layout-introcution
-id: layout-introduction
+title: layout-introcution
 ---
 
 # Rows and columns

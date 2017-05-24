@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/window
-id: window
+title: window
 ---
 
 # Window

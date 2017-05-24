@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/trackbar
-id: trackbar
+title: trackbar
 ---
 
 # Trackbar

@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /instalation
-id: instalation
+title: instalation
 ---
 
 # Instalation

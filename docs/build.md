@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /build
-id: build
+title: build
 ---
 
 # Build

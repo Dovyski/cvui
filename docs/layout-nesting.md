@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /layout-nesting
-id: layout-nesting
+title: layout-nesting
 ---
 
 # Nesting rows and columns

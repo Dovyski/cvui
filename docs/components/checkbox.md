@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/checkbox
-id: checkbox
+title: checkbox
 ---
 
 # Checkbox

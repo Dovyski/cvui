@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/printf
-id: printf
+title: printf
 ---
 
 # printf

@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/button
-id: button
+title: button
 ---
 
 # Button

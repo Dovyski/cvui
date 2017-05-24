@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /layout-spacing
-id: layout-spacing
+title: layout-spacing
 ---
 
 # Spacing components in rows/columns

@@ -1,7 +1,6 @@
 ---
 layout: default
-permalink: /components/counter
-id: counter
+title: counter
 ---
 
 # Counter
