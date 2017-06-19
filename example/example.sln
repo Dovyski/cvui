@@ -26,6 +26,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "trackbar-complex", "src\tra
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "trackbar-sparkline", "src\trackbar-sparkline\trackbar-sparkline.vcxproj", "{F5E56E5A-D2E3-4D19-BE11-720E6E566085}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "canny", "src\canny\canny.vcxproj", "{9CF8710D-ECFC-4092-905E-1A95C5FB481C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hello-world", "src\hello-world\hello-world.vcxproj", "{0A75F05D-D172-4FB7-8928-E2F3E2FE0A61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -80,6 +84,14 @@ Global
 		{F5E56E5A-D2E3-4D19-BE11-720E6E566085}.Debug|x64.Build.0 = Debug|x64
 		{F5E56E5A-D2E3-4D19-BE11-720E6E566085}.Release|x64.ActiveCfg = Release|x64
 		{F5E56E5A-D2E3-4D19-BE11-720E6E566085}.Release|x64.Build.0 = Release|x64
+		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Debug|x64.ActiveCfg = Debug|x64
+		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Debug|x64.Build.0 = Debug|x64
+		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Release|x64.ActiveCfg = Release|x64
+		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Release|x64.Build.0 = Release|x64
+		{0A75F05D-D172-4FB7-8928-E2F3E2FE0A61}.Debug|x64.ActiveCfg = Debug|x64
+		{0A75F05D-D172-4FB7-8928-E2F3E2FE0A61}.Debug|x64.Build.0 = Debug|x64
+		{0A75F05D-D172-4FB7-8928-E2F3E2FE0A61}.Release|x64.ActiveCfg = Release|x64
+		{0A75F05D-D172-4FB7-8928-E2F3E2FE0A61}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
