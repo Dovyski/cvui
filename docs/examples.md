@@ -5,7 +5,7 @@ title: examples
 
 # Examples
 
-The [examples](https://github.com/Dovyski/cvui/tree/master/example) folder contains several small-sized apps that demonstrate each component of cvui. Below is a list of all available examples:
+The [examples](https://github.com/Dovyski/cvui/tree/master/example) folder contains several small-sized apps that demonstrate each component of cvui. Below is a list of all available examples. You can [build all examples](../build) using [cmake](https://cmake.org).
 
 * [button-shortcut](https://github.com/Dovyski/cvui/tree/master/example/src/button-shortcut): how to use buttons with labels triggering keyboard shortcuts, e.g. `&Quit` will trigger the button when `Q` is pressed on the keyboard.
 
