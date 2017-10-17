@@ -18,6 +18,8 @@ void window(const cv::String& name) {
 	cv::Mat frame = cv::Mat(200, 500, CV_8UC3);
 	frame = cv::Scalar(49, 52, 49);
 
+	cvui::source(name);
+
 	// Show info regarding the window
 	cvui::printf(frame, 110, 50, "%s - click the button", name.c_str());
 
@@ -29,7 +31,7 @@ void window(const cv::String& name) {
 
 	// This function must be called *AFTER* all UI components. It does
 	// all the behind the scenes magic to handle mouse clicks, etc.
-	cvui::update();
+	cvui::update(name);
 
 	// Show the content of this window on the screen
 	cv::imshow(name, frame);

@@ -11,6 +11,8 @@
 #define _CVUI_H_
 
 #include <iostream>
+#include <vector>
+#include <map>
 #include <stdarg.h>
 
 #include <opencv2/imgproc/imgproc.hpp>
@@ -28,7 +30,7 @@ namespace cvui
  have to worry about it. The value passed to `theDelayWaitKey` will be
  used as the delay for `cv::waitKey()`.
  
- \param theWindowName name of the window where the components will be added
+ \param theWindowName name of the window where the components will be added.
  \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
 */
 void init(const cv::String& theWindowName, int theDelayWaitKey = -1);
@@ -37,9 +39,15 @@ void init(const cv::String& theWindowName, int theDelayWaitKey = -1);
  TODO: add docs
 
  \param theWindowName name of the window where the components will be added
- \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
 */
 void watch(const cv::String& theWindowName);
+
+/**
+TODO: add docs
+
+\param theWindowName name of the window that will receive components.
+*/
+void source(const cv::String& theWindowName);
 
 /**
  Return the last key that was pressed. This function will only
@@ -786,8 +794,14 @@ void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsi
 /**
  Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating
  UI elements in order for them to react to mouse interactions.
+
+ \param theWindowName name of the window whose components are being updated. If no window name is provided, cvui uses the default window.
+
+ \sa init()
+ \sa watch()
+ \sa source()
 */
-void update();
+void update(const cv::String& theWindowName = "");
 
 // Internally used to handle mouse events
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
@@ -854,12 +868,12 @@ typedef struct {
 	std::string textAfterShortcut;
 } cvui_label_t;
 
-// Describes the information of the mouse cursor in a window
+// Describes the information of a mouse cursor in a window
 typedef struct {
-	cv::String windowName;
-	bool justReleased;
-	bool pressed;
-	cv::Point position;
+	cv::String windowName;   // name of the window this mouse belongs to
+	bool justReleased;       // if the mouse button was released, i.e. click event.
+	bool pressed;            // if the mouse button is pressed or not
+	cv::Point position;      // x and y coordinates of the mouse at the moment
 } cvui_mouse_t;
 
 // Internal namespace with all code that is shared among components/functions.
@@ -871,7 +885,8 @@ namespace internal
 	static bool gMousePressed = false;
 	static cv::Point gMouse;
 	static cv::String gDefaultWindow;
-	static std::map <cv::String, cvui_mouse_t> gMouses; // indexed by the window name
+	static cv::String gSourceWindow;
+	static std::map<cv::String, cvui_mouse_t> gMouses; // indexed by the window name
 	static char gBuffer[1024];
 	static int gLastKeyPressed;
 	static int gDelayWaitKey;
@@ -899,6 +914,7 @@ namespace internal
 	static int gStackCount = -1;
 	static const int gTrackbarMarginX = 14;
 
+	cvui_mouse_t& getMouseFromContext();
 	bool bitsetHas(unsigned int theBitset, unsigned int theValue);
 	void error(int theId, std::string theMessage);
 	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize);
@@ -1028,6 +1044,25 @@ namespace cvui
 // that is shared among components/functions
 namespace internal
 {
+	cvui_mouse_t& getMouseFromContext() {
+		if (!internal::gSourceWindow.empty()) {
+			// The source window is not empty, which means we are rendering components
+			// of a window in particular. Let's use the mouse cursor from that
+			// window then.
+			return internal::gMouses[internal::gSourceWindow];
+
+		} else if (!internal::gDefaultWindow.empty()) {
+			// We have no source window, so let's use the default one.
+			return internal::gMouses[internal::gDefaultWindow];
+
+		} else {
+			// Apparently we have no window at all! <o>
+			// This should not happen. Probably cvui::init() was never called.
+			internal::error(5, "No window to read info about mouse cursor. Have you forgot to call cvui::init()?");
+			return internal::gMouses["first"]; // return to make the compiler happy.
+		}
+	}
+
 	bool bitsetHas(unsigned int theBitset, unsigned int theValue) {
 		return (theBitset & theValue) != 0;
 	}
@@ -1241,14 +1276,16 @@ namespace internal
 	}
 
 	int iarea(int theX, int theY, int theWidth, int theHeight) {
+		cvui_mouse_t& aMouse = internal::getMouseFromContext();
+
 		// By default, return that the mouse is out of the interaction area.
 		int aRet = cvui::OUT;
 
 		// Check if the mouse is over the interaction area.
-		bool aMouseIsOver = cv::Rect(theX, theY, theWidth, theHeight).contains(internal::gMouse);
+		bool aMouseIsOver = cv::Rect(theX, theY, theWidth, theHeight).contains(aMouse.position);
 
 		if (aMouseIsOver) {
-			if (internal::gMousePressed) {
+			if (aMouse.pressed) {
 				aRet = cvui::DOWN;
 			}
 			else {
@@ -1257,7 +1294,7 @@ namespace internal
 		}
 
 		// Tell if the button was clicked or not
-		if (aMouseIsOver && internal::gMouseJustReleased) {
+		if (aMouseIsOver && aMouse.justReleased) {
 			aRet = cvui::CLICK;
 		}
 
@@ -1265,6 +1302,8 @@ namespace internal
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {
+		cvui_mouse_t& aMouse = internal::getMouseFromContext();
+
 		// Calculate the space that the label will fill
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 
@@ -1272,7 +1311,7 @@ namespace internal
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
 
 		// Check the state of the button (idle, pressed, etc.)
-		bool aMouseIsOver = aRect.contains(internal::gMouse);
+		bool aMouseIsOver = aRect.contains(aMouse.position);
 
 		if (aMouseIsOver) {
 			if (internal::gMousePressed) {
@@ -1308,7 +1347,7 @@ namespace internal
 		}
 
 		// Tell if the button was clicked or not
-		return (aMouseIsOver && internal::gMouseJustReleased) || wasShortcutPressed;
+		return (aMouseIsOver && aMouse.justReleased) || wasShortcutPressed;
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel) {
@@ -1787,6 +1826,7 @@ void init(const cv::String& theWindowName, int theDelayWaitKey) {
 	internal::gDefaultWindow = theWindowName;
 	internal::gDelayWaitKey = theDelayWaitKey;
 	internal::gLastKeyPressed = -1;
+	internal::gSourceWindow = theWindowName;
 	//TODO: init gScreen here?
 
 	watch(theWindowName);
@@ -1803,6 +1843,10 @@ void watch(const cv::String& theWindowName) {
 
 	internal::gMouses[theWindowName] = aMouse;
 	cv::setMouseCallback(theWindowName, handleMouse, &internal::gMouses[theWindowName]);
+}
+
+void source(const cv::String& theWindowName) {
+	internal::gSourceWindow = theWindowName;
 }
 
 int lastKeyPressed() {
@@ -2000,9 +2044,13 @@ void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsi
 	internal::sparkline(aBlock, theValues, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theColor);
 }
 
-void update() {
-	internal::gMouseJustReleased = false;
+void update(const cv::String& theWindowName) {
+	// TODO: get mouse from context?
+	cv::String aWindowName = theWindowName.empty() ? internal::gDefaultWindow : theWindowName;
+	cvui_mouse_t& aMouse = internal::gMouses[aWindowName];
 
+	internal::gMouseJustReleased = false;
+	aMouse.justReleased = false;
 	internal::resetRenderingBuffer(internal::gScreen);
 
 	// If we were told to keep track of the keyboard shortcuts, we
@@ -2026,11 +2074,13 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 
 	if (theEvent == cv::EVENT_LBUTTONDOWN || theEvent == cv::EVENT_RBUTTONDOWN) {
 		internal::gMousePressed = true;
+		aMouse->pressed = true;
 
-	}
-	else if (theEvent == cv::EVENT_LBUTTONUP || theEvent == cv::EVENT_RBUTTONUP) {
+	} else if (theEvent == cv::EVENT_LBUTTONUP || theEvent == cv::EVENT_RBUTTONUP) {
 		internal::gMouseJustReleased = true;
 		internal::gMousePressed = false;
+		aMouse->justReleased = true;
+		aMouse->pressed = false;
 	}
 }
 
