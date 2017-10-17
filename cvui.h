@@ -896,17 +896,12 @@ typedef struct {
 typedef struct {
 	cv::String windowName;       // name of the window related to this context.
 	cvui_mouse_t mouse;          // the mouse cursor related to this context.
-	int lastKeyPressed;          // code of the last keyboard key pressed in this context.
 } cvui_context_t;
 
 // Internal namespace with all code that is shared among components/functions.
 // You should probably not be using anything from here.
 namespace internal
 {
-	// Variables to keep track of mouse events and stuff
-	static bool gMouseJustReleased = false;
-	static bool gMousePressed = false;
-	static cv::Point gMouse;
 	static cv::String gDefaultContext;
 	static cv::String gCurrentContext;
 	static std::map<cv::String, cvui_context_t> gContexts; // indexed by the window name.
@@ -1400,19 +1395,19 @@ namespace internal
 	}
 
 	bool checkbox(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
+		cvui_mouse_t& aMouse = mouse();
 		cv::Rect aRect(theX, theY, 15, 15);
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 		cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width + 6, aRect.height);
-		bool aMouseIsOver = aHitArea.contains(internal::gMouse);
+		bool aMouseIsOver = aHitArea.contains(aMouse.position);
 
 		if (aMouseIsOver) {
 			render::checkbox(theBlock, cvui::OVER, aRect);
 
-			if (internal::gMouseJustReleased) {
+			if (aMouse.justReleased) {
 				*theState = !(*theState);
 			}
-		}
-		else {
+		} else {
 			render::checkbox(theBlock, cvui::OUT, aRect);
 		}
 
@@ -1486,14 +1481,15 @@ namespace internal
 	}
 
 	bool trackbar(cvui_block_t& theBlock, int theX, int theY, int theWidth, long double *theValue, const TrackbarParams & theParams) {
+		cvui_mouse_t& aMouse = mouse();
 		cv::Rect aContentArea(theX, theY, theWidth, 45);
 		long double aValue = *theValue;
-		bool aMouseIsOver = aContentArea.contains(internal::gMouse);
+		bool aMouseIsOver = aContentArea.contains(aMouse.position);
 
 		render::trackbar(theBlock, aMouseIsOver ? OVER : OUT, aContentArea, *theValue, theParams);
 
-		if (internal::gMousePressed && aMouseIsOver) {
-			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, internal::gMouse.x);
+		if (aMouse.pressed && aMouseIsOver) {
+			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, aMouse.position.x);
 
 			if (bitsetHas(theParams.options, TRACKBAR_DISCRETE)) {
 				internal::trackbarForceValuesAsMultiplesOfSmallStep(theParams, theValue);
@@ -2060,7 +2056,6 @@ void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsi
 void update(const cv::String& theWindowName) {
 	cvui_context_t& aContext = internal::getContext(theWindowName);
 
-	internal::gMouseJustReleased = false; // TODO: remove
 	aContext.mouse.justReleased = false;
 	aContext.mouse.buttons[RIGHT].justReleased = false;
 	aContext.mouse.buttons[MIDDLE].justReleased = false;
@@ -2085,23 +2080,15 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 	int aEventsUp[3] = { cv::EVENT_LBUTTONUP, cv::EVENT_MBUTTONUP, cv::EVENT_RBUTTONUP };
 	
 	cvui_context_t *aContext = (cvui_context_t *)theData;
-
-	aContext->mouse.position.x = theX;
-	aContext->mouse.position.y = theY;
 	
 	for (int i = 0; i < 3; i++) {
 		int aBtn = aButtons[i];
 
 		if (theEvent == aEventsDown[i]) {
-			internal::gMousePressed = true; // TODO: remove
-
 			aContext->mouse.buttons[aBtn].pressed = true;
 			aContext->mouse.pressed = true;
 
 		} else if (theEvent == aEventsUp[i]) {
-			internal::gMouseJustReleased = true; // TODO: remove
-			internal::gMousePressed = false;// TODO: remove
-
 			aContext->mouse.justReleased = true;
 			aContext->mouse.pressed = false;
 			aContext->mouse.buttons[aBtn].justReleased = true;
@@ -2109,8 +2096,8 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 		}
 	}
 	
-	internal::gMouse.x = theX;
-	internal::gMouse.y = theY;
+	aContext->mouse.position.x = theX;
+	aContext->mouse.position.y = theY;
 }
 
 } // namespace cvui
