@@ -836,6 +836,9 @@ const int DOWN = 2;
 const int CLICK = 3;
 const int OVER = 4;
 const int OUT = 5;
+const int RIGHT = 6;
+const int LEFT = 7;
+const int MIDDLE = 8;
 
 // Constants regarding components
 const unsigned int TRACKBAR_HIDE_SEGMENT_LABELS = 1;
@@ -868,12 +871,19 @@ typedef struct {
 	std::string textAfterShortcut;
 } cvui_label_t;
 
+// Describes the information of a mouse button
+typedef struct {
+	bool justReleased;       // if the mouse button was released, i.e. click event.
+	bool pressed;            // if the mouse button is pressed or not.
+} cvui_mouse_btn_t;
+
 // Describes the information of a mouse cursor in a window
 typedef struct {
-	cv::String windowName;   // name of the window this mouse belongs to
-	bool justReleased;       // if the mouse button was released, i.e. click event.
-	bool pressed;            // if the mouse button is pressed or not
-	cv::Point position;      // x and y coordinates of the mouse at the moment
+	cv::String windowName;       // name of the window this mouse belongs to.
+	cvui_mouse_btn_t buttons[3]; // status of each button. Use cvui::{RIGHT,LEFT,MIDDLE} to access the buttons.
+	bool justReleased;           // if any mouse button was released, i.e. click event.
+	bool pressed;                // if any mouse button is pressed.
+	cv::Point position;          // x and y coordinates of the mouse at the moment.
 } cvui_mouse_t;
 
 // Internal namespace with all code that is shared among components/functions.
@@ -886,9 +896,9 @@ namespace internal
 	static cv::Point gMouse;
 	static cv::String gDefaultWindow;
 	static cv::String gSourceWindow;
-	static std::map<cv::String, cvui_mouse_t> gMouses; // indexed by the window name
+	static std::map<cv::String, cvui_mouse_t> gMouses; // indexed by the window name. TODO: Replace with cvui_context_t.
 	static char gBuffer[1024];
-	static int gLastKeyPressed;
+	static int gLastKeyPressed; // TODO: collect it per window
 	static int gDelayWaitKey;
 	static cvui_block_t gScreen;
 
@@ -1310,23 +1320,10 @@ namespace internal
 		// Make the button bit enough to house the label
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
 
-		// Check the state of the button (idle, pressed, etc.)
-		bool aMouseIsOver = aRect.contains(aMouse.position);
-
-		if (aMouseIsOver) {
-			if (internal::gMousePressed) {
-				render::button(theBlock, cvui::DOWN, aRect, theLabel);
-				render::buttonLabel(theBlock, cvui::DOWN, aRect, theLabel, aTextSize);
-			}
-			else {
-				render::button(theBlock, cvui::OVER, aRect, theLabel);
-				render::buttonLabel(theBlock, cvui::OVER, aRect, theLabel, aTextSize);
-			}
-		}
-		else {
-			render::button(theBlock, cvui::OUT, aRect, theLabel);
-			render::buttonLabel(theBlock, cvui::OUT, aRect, theLabel, aTextSize);
-		}
+		// Render the button according to mouse interaction, e.g. OVER, DOWN, OUT.
+		int aStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
+		render::button(theBlock, aStatus, aRect, theLabel);
+		render::buttonLabel(theBlock, aStatus, aRect, theLabel, aTextSize);
 
 		// Update the layout flow according to button size
 		// if we were told to update.
@@ -1335,19 +1332,19 @@ namespace internal
 			updateLayoutFlow(theBlock, aSize);
 		}
 
-		bool wasShortcutPressed = false;
+		bool aWasShortcutPressed = false;
 
 		//Handle keyboard shortcuts
 		if (internal::gLastKeyPressed != -1) {
 			// TODO: replace with something like strpos(). I think it has better performance.
 			auto aLabel = internal::createLabel(theLabel);
 			if (aLabel.hasShortcut && (tolower(aLabel.shortcut) == tolower((char)internal::gLastKeyPressed))) {
-				wasShortcutPressed = true;
+				aWasShortcutPressed = true;
 			}
 		}
 
-		// Tell if the button was clicked or not
-		return (aMouseIsOver && aMouse.justReleased) || wasShortcutPressed;
+		// Return true if the button was clicked
+		return aStatus == cvui::CLICK || aWasShortcutPressed;
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel) {
@@ -1363,9 +1360,9 @@ namespace internal
 		int aStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
 
 		switch (aStatus) {
-		case cvui::OUT: render::image(theBlock, aRect, theIdle); break;
-		case cvui::OVER: render::image(theBlock, aRect, theOver); break;
-		case cvui::DOWN: render::image(theBlock, aRect, theDown); break;
+			case cvui::OUT: render::image(theBlock, aRect, theIdle); break;
+			case cvui::OVER: render::image(theBlock, aRect, theOver); break;
+			case cvui::DOWN: render::image(theBlock, aRect, theDown); break;
 		}
 
 		// Update the layout flow according to button size
@@ -2065,23 +2062,33 @@ void update(const cv::String& theWindowName) {
 }
 
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
+	int aButtons[3] = { cvui::LEFT, cvui::MIDDLE, cvui::RIGHT };
+	int aEventsDown[3] = { cv::EVENT_LBUTTONDOWN, cv::EVENT_MBUTTONDOWN, cv::EVENT_RBUTTONDOWN };
+	int aEventsUp[3] = { cv::EVENT_LBUTTONUP, cv::EVENT_MBUTTONUP, cv::EVENT_RBUTTONUP };
+	
 	cvui_mouse_t *aMouse = (cvui_mouse_t *)theData;
 
 	aMouse->position.x = theX;
 	aMouse->position.y = theY;
+	
+	for (int i = 0; i < 3; i++) {
+		int aBtn = aButtons[i];
+
+		if (theEvent == aEventsDown[i]) {
+			internal::gMousePressed = true; // TODO: remove
+			aMouse->buttons[aBtn].pressed = true;
+			aMouse->pressed = true;
+
+		} else if (theEvent == aEventsUp[i]) {
+			internal::gMouseJustReleased = true; // TODO: remove
+			internal::gMousePressed = false;// TODO: remove
+			aMouse->justReleased = true;
+			aMouse->buttons[aBtn].pressed = false;
+		}
+	}
+	
 	internal::gMouse.x = theX;
 	internal::gMouse.y = theY;
-
-	if (theEvent == cv::EVENT_LBUTTONDOWN || theEvent == cv::EVENT_RBUTTONDOWN) {
-		internal::gMousePressed = true;
-		aMouse->pressed = true;
-
-	} else if (theEvent == cv::EVENT_LBUTTONUP || theEvent == cv::EVENT_RBUTTONUP) {
-		internal::gMouseJustReleased = true;
-		internal::gMousePressed = false;
-		aMouse->justReleased = true;
-		aMouse->pressed = false;
-	}
 }
 
 } // namespace cvui
