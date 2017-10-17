@@ -47,14 +47,19 @@ typedef struct {
  \param theWindowName name of the window where the components will be added.
  \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
 */
-void init(const cv::String& theWindowName, int theDelayWaitKey = -1);
+void init(const cv::String& theWindowName, int theDelayWaitKey = -1, bool theCreateNamedWindow = true);
+
+/**
+ TODO: add docs
+*/
+void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDelayWaitKey = -1, bool theCreateNamedWindows = true);
 
 /**
  TODO: add docs
 
  \param theWindowName name of the window where the components will be added
 */
-void watch(const cv::String& theWindowName);
+void watch(const cv::String& theWindowName, bool theCreateNamedWindows = true);
 
 /**
 TODO: add docs
@@ -932,6 +937,7 @@ namespace internal
 	static int gStackCount = -1;
 	static const int gTrackbarMarginX = 14;
 
+	void init(const cv::String& theWindowName, int theDelayWaitKey);
 	cvui_context_t& getContext(const cv::String& theWindowName = "");
 	bool bitsetHas(unsigned int theBitset, unsigned int theValue);
 	void error(int theId, std::string theMessage);
@@ -1062,6 +1068,13 @@ namespace cvui
 // that is shared among components/functions
 namespace internal
 {
+	void init(const cv::String& theWindowName, int theDelayWaitKey) {
+		internal::gDefaultContext = theWindowName;
+		internal::gCurrentContext = theWindowName;
+		internal::gDelayWaitKey = theDelayWaitKey;
+		internal::gLastKeyPressed = -1;
+	}
+
 	cvui_context_t& getContext(const cv::String& theWindowName) {
 		if (!theWindowName.empty()) {
 			// Get context in particular
@@ -1827,18 +1840,27 @@ namespace render
 	}
 } // namespace render
 
-void init(const cv::String& theWindowName, int theDelayWaitKey) {
-	internal::gDefaultContext = theWindowName;
-	internal::gCurrentContext = theWindowName;
-	internal::gDelayWaitKey = theDelayWaitKey;
-	internal::gLastKeyPressed = -1;
-	//TODO: init gScreen here?
-
-	watch(theWindowName);
+void init(const cv::String& theWindowName, int theDelayWaitKey, bool theCreateNamedWindow) {
+	internal::init(theWindowName, theDelayWaitKey);
+	watch(theWindowName, theCreateNamedWindow);
 }
 
-void watch(const cv::String& theWindowName) {
+void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDelayWaitKey, bool theCreateNamedWindows) {
+	size_t aSize = sizeof(theWindowNames) / sizeof(theWindowNames[0]);
+
+	internal::init(theWindowNames[0], theDelayWaitKey);
+
+	for (size_t i = 0; i < theHowManyWindows; i++) {
+		watch(theWindowNames[i], theCreateNamedWindows);
+	}
+}
+
+void watch(const cv::String& theWindowName, bool theCreateNamedWindow) {
 	cvui_context_t aContex;
+
+	if (theCreateNamedWindow) {
+		cv::namedWindow(theWindowName);
+	}
 
 	aContex.windowName = theWindowName;
 	aContex.mouse.position.x = 0;

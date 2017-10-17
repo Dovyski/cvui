@@ -39,16 +39,10 @@ void window(const cv::String& name) {
 
 int main(int argc, const char *argv[])
 {
-	// Init a OpenCV window and tell cvui to use it.
-	// If cv::namedWindow() is not used, mouse events will
-	// not be captured by cvui.
-	cv::namedWindow(WINDOW1_NAME);
-	cv::namedWindow(WINDOW2_NAME);
-	cv::namedWindow(WINDOW3_NAME);
-	
-	cvui::init(WINDOW1_NAME);
-	cvui::watch(WINDOW2_NAME);
-	cvui::watch(WINDOW3_NAME);
+	// Init cvui. If you don't tell otherwise, cvui will create the required OpenCV
+	// windows based on the list of names you provided.
+	const cv::String windows[] = { WINDOW1_NAME, WINDOW2_NAME, WINDOW3_NAME };
+	cvui::init(windows, 3);
 
 	while (true) {
 		window(WINDOW1_NAME);
