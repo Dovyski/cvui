@@ -34,6 +34,14 @@ namespace cvui
 void init(const cv::String& theWindowName, int theDelayWaitKey = -1);
 
 /**
+ TODO: add docs
+
+ \param theWindowName name of the window where the components will be added
+ \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
+*/
+void watch(const cv::String& theWindowName);
+
+/**
  Return the last key that was pressed. This function will only
  work if a value greater than zero was passed to `cvui::init()`
  as the delay waitkey parameter.
@@ -846,6 +854,14 @@ typedef struct {
 	std::string textAfterShortcut;
 } cvui_label_t;
 
+// Describes the information of the mouse cursor in a window
+typedef struct {
+	cv::String windowName;
+	bool justReleased;
+	bool pressed;
+	cv::Point position;
+} cvui_mouse_t;
+
 // Internal namespace with all code that is shared among components/functions.
 // You should probably not be using anything from here.
 namespace internal
@@ -854,6 +870,8 @@ namespace internal
 	static bool gMouseJustReleased = false;
 	static bool gMousePressed = false;
 	static cv::Point gMouse;
+	static cv::String gDefaultWindow;
+	static std::map <cv::String, cvui_mouse_t> gMouses; // indexed by the window name
 	static char gBuffer[1024];
 	static int gLastKeyPressed;
 	static int gDelayWaitKey;
@@ -1766,10 +1784,25 @@ namespace render
 } // namespace render
 
 void init(const cv::String& theWindowName, int theDelayWaitKey) {
-	cv::setMouseCallback(theWindowName, handleMouse, NULL);
+	internal::gDefaultWindow = theWindowName;
 	internal::gDelayWaitKey = theDelayWaitKey;
 	internal::gLastKeyPressed = -1;
 	//TODO: init gScreen here?
+
+	watch(theWindowName);
+}
+
+void watch(const cv::String& theWindowName) {
+	cvui_mouse_t aMouse;
+
+	aMouse.windowName = theWindowName;
+	aMouse.position.x = 0;
+	aMouse.position.y = 0;
+	aMouse.justReleased = false;
+	aMouse.pressed = false;
+
+	internal::gMouses[theWindowName] = aMouse;
+	cv::setMouseCallback(theWindowName, handleMouse, &internal::gMouses[theWindowName]);
 }
 
 int lastKeyPressed() {
@@ -1984,6 +2017,10 @@ void update() {
 }
 
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
+	cvui_mouse_t *aMouse = (cvui_mouse_t *)theData;
+
+	aMouse->position.x = theX;
+	aMouse->position.y = theY;
 	internal::gMouse.x = theX;
 	internal::gMouse.y = theY;
 
