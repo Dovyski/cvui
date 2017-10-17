@@ -18,7 +18,7 @@ void window(const cv::String& name) {
 	cv::Mat frame = cv::Mat(200, 500, CV_8UC3);
 	frame = cv::Scalar(49, 52, 49);
 
-	cvui::source(name);
+	cvui::context(name);
 
 	// Show info regarding the window
 	cvui::printf(frame, 110, 50, "%s - click the button", name.c_str());

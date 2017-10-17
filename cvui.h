@@ -21,6 +21,20 @@
 
 namespace cvui
 {
+// Describe a mouse button
+typedef struct {
+	bool justReleased;          // if the mouse button was released, i.e. click event.
+	bool pressed;               // if the mouse button is pressed or not.
+} cvui_mouse_btn_t;
+
+// Describe the information of the mouse cursor
+typedef struct {
+	cvui_mouse_btn_t buttons[3]; // status of each button. Use cvui::{RIGHT,LEFT,MIDDLE} to access the buttons.
+	bool justReleased;           // if any mouse button was released, i.e. click event.
+	bool pressed;                // if any mouse button is pressed.
+	cv::Point position;          // x and y coordinates of the mouse at the moment.
+} cvui_mouse_t;
+
 /**
  Initializes the library. You must provide the name of the window where
  the components will be added. It is also possible to tell cvui to handle
@@ -47,7 +61,14 @@ TODO: add docs
 
 \param theWindowName name of the window that will receive components.
 */
-void source(const cv::String& theWindowName);
+void context(const cv::String& theWindowName);
+
+/**
+ TODO: add docs
+
+ \param theWindowName name of the window where the components will be added
+*/
+cvui_mouse_t& mouse(const cv::String& theWindowName = "");
 
 /**
  Return the last key that was pressed. This function will only
@@ -799,7 +820,7 @@ void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsi
 
  \sa init()
  \sa watch()
- \sa source()
+ \sa context()
 */
 void update(const cv::String& theWindowName = "");
 
@@ -836,9 +857,9 @@ const int DOWN = 2;
 const int CLICK = 3;
 const int OVER = 4;
 const int OUT = 5;
-const int RIGHT = 6;
-const int LEFT = 7;
-const int MIDDLE = 8;
+const int RIGHT = 0;
+const int LEFT = 1;
+const int MIDDLE = 2;
 
 // Constants regarding components
 const unsigned int TRACKBAR_HIDE_SEGMENT_LABELS = 1;
@@ -871,20 +892,12 @@ typedef struct {
 	std::string textAfterShortcut;
 } cvui_label_t;
 
-// Describes the information of a mouse button
+// Describes a (window) context.
 typedef struct {
-	bool justReleased;       // if the mouse button was released, i.e. click event.
-	bool pressed;            // if the mouse button is pressed or not.
-} cvui_mouse_btn_t;
-
-// Describes the information of a mouse cursor in a window
-typedef struct {
-	cv::String windowName;       // name of the window this mouse belongs to.
-	cvui_mouse_btn_t buttons[3]; // status of each button. Use cvui::{RIGHT,LEFT,MIDDLE} to access the buttons.
-	bool justReleased;           // if any mouse button was released, i.e. click event.
-	bool pressed;                // if any mouse button is pressed.
-	cv::Point position;          // x and y coordinates of the mouse at the moment.
-} cvui_mouse_t;
+	cv::String windowName;       // name of the window related to this context.
+	cvui_mouse_t mouse;          // the mouse cursor related to this context.
+	int lastKeyPressed;          // code of the last keyboard key pressed in this context.
+} cvui_context_t;
 
 // Internal namespace with all code that is shared among components/functions.
 // You should probably not be using anything from here.
@@ -894,9 +907,9 @@ namespace internal
 	static bool gMouseJustReleased = false;
 	static bool gMousePressed = false;
 	static cv::Point gMouse;
-	static cv::String gDefaultWindow;
-	static cv::String gSourceWindow;
-	static std::map<cv::String, cvui_mouse_t> gMouses; // indexed by the window name. TODO: Replace with cvui_context_t.
+	static cv::String gDefaultContext;
+	static cv::String gCurrentContext;
+	static std::map<cv::String, cvui_context_t> gContexts; // indexed by the window name.
 	static char gBuffer[1024];
 	static int gLastKeyPressed; // TODO: collect it per window
 	static int gDelayWaitKey;
@@ -924,7 +937,7 @@ namespace internal
 	static int gStackCount = -1;
 	static const int gTrackbarMarginX = 14;
 
-	cvui_mouse_t& getMouseFromContext();
+	cvui_context_t& getContext(const cv::String& theWindowName = "");
 	bool bitsetHas(unsigned int theBitset, unsigned int theValue);
 	void error(int theId, std::string theMessage);
 	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize);
@@ -1054,22 +1067,24 @@ namespace cvui
 // that is shared among components/functions
 namespace internal
 {
-	cvui_mouse_t& getMouseFromContext() {
-		if (!internal::gSourceWindow.empty()) {
-			// The source window is not empty, which means we are rendering components
-			// of a window in particular. Let's use the mouse cursor from that
-			// window then.
-			return internal::gMouses[internal::gSourceWindow];
+	cvui_context_t& getContext(const cv::String& theWindowName) {
+		if (!theWindowName.empty()) {
+			// Get context in particular
+			return internal::gContexts[theWindowName];
 
-		} else if (!internal::gDefaultWindow.empty()) {
-			// We have no source window, so let's use the default one.
-			return internal::gMouses[internal::gDefaultWindow];
+		} else if (!internal::gCurrentContext.empty()) {
+			// No window provided, return currently active context.
+			return internal::gContexts[internal::gCurrentContext];
+
+		} else if (!internal::gDefaultContext.empty()) {
+			// We have no active context, so let's use the default one.
+			return internal::gContexts[internal::gDefaultContext];
 
 		} else {
 			// Apparently we have no window at all! <o>
 			// This should not happen. Probably cvui::init() was never called.
-			internal::error(5, "No window to read info about mouse cursor. Have you forgot to call cvui::init()?");
-			return internal::gMouses["first"]; // return to make the compiler happy.
+			internal::error(5, "Unable to read context. Did you forget to call cvui::init()?");
+			return internal::gContexts["first"]; // return to make the compiler happy.
 		}
 	}
 
@@ -1286,7 +1301,7 @@ namespace internal
 	}
 
 	int iarea(int theX, int theY, int theWidth, int theHeight) {
-		cvui_mouse_t& aMouse = internal::getMouseFromContext();
+		cvui_mouse_t& aMouse = mouse();
 
 		// By default, return that the mouse is out of the interaction area.
 		int aRet = cvui::OUT;
@@ -1297,8 +1312,7 @@ namespace internal
 		if (aMouseIsOver) {
 			if (aMouse.pressed) {
 				aRet = cvui::DOWN;
-			}
-			else {
+			} else {
 				aRet = cvui::OVER;
 			}
 		}
@@ -1312,8 +1326,6 @@ namespace internal
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {
-		cvui_mouse_t& aMouse = internal::getMouseFromContext();
-
 		// Calculate the space that the label will fill
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 
@@ -1820,30 +1832,34 @@ namespace render
 } // namespace render
 
 void init(const cv::String& theWindowName, int theDelayWaitKey) {
-	internal::gDefaultWindow = theWindowName;
+	internal::gDefaultContext = theWindowName;
+	internal::gCurrentContext = theWindowName;
 	internal::gDelayWaitKey = theDelayWaitKey;
 	internal::gLastKeyPressed = -1;
-	internal::gSourceWindow = theWindowName;
 	//TODO: init gScreen here?
 
 	watch(theWindowName);
 }
 
 void watch(const cv::String& theWindowName) {
-	cvui_mouse_t aMouse;
+	cvui_context_t aContex;
 
-	aMouse.windowName = theWindowName;
-	aMouse.position.x = 0;
-	aMouse.position.y = 0;
-	aMouse.justReleased = false;
-	aMouse.pressed = false;
+	aContex.windowName = theWindowName;
+	aContex.mouse.position.x = 0;
+	aContex.mouse.position.y = 0;
+	aContex.mouse.justReleased = false;
+	aContex.mouse.pressed = false;
 
-	internal::gMouses[theWindowName] = aMouse;
-	cv::setMouseCallback(theWindowName, handleMouse, &internal::gMouses[theWindowName]);
+	internal::gContexts[theWindowName] = aContex;
+	cv::setMouseCallback(theWindowName, handleMouse, &internal::gContexts[theWindowName]);
 }
 
-void source(const cv::String& theWindowName) {
-	internal::gSourceWindow = theWindowName;
+void context(const cv::String& theWindowName) {
+	internal::gCurrentContext = theWindowName;
+}
+
+cvui_mouse_t& mouse(const cv::String& theWindowName) {
+	return internal::getContext().mouse;
 }
 
 int lastKeyPressed() {
@@ -2042,12 +2058,14 @@ void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsi
 }
 
 void update(const cv::String& theWindowName) {
-	// TODO: get mouse from context?
-	cv::String aWindowName = theWindowName.empty() ? internal::gDefaultWindow : theWindowName;
-	cvui_mouse_t& aMouse = internal::gMouses[aWindowName];
+	cvui_context_t& aContext = internal::getContext(theWindowName);
 
-	internal::gMouseJustReleased = false;
-	aMouse.justReleased = false;
+	internal::gMouseJustReleased = false; // TODO: remove
+	aContext.mouse.justReleased = false;
+	aContext.mouse.buttons[RIGHT].justReleased = false;
+	aContext.mouse.buttons[MIDDLE].justReleased = false;
+	aContext.mouse.buttons[LEFT].justReleased = false;
+	
 	internal::resetRenderingBuffer(internal::gScreen);
 
 	// If we were told to keep track of the keyboard shortcuts, we
@@ -2066,24 +2084,28 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 	int aEventsDown[3] = { cv::EVENT_LBUTTONDOWN, cv::EVENT_MBUTTONDOWN, cv::EVENT_RBUTTONDOWN };
 	int aEventsUp[3] = { cv::EVENT_LBUTTONUP, cv::EVENT_MBUTTONUP, cv::EVENT_RBUTTONUP };
 	
-	cvui_mouse_t *aMouse = (cvui_mouse_t *)theData;
+	cvui_context_t *aContext = (cvui_context_t *)theData;
 
-	aMouse->position.x = theX;
-	aMouse->position.y = theY;
+	aContext->mouse.position.x = theX;
+	aContext->mouse.position.y = theY;
 	
 	for (int i = 0; i < 3; i++) {
 		int aBtn = aButtons[i];
 
 		if (theEvent == aEventsDown[i]) {
 			internal::gMousePressed = true; // TODO: remove
-			aMouse->buttons[aBtn].pressed = true;
-			aMouse->pressed = true;
+
+			aContext->mouse.buttons[aBtn].pressed = true;
+			aContext->mouse.pressed = true;
 
 		} else if (theEvent == aEventsUp[i]) {
 			internal::gMouseJustReleased = true; // TODO: remove
 			internal::gMousePressed = false;// TODO: remove
-			aMouse->justReleased = true;
-			aMouse->buttons[aBtn].pressed = false;
+
+			aContext->mouse.justReleased = true;
+			aContext->mouse.pressed = false;
+			aContext->mouse.buttons[aBtn].justReleased = true;
+			aContext->mouse.buttons[aBtn].pressed = false;
 		}
 	}
 	
