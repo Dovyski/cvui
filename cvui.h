@@ -81,8 +81,13 @@ cvui_mouse_t& mouse(const cv::String& theWindowName = "");
  as the delay waitkey parameter.
 
  \sa init()
- */
+*/
 int lastKeyPressed();
+
+/**
+ Return the last position of the mouse.
+*/
+cv::Point mouseLocation();
 
 /**
  Display a button. The size of the button will be automatically adjusted to
@@ -1882,6 +1887,11 @@ cvui_mouse_t& mouse(const cv::String& theWindowName) {
 
 int lastKeyPressed() {
 	return internal::gLastKeyPressed;
+}
+
+cv::Point mouseLocation()
+{
+	return internal::gMouse;
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
