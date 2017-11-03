@@ -72,6 +72,14 @@ int lastKeyPressed();
 cv::Point mouse(const cv::String& theWindowName = "");
 
 /**
+ Return the last position of the mouse.
+ TODO: add docs
+
+ \param theQuery TODO: write docs
+*/
+bool mouse(int theQuery);
+
+/**
  Display a button. The size of the button will be automatically adjusted to
  properly house the label content.
 
@@ -849,9 +857,11 @@ const int DOWN = 2;
 const int CLICK = 3;
 const int OVER = 4;
 const int OUT = 5;
-const int RIGHT = 0;
-const int LEFT = 1;
-const int MIDDLE = 2;
+const int UP = 6;
+const int IS_DOWN = 7;
+const int LEFT = 0;
+const int MIDDLE = 1;
+const int RIGHT = 2;
 
 // Constants regarding components
 const unsigned int TRACKBAR_HIDE_SEGMENT_LABELS = 1;
@@ -887,6 +897,7 @@ typedef struct {
 // Describe a mouse button
 typedef struct {
 	bool justReleased;          // if the mouse button was released, i.e. click event.
+	bool justPressed;           // if the mouse button was just pressed, i.e. true for a frame when a button is down.
 	bool pressed;               // if the mouse button is pressed or not.
 } cvui_mouse_btn_t;
 
@@ -894,6 +905,7 @@ typedef struct {
 typedef struct {
 	cvui_mouse_btn_t buttons[3]; // status of each button. Use cvui::{RIGHT,LEFT,MIDDLE} to access the buttons.
 	bool justReleased;           // if any mouse button was released, i.e. click event.
+	bool justPressed;            // if any mouse button was just pressed, i.e. true for a frame when the button is down.
 	bool pressed;                // if any mouse button is pressed.
 	cv::Point position;          // x and y coordinates of the mouse at the moment.
 } cvui_mouse_t;
@@ -1867,6 +1879,7 @@ void watch(const cv::String& theWindowName, bool theCreateNamedWindow) {
 	aContex.mouse.position.x = 0;
 	aContex.mouse.position.y = 0;
 	aContex.mouse.justReleased = false;
+	aContex.mouse.justPressed = false;
 	aContex.mouse.pressed = false;
 
 	internal::gContexts[theWindowName] = aContex;
@@ -1883,6 +1896,23 @@ int lastKeyPressed() {
 
 cv::Point mouse(const cv::String& theWindowName) {
 	return internal::getContext().mouse.position;
+}
+
+bool mouse(int theQuery) {
+	bool aRet = false;
+	cvui_mouse_t& aMouse = internal::getContext().mouse;
+
+	switch (theQuery) {
+		case cvui::CLICK:
+		case cvui::UP:
+			aRet = aMouse.justReleased; break;
+		case cvui::DOWN:
+			aRet = aMouse.justPressed; break;
+		case cvui::IS_DOWN:
+			aRet = aMouse.pressed; break;
+	}
+
+	return aRet;
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
@@ -2080,9 +2110,12 @@ void update(const cv::String& theWindowName) {
 	cvui_context_t& aContext = internal::getContext(theWindowName);
 
 	aContext.mouse.justReleased = false;
-	aContext.mouse.buttons[RIGHT].justReleased = false;
-	aContext.mouse.buttons[MIDDLE].justReleased = false;
-	aContext.mouse.buttons[LEFT].justReleased = false;
+	aContext.mouse.justPressed = false;
+
+	for (int i = cvui::LEFT; i <= cvui::RIGHT; i++) {
+		aContext.mouse.buttons[i].justReleased = false;
+		aContext.mouse.buttons[i].justPressed = false;
+	}
 	
 	internal::resetRenderingBuffer(internal::gScreen);
 
@@ -2108,8 +2141,10 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 		int aBtn = aButtons[i];
 
 		if (theEvent == aEventsDown[i]) {
-			aContext->mouse.buttons[aBtn].pressed = true;
+			aContext->mouse.justPressed = true;
 			aContext->mouse.pressed = true;
+			aContext->mouse.buttons[aBtn].justPressed = true;
+			aContext->mouse.buttons[aBtn].pressed = true;
 
 		} else if (theEvent == aEventsUp[i]) {
 			aContext->mouse.justReleased = true;
