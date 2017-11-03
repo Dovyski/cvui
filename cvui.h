@@ -21,20 +21,6 @@
 
 namespace cvui
 {
-// Describe a mouse button
-typedef struct {
-	bool justReleased;          // if the mouse button was released, i.e. click event.
-	bool pressed;               // if the mouse button is pressed or not.
-} cvui_mouse_btn_t;
-
-// Describe the information of the mouse cursor
-typedef struct {
-	cvui_mouse_btn_t buttons[3]; // status of each button. Use cvui::{RIGHT,LEFT,MIDDLE} to access the buttons.
-	bool justReleased;           // if any mouse button was released, i.e. click event.
-	bool pressed;                // if any mouse button is pressed.
-	cv::Point position;          // x and y coordinates of the mouse at the moment.
-} cvui_mouse_t;
-
 /**
  Initializes the library. You must provide the name of the window where
  the components will be added. It is also possible to tell cvui to handle
@@ -69,13 +55,6 @@ TODO: add docs
 void context(const cv::String& theWindowName);
 
 /**
- TODO: add docs
-
- \param theWindowName name of the window where the components will be added
-*/
-cvui_mouse_t& mouse(const cv::String& theWindowName = "");
-
-/**
  Return the last key that was pressed. This function will only
  work if a value greater than zero was passed to `cvui::init()`
  as the delay waitkey parameter.
@@ -86,8 +65,11 @@ int lastKeyPressed();
 
 /**
  Return the last position of the mouse.
+ TODO: add docs
+
+ \param theWindowName name of the window where the components will be added
 */
-cv::Point mouseLocation();
+cv::Point mouse(const cv::String& theWindowName = "");
 
 /**
  Display a button. The size of the button will be automatically adjusted to
@@ -902,6 +884,20 @@ typedef struct {
 	std::string textAfterShortcut;
 } cvui_label_t;
 
+// Describe a mouse button
+typedef struct {
+	bool justReleased;          // if the mouse button was released, i.e. click event.
+	bool pressed;               // if the mouse button is pressed or not.
+} cvui_mouse_btn_t;
+
+// Describe the information of the mouse cursor
+typedef struct {
+	cvui_mouse_btn_t buttons[3]; // status of each button. Use cvui::{RIGHT,LEFT,MIDDLE} to access the buttons.
+	bool justReleased;           // if any mouse button was released, i.e. click event.
+	bool pressed;                // if any mouse button is pressed.
+	cv::Point position;          // x and y coordinates of the mouse at the moment.
+} cvui_mouse_t;
+
 // Describes a (window) context.
 typedef struct {
 	cv::String windowName;       // name of the window related to this context.
@@ -1314,7 +1310,7 @@ namespace internal
 	}
 
 	int iarea(int theX, int theY, int theWidth, int theHeight) {
-		cvui_mouse_t& aMouse = mouse();
+		cvui_mouse_t& aMouse = internal::getContext().mouse;
 
 		// By default, return that the mouse is out of the interaction area.
 		int aRet = cvui::OUT;
@@ -1413,7 +1409,7 @@ namespace internal
 	}
 
 	bool checkbox(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
-		cvui_mouse_t& aMouse = mouse();
+		cvui_mouse_t& aMouse = internal::getContext().mouse;
 		cv::Rect aRect(theX, theY, 15, 15);
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 		cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width + 6, aRect.height);
@@ -1499,7 +1495,7 @@ namespace internal
 	}
 
 	bool trackbar(cvui_block_t& theBlock, int theX, int theY, int theWidth, long double *theValue, const TrackbarParams & theParams) {
-		cvui_mouse_t& aMouse = mouse();
+		cvui_mouse_t& aMouse = internal::getContext().mouse;
 		cv::Rect aContentArea(theX, theY, theWidth, 45);
 		long double aValue = *theValue;
 		bool aMouseIsOver = aContentArea.contains(aMouse.position);
@@ -1881,17 +1877,12 @@ void context(const cv::String& theWindowName) {
 	internal::gCurrentContext = theWindowName;
 }
 
-cvui_mouse_t& mouse(const cv::String& theWindowName) {
-	return internal::getContext().mouse;
-}
-
 int lastKeyPressed() {
 	return internal::gLastKeyPressed;
 }
 
-cv::Point mouseLocation()
-{
-	return internal::gMouse;
+cv::Point mouse(const cv::String& theWindowName) {
+	return internal::getContext().mouse.position;
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
