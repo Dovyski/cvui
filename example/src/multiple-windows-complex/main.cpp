@@ -43,6 +43,7 @@ int main(int argc, const char *argv[])
 	cv::namedWindow(WINDOW2_NAME);
 	
 	// Init cvui and inform it to use the first window as the default one.
+	// cvui::init() will automatically watch the informed window.
 	cvui::init(WINDOW1_NAME);
 
 	// Tell cvui to keep track of mouse events in window2 as well.
