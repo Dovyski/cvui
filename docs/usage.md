@@ -10,14 +10,10 @@ There are two mandatory steps you need to perform in order to make cvui work. Fi
 Below is a very simple program using the basics of cvui:
 
 {% highlight c++ %}
-
-#include <iostream>
-
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/opencv.hpp"
 #include "cvui.h"
 
-#define WINDOW_NAME		"CVUI Test"
+#define WINDOW_NAME "CVUI Test"
 
 int main(int argc, const char *argv[])
 {
@@ -29,11 +25,14 @@ int main(int argc, const char *argv[])
 	while (true) {
 		frame = cv::Scalar(49, 52, 49);
 
-		cvui::text(frame, 50, 30, "Hey there!");
+		cvui::text(frame, 50, 30, "Hello, world!");
 		cvui::update();
 
 		cv::imshow(WINDOW_NAME, frame);
-		cv::waitKey(30);
+
+		if(cv::waitKey(30) == 27) {
+			break;
+		}
 	}
 
 	return 0;

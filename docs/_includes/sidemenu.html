@@ -6,6 +6,7 @@
             <li>
                 <span class="nav__sub-title">Getting started</span>
                 <ul>
+                    <li class="{% if page.title == 'index' %}active{% endif %}"><a href="{{ site.url }}">About</a></li>
                     <li class="{% if page.title == 'instalation' %}active{% endif %}"><a href="{{ site.url }}/instalation">Instalation</a></li>
                     <li class="{% if page.title == 'build' %}active{% endif %}"><a href="{{ site.url }}/build/">Build</a></li>
                     <li class="{% if page.title == 'usage' %}active{% endif %}"><a href="{{ site.url }}/usage/">Usage</a></li>
@@ -31,7 +32,7 @@
             <li>
                 <span class="nav__sub-title">Rows and columns</span>
                 <ul>
-                    <li class="{% if page.title == 'layout-introduction' %}active{% endif %}"><a href="{{ site.url }}/layout-introcution/">Introduction</a></li>
+                    <li class="{% if page.title == 'layout-introduction' %}active{% endif %}"><a href="{{ site.url }}/layout-introduction/">Introduction</a></li>
                     <li class="{% if page.title == 'layout-spacing' %}active{% endif %}"><a href="{{ site.url }}/layout-spacing/">Spacing</a></li>
                     <li class="{% if page.title == 'layout-nesting' %}active{% endif %}"><a href="{{ site.url }}/layout-nesting/">Nesting</a></li>
                 </ul>
