@@ -75,6 +75,12 @@ int main(int argc, const char *argv[])
 			working = false;
 		}
 
+		// Ensure ROI is within bounds
+		roi.x = roi.x < 0 ? 0 : roi.x;
+		roi.y = roi.y < 0 ? 0 : roi.y;
+		roi.width = roi.x + roi.width > lena.cols ? roi.width + lena.cols - (roi.x + roi.width) : roi.width;
+		roi.height = roi.y + roi.height > lena.rows ? roi.height + lena.rows - (roi.y + roi.height) : roi.height;
+
 		// Render the roi
 		cvui::rect(frame, roi.x, roi.y, roi.width, roi.height, 0xff0000);
 
@@ -87,7 +93,7 @@ int main(int argc, const char *argv[])
 
 		// If the ROI is valid, show it.
 		if (roi.area() > 0 && !working) {
-			cv::imshow(ROI_WINDOW, frame(roi));
+			cv::imshow(ROI_WINDOW, lena(roi));
 		}
 
 		// Check if ESC key was pressed
