@@ -40,6 +40,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mouse-complex", "src\mouse-
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mouse-complex-buttons", "src\mouse-complex-buttons\mouse-complex-buttons.vcxproj", "{095E1618-006A-4142-AA0E-DC66FEA1D0E4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multiple-files", "src\multiple-files\multiple-files.vcxproj", "{2808F6A4-4C27-49D8-B0BF-C09CECFF6313}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -122,6 +124,10 @@ Global
 		{095E1618-006A-4142-AA0E-DC66FEA1D0E4}.Debug|x64.Build.0 = Debug|x64
 		{095E1618-006A-4142-AA0E-DC66FEA1D0E4}.Release|x64.ActiveCfg = Release|x64
 		{095E1618-006A-4142-AA0E-DC66FEA1D0E4}.Release|x64.Build.0 = Release|x64
+		{2808F6A4-4C27-49D8-B0BF-C09CECFF6313}.Debug|x64.ActiveCfg = Debug|x64
+		{2808F6A4-4C27-49D8-B0BF-C09CECFF6313}.Debug|x64.Build.0 = Debug|x64
+		{2808F6A4-4C27-49D8-B0BF-C09CECFF6313}.Release|x64.ActiveCfg = Release|x64
+		{2808F6A4-4C27-49D8-B0BF-C09CECFF6313}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

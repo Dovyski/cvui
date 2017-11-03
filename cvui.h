@@ -1081,8 +1081,22 @@ bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax
 
 // Below this line is the implementation of all functions declared above.
 
-#ifndef _CVUI_IMPLEMENTATION_
+// If someone told us to have the definitions only, we don't include
+// the implementation part of the lib.
+#if defined(_CVUI_API_ONLY) || defined(_CVUI_NO_IMPLEMENTATION)
+	#define _CVUI_IMPLEMENTATION_
+#endif // _CVUI_API_ONLY
+
+#if !defined(_CVUI_IMPLEMENTATION_) || defined(_CVUI_IMPLEMENTATION)
 #define _CVUI_IMPLEMENTATION_
+
+// Show some helping hand in case cvui.h does not compile because of inclusion in multiple files.
+#pragma message ("cvui.h: Compiling implementation.")
+#pragma message ("cvui.h: If you get any cvui compilation errors, e.g. items already defined, include cvui as the following in *all but one* of your files:")
+#pragma message ("cvui.h:   #define _CVUI_NO_IMPLEMENTATION")
+#pragma message ("cvui.h:   #include \"cvui.h\"")
+#pragma message ("cvui.h: One (and only one) of your files should include cvui as (without _CVUI_NO_IMPLEMENTATION):")
+#pragma message ("cvui.h:   #include \"cvui.h\"")
 
 namespace cvui
 {
