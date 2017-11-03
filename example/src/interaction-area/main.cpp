@@ -45,9 +45,9 @@ int main(int argc, const char *argv[])
 		//	OUT: mouse cursor is outside the interaction area
 		switch (status) {
 			case cvui::CLICK:	std::cout << "Rectangle was clicked!" << std::endl; break;
-			case cvui::DOWN:	cvui::text(frame, 240, 50, "Mouse is: DOWN"); break;
-			case cvui::OVER:	cvui::text(frame, 240, 50, "Mouse is: OVER"); break;
-			case cvui::OUT:		cvui::text(frame, 240, 50, "Mouse is: OUT"); break;
+			case cvui::DOWN:	cvui::printf(frame, 240, 50, "Mouse is: DOWN at (%i,%i)", cvui::mouseLocation().x, cvui::mouseLocation().y); break;
+			case cvui::OVER:	cvui::printf(frame, 240, 50, "Mouse is: OVER at (%i,%i)", cvui::mouseLocation().x, cvui::mouseLocation().y); break;
+			case cvui::OUT:		cvui::printf(frame, 240, 50, "Mouse is: OUT"); break;
 		}
 
 		// This function must be called *AFTER* all UI components. It does
