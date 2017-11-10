@@ -39,12 +39,8 @@ int main(int argc, const char *argv[])
 		// Let's show how many times the button has been clicked.
 		cvui::printf(frame, 250, 90, 0.4, 0xff0000, "Button click count: %d", count);
 
-		// This function must be called *AFTER* all UI components. It does
-		// all the behind the scenes magic to handle mouse clicks, etc.
-		cvui::update();
-
-		// Show everything on the screen
-		cv::imshow(WINDOW_NAME, frame);
+		// Update cvui stuff and show everything on the screen
+		cvui::imshow(WINDOW_NAME, frame);
 
 		// Check if ESC key was pressed
 		if (cv::waitKey(20) == 27) {

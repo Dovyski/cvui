@@ -48,11 +48,18 @@ void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDe
 void watch(const cv::String& theWindowName, bool theCreateNamedWindows = true);
 
 /**
-TODO: add docs
+ TODO: add docs
 
-\param theWindowName name of the window that will receive components.
+ \param theWindowName name of the window that will receive components.
 */
 void context(const cv::String& theWindowName);
+
+/**
+ TODO: add docs
+
+ \param theWindowName name of the window that will receive components.
+*/
+void imshow(const cv::String& theWindowName, cv::InputArray theFrame);
 
 /**
  Return the last key that was pressed. This function will only
@@ -1944,6 +1951,11 @@ void watch(const cv::String& theWindowName, bool theCreateNamedWindow) {
 
 void context(const cv::String& theWindowName) {
 	internal::gCurrentContext = theWindowName;
+}
+
+void imshow(const cv::String& theWindowName, cv::InputArray theFrame) {
+	cvui::update(theWindowName);
+	cv::imshow(theWindowName, theFrame);
 }
 
 int lastKeyPressed() {
