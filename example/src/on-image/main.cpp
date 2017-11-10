@@ -4,14 +4,13 @@ Author: Pascal Thomet
 */
 
 #include <iostream>
-
 #include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME		"CVUI Test"
+#define WINDOW_NAME	"CVUI Test"
 
 int main(int argc, const char *argv[])
 {
@@ -20,12 +19,7 @@ int main(int argc, const char *argv[])
 	cv::Mat doubleBuffer = frame.clone();
 	int trackbarWidth = 130;
 
-	// Init a OpenCV window and tell cvui to use it.
-	// If cv::namedWindow() is not used, mouse events will
-	// not be captured by cvui.
-	cv::namedWindow(WINDOW_NAME);
-	
-	// Tell cvui to use a value of 20 for cv::waitKey()
+	// Init cvui and tell it to use a value of 20 for cv::waitKey()
 	// because we want to enable keyboard shortcut for
 	// all components, e.g. button with label "&Quit".
 	// If cvui has a value for waitKey, it will call

@@ -4,10 +4,10 @@ Code licensed under the MIT license, check LICENSE file.
 */
 
 #include <iostream>
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
 #define WINDOW1_NAME "Windows 1"

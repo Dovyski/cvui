@@ -5,7 +5,10 @@ more than one OpenCV window.
 Code licensed under the MIT license, check LICENSE file.
 */
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
 #define WINDOW1_NAME "Window 1"

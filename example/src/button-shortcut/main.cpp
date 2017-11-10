@@ -4,23 +4,20 @@ Author: Pascal Thomet
 */
 
 #include <iostream>
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME		"Button shortcut"
+#define WINDOW_NAME	"Button shortcut"
 
 int main(int argc, const char *argv[])
 {
 	cv::Mat frame = cv::Mat(cv::Size(650, 150), CV_8UC3);
 
-	// Create an OpenCV window
-	cv::namedWindow(WINDOW_NAME);
-	
-	// Tell cvui to use a value of 20 for cv::waitKey()
+	// Init cvui and tell it to use a value of 20 for cv::waitKey()
 	// because we want to enable keyboard shortcut for
 	// all components, e.g. button with label "&Quit".
 	// If cvui has a value for waitKey, it will call

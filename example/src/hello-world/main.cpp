@@ -1,11 +1,15 @@
 /*
 This is an extremely simple demo application to showcase the
-principles of cvui.
+basic structure, features and use of cvui.
 
 Code licensed under the MIT license, check LICENSE file.
 */
 
 #include <opencv2/opencv.hpp>
+
+// One (and only one) of your C++ files must define CVUI_IMPLEMENTATION
+// before the inclusion of cvui.h to ensure its implementaiton is compiled.
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
 #define WINDOW_NAME "CVUI Hello World!"
@@ -15,10 +19,7 @@ int main(int argc, const char *argv[])
 	cv::Mat frame = cv::Mat(200, 500, CV_8UC3);
 	int count = 0;
 
-	// Init a OpenCV window and tell cvui to use it.
-	// If cv::namedWindow() is not used, mouse events will
-	// not be captured by cvui.
-	cv::namedWindow(WINDOW_NAME);
+	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME);
 
 	while (true) {

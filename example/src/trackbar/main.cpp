@@ -6,16 +6,13 @@ Authors: Pascal Thomet, Fernando Bevilacqua
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME		"Trackbar"
-
-
+#define WINDOW_NAME	"Trackbar"
 
 int main(int argc, const char *argv[])
 {
@@ -32,10 +29,7 @@ int main(int argc, const char *argv[])
 	// The x position of all trackbars used in this example
 	int x = 10;
 
-	// Init a OpenCV window and tell cvui to use it.
-	// If cv::namedWindow() is not used, mouse events will
-	// not be captured by cvui.
-	cv::namedWindow(WINDOW_NAME);
+	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME);
 
 	while (true) {

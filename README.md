@@ -23,11 +23,12 @@ Check the [examples](https://github.com/Dovyski/cvui/tree/master/example) folder
 
 ```c++
 #include <iostream>
+#include <opencv2/opencv.hpp>
 
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#define CVUI_IMPLEMENTATION
+#include "cvui.h"
 
-#define WINDOW_NAME		"CVUI Test"
+#define WINDOW_NAME "CVUI Test"
 
 int main(int argc, const char *argv[])
 {
@@ -35,7 +36,6 @@ int main(int argc, const char *argv[])
 	bool checked = false;
 	int count = 0;
 
-	cv::namedWindow(WINDOW_NAME);
 	cvui::init(WINDOW_NAME);
 
 	while (true) {
@@ -55,7 +55,10 @@ int main(int argc, const char *argv[])
 		cvui::update();
 
 		cv::imshow(WINDOW_NAME, frame);
-        cv::waitKey(30);
+        
+		if (cv::waitKey(30) == 27) {
+			break;
+		}
 	}
 
 	return 0;

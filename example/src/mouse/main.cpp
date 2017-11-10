@@ -7,7 +7,10 @@ Licensed under the MIT license.
 */
 
 #include <iostream>
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
 #define WINDOW_NAME	"Mouse"
@@ -16,10 +19,7 @@ int main(int argc, const char *argv[])
 {
 	cv::Mat frame = cv::Mat(300, 600, CV_8UC3);
 
-	// Init a OpenCV window and tell cvui to use it.
-	// If cv::namedWindow() is not used, mouse events will
-	// not be captured by cvui.
-	cv::namedWindow(WINDOW_NAME);
+	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME);
 
 	// Rectangle to be rendered according to mouse interactions.

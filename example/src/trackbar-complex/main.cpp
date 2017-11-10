@@ -4,14 +4,13 @@ Authors: Pascal Thomet, Fernando Bevilacqua
 */
 
 #include <iostream>
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME		"Trackbar and columns"
+#define WINDOW_NAME	"Trackbar and columns"
 
 int main(int argc, const char *argv[])
 {
@@ -25,10 +24,7 @@ int main(int argc, const char *argv[])
 	// Size of trackbars
 	int width = 400;
 
-	// Create an OpenCV window
-	cv::namedWindow(WINDOW_NAME);
-	
-	// Tell cvui to use a value of 20 for cv::waitKey()
+	// Init cvui and tell it to use a value of 20 for cv::waitKey()
 	// because we want to enable keyboard shortcut for
 	// all components, e.g. button with label "&Quit".
 	// If cvui has a value for waitKey, it will call

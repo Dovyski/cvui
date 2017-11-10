@@ -5,12 +5,17 @@ multiple files that use cvui.
 Code licensed under the MIT license, check LICENSE file.
 */
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
-// Add docs here
+// One (and only one) of your C++ files must define CVUI_IMPLEMENTATION
+// before the inclusion of cvui.h to ensure its implementaiton is compiled.
+// In this project, main.cpp (this file) is the one to ensure cvui.h gets
+// its implementaiton compiled.
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-// Include external classes
+// Include project external classes
 #include "Class1.h"
 #include "Class2.h"
 
@@ -23,10 +28,7 @@ int main(int argc, const char *argv[])
 	Class1 c1;
 	Class2 c2;
 
-	// Init a OpenCV window and tell cvui to use it.
-	// If cv::namedWindow() is not used, mouse events will
-	// not be captured by cvui.
-	cv::namedWindow(WINDOW_NAME);
+	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME);
 
 	while (true) {

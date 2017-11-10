@@ -6,13 +6,13 @@ Licensed under the MIT license.
 */
 
 #include <iostream>
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME		"Image button"
+#define WINDOW_NAME	"Image button"
 
 int main(int argc, const char *argv[])
 {
@@ -21,10 +21,7 @@ int main(int argc, const char *argv[])
 	cv::Mat down = cv::imread("./lena-face-red.jpg", cv::IMREAD_COLOR);
 	cv::Mat over = cv::imread("./lena-face-gray.jpg", cv::IMREAD_COLOR);
 
-	// Init a OpenCV window and tell cvui to use it.
-	// If cv::namedWindow() is not used, mouse events will
-	// not be captured by cvui.
-	cv::namedWindow(WINDOW_NAME);
+	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME);
 
 	while (true) {

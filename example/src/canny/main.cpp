@@ -5,6 +5,8 @@ Code licensed under the MIT license, check LICENSE file.
 */
 
 #include <opencv2/opencv.hpp>
+
+#define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
 #define WINDOW_NAME	"CVUI Canny Edge"
@@ -16,10 +18,7 @@ int main(int argc, const char *argv[])
 	int low_threshold = 50, high_threshold = 150;
 	bool use_canny = false;
 
-	// Init a OpenCV window and tell cvui to use it.
-	// If cv::namedWindow() is not used, mouse events will
-	// not be captured by cvui.
-	cv::namedWindow(WINDOW_NAME);
+	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME);
 
 	while (true) {
