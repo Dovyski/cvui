@@ -843,7 +843,8 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #endif
 #define CVUI_FILLED -1
 
-// Check for Windows-specific functions and react accordingly
+// If we are not in a Windows-based environment, replace Windows-specific functions with
+// their POSIX equivalents.
 #if !defined(_MSC_VER)
 	#define vsprintf_s vsprintf
 	#define sprintf_s sprintf
@@ -855,6 +856,17 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 	// (needed for those who compile with -Werror (make warning as errors)
 	#pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
+
+// Define a few platform-dependent macros
+#ifdef _MSC_VER
+	#define _CVUI_COMPILE_MESSAGE(x) message(x)
+#elif __GNUC__
+	#define _CVUI_COMPILE_MESSAGE(x) message x
+#endif
+
+// Some compilation messages
+#define _CVUI_IMPLEMENTATION_NOTICE "cvui.h: compiling implementation because of CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/"
+#define _CVUI_NO_IMPLEMENTATION_NOTICE "cvui.h: implementation skipped. Ensure one of your C++ files included cvui.h after a #define CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/"
 
 // Lib version
 static const char *VERSION = "2.0.0";
@@ -1081,22 +1093,18 @@ bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax
 
 // Below this line is the implementation of all functions declared above.
 
-// If someone told us to have the definitions only, we don't include
-// the implementation part of the lib.
-#if defined(_CVUI_API_ONLY) || defined(_CVUI_NO_IMPLEMENTATION)
-	#define _CVUI_IMPLEMENTATION_
-#endif // _CVUI_API_ONLY
+#if !defined(CVUI_IMPLEMENTATION) && !defined(CVUI_DISABLE_COMPILATION_NOTICES)
+	// cvui.h is being included without CVUI_IMEPLEMENTATION. Let's output a compile notice about it
+	// to help those trying to debug possible cvui compilation errors.
+	#pragma _CVUI_COMPILE_MESSAGE(_CVUI_NO_IMPLEMENTATION_NOTICE)
+#endif
 
-#if !defined(_CVUI_IMPLEMENTATION_) || defined(_CVUI_IMPLEMENTATION)
-#define _CVUI_IMPLEMENTATION_
+#ifdef CVUI_IMPLEMENTATION
 
 // Show some helping hand in case cvui.h does not compile because of inclusion in multiple files.
-#pragma message ("cvui.h: Compiling implementation.")
-#pragma message ("cvui.h: If you get any cvui compilation errors, e.g. items already defined, include cvui as the following in *all but one* of your files:")
-#pragma message ("cvui.h:   #define _CVUI_NO_IMPLEMENTATION")
-#pragma message ("cvui.h:   #include \"cvui.h\"")
-#pragma message ("cvui.h: One (and only one) of your files should include cvui as (without _CVUI_NO_IMPLEMENTATION):")
-#pragma message ("cvui.h:   #include \"cvui.h\"")
+#ifndef CVUI_DISABLE_COMPILATION_NOTICES
+	#pragma _CVUI_COMPILE_MESSAGE(_CVUI_IMPLEMENTATION_NOTICE)
+#endif
 
 namespace cvui
 {
@@ -2208,4 +2216,4 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 }
 
 } // namespace cvui
-#endif //_CVUI_IMPLEMENTATION_
+#endif // CVUI_IMPLEMENTATION
