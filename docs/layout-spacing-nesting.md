@@ -1,8 +1,8 @@
 ---
 layout: default
-title: layout-spacing
+title: layout-spacing-nesting
 ---
 
-# Spacing components in rows/columns
+# Spacing and nesting in rows/columns
 
 Sorry, the content for this page is under construction.

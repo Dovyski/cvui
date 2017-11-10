@@ -1,8 +1,8 @@
 ---
 layout: default
-title: layout-nesting
+title: mouse-introduction
 ---
 
-# Nesting rows and columns
+# Mouse
 
 Sorry, the content for this page is under construction.
