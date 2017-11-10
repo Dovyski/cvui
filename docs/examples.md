@@ -9,6 +9,8 @@ The [examples](https://github.com/Dovyski/cvui/tree/master/example) folder conta
 
 * [button-shortcut](https://github.com/Dovyski/cvui/tree/master/example/src/button-shortcut): how to use buttons with labels triggering keyboard shortcuts, e.g. `&Quit` will trigger the button when `Q` is pressed on the keyboard.
 
+* [canny](https://github.com/Dovyski/cvui/tree/master/example/src/canny): use checkboxes and sliders to dynamically apply and control the Canny Edge algorithm on an image.
+
 * [complext-layout](https://github.com/Dovyski/cvui/tree/master/example/src/complext-layout): use of several components to create a complex UI.
 
 * [image-button](https://github.com/Dovyski/cvui/tree/master/example/src/image-button): use of buttons with custom rendering based on images.
@@ -16,6 +18,21 @@ The [examples](https://github.com/Dovyski/cvui/tree/master/example) folder conta
 * [interaction-area](https://github.com/Dovyski/cvui/tree/master/example/src/interaction-area): tracking of mouse status within an area on the screen, e.g. over, clicked, etc.
 
 * [main-app](https://github.com/Dovyski/cvui/tree/master/example/src/main-app): simple application showcasing several components of cvui.
+
+* [mouse](https://github.com/Dovyski/cvui/tree/master/example/src/mouse): shows the capabilities of cvui's mouse API with a rectangle on the screen that can be adjusted with mouse clicks and drags.
+
+* [mouse-complex](https://github.com/Dovyski/cvui/tree/master/example/src/mouse-complex): shows more advanced capabilities of cvui's mouse API allowing the dynamic creation of a ROI for image visualization.
+
+* [mouse-complex-buttons](https://github.com/Dovyski/cvui/tree/master/example/src/mouse-complex-buttons): uses the fine details of cvui's mouse API to dynamically
+create ROIs for image visualization based on different mouse buttons.
+
+* [multiple-files](https://github.com/Dovyski/cvui/tree/master/example/src/multiple-files): demonstrates how to use cvui when a project has multiple files that include `cvui.h`, e.g. multiple classes.
+
+* [multiple-windows](https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows): demonstrates how you to use cvui in an application that uses
+more than one OpenCV window.
+
+* [multiple-windows-complex](https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows-complex): demonstrates how you to use cvui in an application that uses
+more than one OpenCV window relying on rows and colums for layout creation.
 
 * [nested-rows-columns](https://github.com/Dovyski/cvui/tree/master/example/src/nested-rows-columns): how to use nested rows and columns.
 

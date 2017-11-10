@@ -1,6 +1,6 @@
 /*
 This is application shows the mouse API of cvui. It shows a rectangle on the
-screen everytime the user clicks and drags and mouse cursor around.
+screen everytime the user clicks and drags the mouse cursor around.
 
 Copyright (c) 2017 Fernando Bevilacqua <dovyski@gmail.com>
 Licensed under the MIT license.
