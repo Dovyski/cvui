@@ -118,11 +118,20 @@ sub {
 
 img {
     max-width: 100%;
-    width: auto\9;
+    width: auto;
     height: auto;
     vertical-align: middle;
+    display: block;
+    margin: 0 auto;
     border: 0;
     -ms-interpolation-mode: bicubic
+}
+
+p.img-caption {
+    margin-top: -15px !important;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.8em !important;
 }
 
 button, input, select, textarea {
