@@ -23,7 +23,7 @@ mkdir build.release && cd build.release
 Generate project files:
 
 ```
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++
 ```
 
 Build everything:
@@ -47,7 +47,7 @@ mkdir build.debug && cd build.debug
 Generate project files:
 
 ```
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=gcc
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=g++
 ```
 
 Build everything:

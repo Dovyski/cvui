@@ -1925,8 +1925,6 @@ void init(const cv::String& theWindowName, int theDelayWaitKey, bool theCreateNa
 }
 
 void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDelayWaitKey, bool theCreateNamedWindows) {
-	size_t aSize = sizeof(theWindowNames) / sizeof(theWindowNames[0]);
-
 	internal::init(theWindowNames[0], theDelayWaitKey);
 
 	for (size_t i = 0; i < theHowManyWindows; i++) {
