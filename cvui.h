@@ -1614,9 +1614,14 @@ namespace internal
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
 		double aMin, aMax;
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
+		std::vector<double>::size_type aHowManyValues = theValues.size();
 
-		internal::findMinMax(theValues, &aMin, &aMax);
-		render::sparkline(theBlock, theValues, aRect, aMin, aMax, theColor);
+		if (aHowManyValues >= 2) {
+			internal::findMinMax(theValues, &aMin, &aMax);
+			render::sparkline(theBlock, theValues, aRect, aMin, aMax, theColor);
+		} else {
+			internal::text(theBlock, theX, theY, aHowManyValues == 0 ? "No data." : "Insufficient data points.", 0.4, 0xCECECE, false);
+		}
 
 		// Update the layout flow
 		cv::Size aSize(theWidth, theHeight);
