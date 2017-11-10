@@ -5,9 +5,13 @@ title: build
 
 # Build
 
-cvui requires *no special build* procedures. Just add the `cvui.h` file along with the rest of your source code and continue to compile your project the way you have being do so far. cvui has no other dependency than OpenCV `3.x` (or `2.x`) itself.
+cvui **does not require any special build procedure**. Just add the `cvui.h` file along with the rest of your source code and continue to compile your project the way you have being doing so far.
 
-The [examples](https://github.com/Dovyski/cvui/tree/master/example) provided with the lib do require a build. You can use cmake to build them.
+cvui has no dependency other than OpenCV `3.x` (or `2.x`) itself.
+
+## Building the examples
+
+The [examples](https://github.com/Dovyski/cvui/tree/master/example) provided with the lib do require a build. You can use [cmake](https://cmake.org) to build them.
 First clone cvui git repo:
 
 ```
