@@ -1,6 +1,6 @@
 ---
 layout: default
-title: mouse-introduction
+title: advanced-mouse
 ---
 
 # Mouse
