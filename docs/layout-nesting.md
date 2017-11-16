@@ -1,6 +1,6 @@
 ---
 layout: default
-title: layout-spacing-nesting
+title: layout-nesting
 ---
 
 # Nesting in rows/columns
