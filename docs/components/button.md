@@ -17,7 +17,7 @@ Below is a button whose width will auto-adjust according to the size of the labe
 
 {% highlight c++ %}
 // cv::Mat frame, x, y, label
-if (cvui::button(frame, 50, 60, "Button")) {
+if (cvui::button(frame, 100, 40, "Button")) {
     // button was clicked
 }
 {% endhighlight %}
@@ -26,7 +26,7 @@ It is also possible to specify the width and height of a button:
 
 {% highlight c++ %}
 // cv::Mat frame, x, y, width, height, label
-if (cvui::button(frame, 50, 60, 80, 30, "Button")) {
+if (cvui::button(frame, 100, 40, 100, 30, "Button")) {
     // button was clicked
 }
 {% endhighlight %}
