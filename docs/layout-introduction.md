@@ -10,13 +10,14 @@ One of the most annoying tasks when building UI is to calculate the position of 
 You create rows by using `beginRow()` and `endRow()`. Similarly you create columns by using `beginColumn()` and `endColumn()`. The signature of `cvui::begin*()` is:
 
 {% highlight c++ %}
-void begin{Row,Column}(
+void begin{Row,Column} (
   cv::Mat &theWhere,
   int theX,
   int theY,
   int theWidth = -1,
   int theHeight = -1,
-  int thePadding = 0)
+  int thePadding = 0
+)
 {% endhighlight %}
 
 Both `cvui::beginRow()` and `cvui::beginColumn()` require you to inform the frame where the row/column will be rendered and its `(x, y)` coordinate on the screen. Opitionally you can inform the width, height and padding of the row/column.
@@ -45,7 +46,7 @@ cvui::endRow();
 The code above will produce the following on the screen:
 
 ![Example of cvui::beginRow() and cvui::endRow()](/img/row-no-padding.png)
-<p class="img-caption">Figure 1: row with several components, which are automatically placed by cvui.</p>
+<p class="img-caption">Figure 1: row with several components automatically placed by cvui.</p>
 
 In the example above, the row will be rendered to `frame` at coordinates `(10, 20)`. Notice that all component calls between `beginRow()` and `endRow()` **do not** specify `(x, y)` coordinates, only width and height when needed, e.g. `cvui::window(80, 80, "window")` and `cvui::button(100, 30, "Fixed")`.
 

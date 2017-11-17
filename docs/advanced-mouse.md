@@ -5,7 +5,7 @@ title: advanced-mouse
 
 # Mouse
 
-cvui has its own mouse API which facilitates the tracking of mouse clicks and cursor position, for instance. Everything related to the mouse can be accessed from `cvui::mouse()`. The following sections will detail all mouse information available.
+cvui has its own mouse API to track mouse clicks and cursor position, for instance. Everything related to the mouse can be accessed from `cvui::mouse()`. The following sections will detail all mouse information available.
 
 ## Cursor position
 
@@ -63,7 +63,7 @@ if (cvui::mouse(cvui::CLICK)) {
 
 ## Check mouse buttons individually
 
-You can also query the state of a particular mouse button, so you can react to clicks on the left button of the mouse, for instance.
+You can also query the state of a particular mouse button, e.g. react to clicks on the left button of the mouse.
 
 Specific mouse buttons can be queried via `cvui::mouse(int, int)`, whose signature is:
 
