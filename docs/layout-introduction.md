@@ -5,17 +5,23 @@ title: layout-introduction
 
 # Rows and columns
 
-One of the most annoying tasks when building UI is to calculate the position of each component on the screen. cvui has a set of methods that abstract that process, so you don't have to think about (x,y) coordinates. Instead you just create rows/columns and cvui will arrange components for you.
+One of the most annoying tasks when building UI is to calculate the position of each component on the screen. cvui has a set of methods that abstract that process, so you don't have to think about `(x,y)`  coordinates. Instead you just create rows/columns and cvui will arrange components for you.
 
 You create rows by using `beginRow()` and `endRow()`. Similarly you create columns by using `beginColumn()` and `endColumn()`. The signature of `cvui::begin*()` is:
 
 {% highlight c++ %}
-void begin*(cv::Mat &theWhere, int theX, int theY, int theWidth = -1, int theHeight = -1, int thePadding = 0)
+void begin{Row,Column}(
+  cv::Mat &theWhere,
+  int theX,
+  int theY,
+  int theWidth = -1,
+  int theHeight = -1,
+  int thePadding = 0)
 {% endhighlight %}
 
-Both `cvui::beginRow()` and `cvui::beginColumn()` require you to inform the frame where the row/column will be rendered and its `(x, y)` coordinate on the screen. Opitionally you can inform the width, height and padding of a row/column.
+Both `cvui::beginRow()` and `cvui::beginColumn()` require you to inform the frame where the row/column will be rendered and its `(x, y)` coordinate on the screen. Opitionally you can inform the width, height and padding of the row/column.
 
-<div class="notice--warning"><strong>Notice:</strong> in <code>cvui::beginRow()</code> and <code>cvui::beginColumn()</code>, you inform (x,y) coordinates of the row/column itself, not the coordinates of its compoments.</div>
+<div class="notice--warning"><strong>Notice:</strong> in <code>cvui::beginRow()</code> and <code>cvui::beginColumn()</code>, you inform <code>(x,y)</code> coordinates of the row/column itself, not the coordinates of its compoments.</div>
 
 ## Create rows and columns
 
