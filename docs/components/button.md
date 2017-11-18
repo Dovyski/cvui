@@ -5,13 +5,15 @@ title: button
 
 # Button
 
-The `button()` function will render a button on the screen. The common signature of a button function is:
+`cvui::button()` renders a button on the screen. The common signature of a button function is:
 
 {% highlight c++ %}
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel)
 {% endhighlight %}
 
-where `theWhere` is the image/frame where the button will be rendered, `theX` is the position X, `theY` is the position Y, and `theLabel` is the text displayed inside the button. All button functions return `true` if the user clicked the button, or `false` otherwise.
+where `theWhere` is the image/frame where the button will be rendered, `theX` is the position X, `theY` is the position Y, and `theLabel` is the text displayed inside the button.
+
+All button functions return `true` if the user clicked the button, or `false` otherwise.
 
 ## Adjust width and height
 
