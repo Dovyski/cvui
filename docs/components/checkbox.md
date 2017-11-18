@@ -15,7 +15,7 @@ bool checkbox (
     const cv::String& theLabel,
     bool *theState,
     unsigned int theColor = 0xCECECE
-);
+)
 {% endhighlight %}
 
 where `theWhere` is the image/frame where the image will be rendered, `theX` is the position X, `theY` is the position Y, `theLabel` is text displayed besides the clickable checkbox square, `theState` describes the current state of the checkbox (`true` means the checkbox is checked) and `theColor` is color of the label in the format `0xRRGGBB`, e.g. `0xff0000` for red.
