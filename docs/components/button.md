@@ -5,7 +5,7 @@ title: button
 
 # Button
 
-`cvui::button()` renders a button on the screen. The common signature of a button function is:
+`cvui::button()` renders a button. The common signature of a button function is:
 
 {% highlight c++ %}
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel)

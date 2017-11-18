@@ -5,7 +5,7 @@ title: image
 
 # Image
 
-`cvui::image()` renders an image, i.e. `cv::Mat`, on the screen. The signature of the function is:
+`cvui::image()` renders an image, i.e. `cv::Mat`. The signature of the function is:
 
 {% highlight c++ %}
 void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage);
