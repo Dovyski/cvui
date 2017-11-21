@@ -38,7 +38,7 @@ int main(int argc, const char *argv[])
 
 		// Define a row at position (10, 50) with width 100 and height 150.
 		cvui::beginRow(frame, 10, 50, 100, 150);
-			// The components below will be placed one besides the other.
+			// The components below will be placed one beside the other.
 			cvui::text("Row starts");
 			cvui::button("here");
 
@@ -46,7 +46,7 @@ int main(int argc, const char *argv[])
 			// an ordinary component with the specified size. In this case,
 			// let's create a column with width 100 and height 50. The
 			// next component added will behave like it was added after
-			// a component with width 100 and heigth 50.
+			// a component with width 100 and heigth 150.
 			cvui::beginColumn(100, 150);
 				cvui::text("Column 1");
 				cvui::button("button1");
