@@ -86,7 +86,7 @@ int main(int argc, const char *argv[])
 			cvui::checkbox("checkbox", &checked2);
 			cvui::window(80, 80, "window");
 			cvui::button(100, 30, "Fixed");
-			cvui::printf("with 50px paddin7hg.");
+			cvui::printf("with 50px padding.");
 		cvui::endRow();
 
 		// Another row mixing several components 

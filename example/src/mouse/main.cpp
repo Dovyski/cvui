@@ -30,16 +30,16 @@ int main(int argc, const char *argv[])
 		frame = cv::Scalar(49, 52, 49);
 
 		// Show the coordinates of the mouse pointer on the screen
-		cvui::text(frame, 10, 30, "Click (any) mouse button and drag the pointer towards the bottom right corner.");
+		cvui::text(frame, 10, 30, "Click (any) mouse button and drag the pointer around to select an area.");
 		cvui::printf(frame, 10, 50, "Mouse pointer is at (%d,%d)", cvui::mouse().x, cvui::mouse().y);
 
 		// The function "bool cvui::mouse(int query)" allows you to query the mouse for events.
 		// E.g. cvui::mouse(cvui::DOWN)
 		//
 		// Available queries:
-		//	- cvui::DOWN: any mouse button was pressed. cvui::mouse() returns true for single frame only.
-		//	- cvui::UP: any mouse button was released. cvui::mouse() returns true for single frame only.
-		//	- cvui::CLICK: any mouse button was clicked (went down then up, no matter the amount of frames in between). cvui::mouse() returns true for single frame only.
+		//	- cvui::DOWN: any mouse button was pressed. cvui::mouse() returns true for a single frame only.
+		//	- cvui::UP: any mouse button was released. cvui::mouse() returns true for a single frame only.
+		//	- cvui::CLICK: any mouse button was clicked (went down then up, no matter the amount of frames in between). cvui::mouse() returns true for a single frame only.
 		//	- cvui::IS_DOWN: any mouse button is currently pressed. cvui::mouse() returns true for as long as the button is down/pressed.
 
 		// Did any mouse button go down?

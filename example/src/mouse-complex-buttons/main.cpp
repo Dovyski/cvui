@@ -34,7 +34,8 @@ int main(int argc, const char *argv[])
 		lena.copyTo(frame);
 
 		// Show the coordinates of the mouse pointer on the screen
-		cvui::text(frame, 10, 10, "Click (any) mouse button then drag the pointer around.");
+		cvui::text(frame, 10, 10, "Click (any) mouse button then drag the pointer around to select a ROI.");
+		cvui::text(frame, 10, 25, "Use different mouse buttons (right, middle and left) to select different ROIs.");
 
 		// Iterate all mouse buttons (left, middle  and right button).
 		for (int button = cvui::LEFT_BUTTON; button <= cvui::RIGHT_BUTTON; button++) {

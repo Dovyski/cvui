@@ -32,7 +32,7 @@ int main(int argc, const char *argv[])
 		lena.copyTo(frame);
 
 		// Show the coordinates of the mouse pointer on the screen
-		cvui::text(frame, 10, 10, "Click (any) mouse button and drag the pointer towards the bottom right corner.");
+		cvui::text(frame, 10, 10, "Click (any) mouse button and drag the pointer around to select a ROI.");
 
 		// The function "bool cvui::mouse(int query)" allows you to query the mouse for events.
 		// E.g. cvui::mouse(cvui::DOWN)
