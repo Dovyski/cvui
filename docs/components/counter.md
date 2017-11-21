@@ -37,7 +37,7 @@ Below is an example showing a counter. The result on the screen is shown in Figu
 
 {% highlight c++ %}
 int count = 2;
-cvui::counter(frame, 50, 30, &count);
+cvui::counter(frame, 90, 50, &count);
 {% endhighlight %}
 
 ![Button](/img/counter.png)

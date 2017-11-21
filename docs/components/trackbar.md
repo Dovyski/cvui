@@ -36,7 +36,7 @@ Below is an example showing a trackbar. The result on the screen is shown in Fig
 
 {% highlight c++ %}
 double value = 12.4;
-cvui::trackbar(frame, 20, 20, 100, &value, (double)10.0, (double)15.0);
+cvui::trackbar(frame, 40, 30, 220, &value, (double)10.0, (double)15.0);
 {% endhighlight %}
 
 ![Trackbar](/img/trackbar.png)

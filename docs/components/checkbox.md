@@ -26,7 +26,7 @@ Below is an example showing a checkbox. The result on the screen is shown in Fig
 
 {% highlight c++ %}
 bool checked = false;
-cvui::checkbox(frame, 80, 30, "Checkbox label", &checked);
+cvui::checkbox(frame, 90, 50, "Checkbox label", &checked);
 {% endhighlight %}
 
 ![Button](/img/checkbox.png)

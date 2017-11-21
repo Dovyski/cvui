@@ -23,7 +23,7 @@ where `theWhere` is the image/frame where the image will be rendered, `theX` is 
 Below is an example of the text component. The result on the screen is shown in Figure 1.
 
 {% highlight c++ %}
-cvui::text(frame, 80, 30, "Hello world");
+cvui::text(frame, 90, 50, "Hello world");
 {% endhighlight %}
 
 ![Button](/img/text.png)

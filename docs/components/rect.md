@@ -24,7 +24,7 @@ where `theWhere` is the image/frame where the image will be rendered, `theX` is 
 Below is an example showing a rectangle with no filling color (transparent). The result on the screen is shown in Figure 1.
 
 {% highlight c++ %}
-cvui::rect(frame, 40, 10, 120, 80, 0xff0000);
+cvui::rect(frame, 60, 10, 130, 90, 0xff0000);
 {% endhighlight %}
 
 ![Rectangle with no filling](/img/rect.png)
@@ -33,7 +33,7 @@ cvui::rect(frame, 40, 10, 120, 80, 0xff0000);
 Rectangles can be filled with a solid color, as demonstrated below. Result on the screen shown in Figure 2.
 
 {% highlight c++ %}
-cvui::rect(frame, 40, 10, 120, 80, 0xff0000, 0x00ff00);
+cvui::rect(frame, 60, 10, 130, 90, 0xff0000, 0x00ff00);
 {% endhighlight %}
 
 ![Button](/img/rect-filled.png)

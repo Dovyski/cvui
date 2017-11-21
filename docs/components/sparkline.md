@@ -27,12 +27,11 @@ Below is an example showing a sparkline. The result on the screen is shown in Fi
 
 {% highlight c++ %}
 std::vector<double> values;
-
 for (std::vector<double>::size_type i = 0; i < 30; i++) {
   values.push_back(rand() + 0.);
 }
 
-cvui::sparkline(frame, values, 5, 5, 140, 100);
+cvui::sparkline(frame, values, 10, 10, 280, 100);
 {% endhighlight %}
 
 ![Sparkline](/img/sparkline.png)

@@ -17,7 +17,7 @@ where `theWhere` is the image/frame where the image will be rendered, `theX` is 
 
 {% highlight c++ %}
 double value = 3.14;
-cvui::printf(frame, 80, 30, "value = %.2f", value);
+cvui::printf(frame, 90, 50, "value = %.2f", value);
 {% endhighlight %}
 
 ![Button](/img/printf.png)
@@ -45,7 +45,7 @@ Below is an example of a text with customized size and color. Result on the scre
 
 {% highlight c++ %}
 double value = 3.14;
-cvui::printf(frame, 80, 30, 0.6, 0x00ff00, "value = %.2f", value);
+cvui::printf(frame, 90, 50, 0.8, 0x00ff00, "value = %.2f", value);
 {% endhighlight %}
 
 ![Button](/img/printf-tweaked.png)
