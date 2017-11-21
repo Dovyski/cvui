@@ -1603,7 +1603,14 @@ namespace internal
 	}
 
 	void rect(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor) {
+		cv::Point aAnchor(theX, theY);
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
+		
+		aRect.x = aRect.width < 0 ? aAnchor.x + aRect.width : aAnchor.x;
+		aRect.y = aRect.height < 0 ? aAnchor.y + aRect.height : aAnchor.y;
+		aRect.width = std::abs(aRect.width);
+		aRect.height = std::abs(aRect.height);
+
 		render::rect(theBlock, aRect, theBorderColor, theFillingColor);
 
 		// Update the layout flow
