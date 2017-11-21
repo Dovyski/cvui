@@ -90,9 +90,27 @@ bool mouse(int theQuery);
  Return the last position of the mouse.
  TODO: add docs
 
+ \param theWindowName name of the window where the components will be added
+ \param theQuery TODO: write docs
+*/
+bool mouse(const cv::String& theWindowName, int theQuery);
+
+/**
+ Return the last position of the mouse.
+ TODO: add docs
+
  \param theQuery TODO: write docs
 */
 bool mouse(int theButton, int theQuery);
+
+/**
+ Return the last position of the mouse.
+ TODO: add docs
+
+ \param theWindowName name of the window where the components will be added
+ \param theQuery TODO: write docs
+*/
+bool mouse(const cv::String& theWindowName, int theButton, int theQuery);
 
 /**
  Display a button. The size of the button will be automatically adjusted to
@@ -1973,22 +1991,30 @@ int lastKeyPressed() {
 }
 
 cv::Point mouse(const cv::String& theWindowName) {
-	return internal::getContext().mouse.position;
+	return internal::getContext(theWindowName).mouse.position;
 }
 
 bool mouse(int theQuery) {
-	cvui_mouse_btn_t& aButton = internal::getContext().mouse.anyButton;
+	return mouse("", theQuery);
+}
+
+bool mouse(const cv::String& theWindowName, int theQuery) {
+	cvui_mouse_btn_t& aButton = internal::getContext(theWindowName).mouse.anyButton;
 	bool aRet = internal::isMouseButton(aButton, theQuery);
 
 	return aRet;
 }
 
 bool mouse(int theButton, int theQuery) {
+	return mouse("", theButton, theQuery);
+}
+
+bool mouse(const cv::String& theWindowName, int theButton, int theQuery) {
 	if (theButton != RIGHT_BUTTON && theButton != MIDDLE_BUTTON && theButton != LEFT_BUTTON) {
 		internal::error(6, "Invalid mouse button. Are you using one of the available: cvui::{RIGHT,MIDDLE,LEFT}_BUTTON ?");
 	}
 
-	cvui_mouse_btn_t& aButton = internal::getContext().mouse.buttons[theButton];
+	cvui_mouse_btn_t& aButton = internal::getContext(theWindowName).mouse.buttons[theButton];
 	bool aRet = internal::isMouseButton(aButton, theQuery);
 
 	return aRet;
