@@ -21,7 +21,7 @@ void sparkline (
 
 where `theWhere` is the image/frame where the image will be rendered, `theX` is the position X, `theY` is the position Y, `theWidth` is the width of the sparkline, `theHeight` is the height of the sparkline, and `theColor` is the color of sparkline in the format `0xRRGGBB`, e.g. `0xff0000` for red.
 
-<div class="notice--info">If an empty vector is provided to <code>cvui::sparkline()</code>, a message informing about the lack of data will be displayed instead of the sparkline.</div>
+<div class="notice--info"><strong>Tip:</strong> if an empty vector is provided to <code>cvui::sparkline()</code>, a message informing about the lack of data will be displayed instead of the sparkline.</div>
 
 Below is an example showing a sparkline. The result on the screen is shown in Figure 1.
 

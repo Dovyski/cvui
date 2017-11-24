@@ -5,9 +5,9 @@ title: build
 
 # Build
 
-cvui **does not require any special build procedure**. Just add the `cvui.h` file along with the rest of your source code and continue to compile your project the way you have being doing so far.
+cvui **does not require any build procedure**. Just add the `cvui.h` file along with the rest of your source code and continue to compile your project the way you have being doing so far.
 
-cvui has no dependency other than OpenCV `3.x` (or `2.x`) itself.
+cvui has no dependency other than OpenCV `3.x` (or `2.x`) itself. Check the [usage page](/usage) to learn how to use cvui.
 
 ## Building the examples
 

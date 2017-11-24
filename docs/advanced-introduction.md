@@ -8,7 +8,7 @@ Some applications require more complex UI interactions, including the use of the
 
 The only thing you need to consider when using multiple OpenCV windows (containing cvui components) or cvui's mouse API is that **cvui must be informed about the window it is opperating**. That way cvui can correctly perform its calculations, e.g. clicks, using the right window space.
 
-<div class="notice--info">All cvui functions are context aware, so they will try as best as possible to guess which on window they are working.</div>
+<div class="notice--info"><strong>Tip:</strong> all cvui functions are context aware, so they will try as best as possible to guess on which window they are working.</div>
 
 ## Mouse
 cvui has its own mouse API which facilitates the tracking of mouse clicks and cursor position. Check out the [mouse page](/advanced-mouse) to learn more.

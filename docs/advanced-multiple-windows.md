@@ -101,7 +101,7 @@ You can ignore `cvui::imshow()`, which is cvui's boosted version of `cv::imshow(
 
 In that case, you enclose all cvui component calls between the pair `cvui::context(NAME)` and `cvui::update(NAME)`, where `NAME` is the name of the window being worked on.
 
-<div class="notice--info">In practice, what <code>cvui::imshow()</code> does is to call <code>cvui::update()</code> followed by <code>cv::imshow()</code>, so you don't have to type it yourself.</div>
+<div class="notice--info"><strong>NOTICE:</strong> in practice what <code>cvui::imshow()</code> does is to call <code>cvui::update()</code> followed by <code>cv::imshow()</code>, so you don't have to type it yourself.</div>
 
 The example below shows how to separately update and render a few components in two different window, e.g. `"window1"` and `"window2"`, assuming those windows were already created and cvui properly initialized before:
 

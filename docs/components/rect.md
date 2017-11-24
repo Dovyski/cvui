@@ -39,7 +39,7 @@ cvui::rect(frame, 60, 10, 130, 90, 0xff0000, 0x00ff00);
 ![Button](/img/rect-filled.png)
 <p class="img-caption">Figure 2: rect component filled with a solid color.</p>
 
-<div class="notice--warning">Currently it is not possible to define the transparency, i.e. alpha value different than <code>0xff000000</code>, for a rectangle's filling.</div>
+<div class="notice--warning"><strong>Notice:</strong> currently it is not possible to define an alpha value different than <code>0xff000000</code> for the rectangle's filling transparency.</div>
 
 ## Learn more
 

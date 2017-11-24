@@ -43,7 +43,7 @@ The parameter `theQuery` is an integer that specifies your query. Available quer
 * `cvui::CLICK`: query if *any* mouse button was clicked (went down then up, no matter the amount of frames in between). `cvui::mouse()` returns `true` for a single frame only.
 * `cvui::IS_DOWN`: query if *any* mouse button is currently pressed. `cvui::mouse()` returns `true` for as long as the button is down/pressed.
 
-<div class="notice--info">Calls to <code>cvui::mouse(int)</code> will query all mouse buttons, so the call <code>cvui::mouse(cvui::DOWN)</code> will return <code>true</code> if <strong>any</strong> mouse button was pressed.</div>
+<div class="notice--info"><strong>IMPORTANT:</strong> calls to <code>cvui::mouse(int)</code> will query all mouse buttons, so the call <code>cvui::mouse(cvui::DOWN)</code> will return <code>true</code> if <strong>any</strong> mouse button was pressed.</div>
 
 Below is an example that shows a message when any mouse button is pressed:
 

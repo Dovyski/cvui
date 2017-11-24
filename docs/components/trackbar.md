@@ -30,7 +30,7 @@ The parameter `theValue`  will be modified when the user interacts with the trac
 
 `cvui::trackbar()` returns `true` when the value of the trackbar changed, or `false` if the value remains the same since the last interaction.
 
-<div class="notice--warning">This component uses templates  so it is imperative that you make it very explicit the type of parameters <code>theValue</code>, <code>theMin</code>, <code>theMax</code> and <code>theStep</code>,  otherwise you might end up with weird compilation errors.</div>
+<div class="notice--warning"><strong>IMPORTANT:</strong> <code>cvui::trackbar()</code> uses C++ templates, so it is imperative that you make it very explicit the type of parameters <code>theValue</code>, <code>theMin</code>, <code>theMax</code> and <code>theStep</code>, otherwise you might end up with weird compilation errors.</div>
 
 Below is an example showing a trackbar. The result on the screen is shown in Figure 1.
 
@@ -49,6 +49,7 @@ Trackbars can be highly customized. Parameter `theSegments` indicates the number
 Parameter `theLabelFormat` is the formatting string that will be used to render the labels, e.g. `%.2Lf` (Lf *not* lf). No matter the type of the `theValue` param, internally `cvui::trackbar()` stores it as a `long double`, so the formatting string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string such as `%.0Lf` to format your labels.
 
 Parameter `theOptions` provide options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are:
+
 * `TRACKBAR_HIDE_SEGMENT_LABELS`: do not render segment labels, but do render min/max labels;
 * `TRACKBAR_HIDE_STEP_SCALE`: do not render the small lines indicating values in the scale;
 * `TRACKBAR_DISCRETE`: changes of the trackbar value are multiples of `theDiscreteStep` param;
@@ -56,13 +57,13 @@ Parameter `theOptions` provide options to customize the behavior/appearance of t
 * `TRACKBAR_HIDE_VALUE_LABEL`: do not render the current value of the trackbar below the moving marker;
 * `TRACKBAR_HIDE_LABELS`: do not render labels at all.
 
-The parameter `theDiscreteStep` is the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option `TRACKBAR_DISCRETE` is active).
+The parameter `theDiscreteStep` is the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option `TRACKBAR_DISCRETE` is active). Figures 2 and 3 illustrate the differences.
 
 ![Trackbar](/img/trackbar.gif)
-<p class="img-caption">Figure 2: trackbar component.</p>
+<p class="img-caption">Figure 2: trackbar component without discrete step.</p>
 
 ![Trackbar](/img/trackbar-discrete.gif)
-<p class="img-caption">Figure 3: trackbar component.</p>
+<p class="img-caption">Figure 3: trackbar component using a discrete step.</p>
 
 ## Learn more
 

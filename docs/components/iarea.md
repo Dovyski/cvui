@@ -19,7 +19,7 @@ where `theX` is the position X, `theY` is the position Y, `theWidth` is the widt
 * `cvui::DOWN`: when the mouse cursor is pressed over the iarea, but not released yet.
 * `cvui::CLICK`: when the mouse cursor clicked (pressed and released) within the iarea.
 
-<div class="notice--info"><code>cvui::iarea()</code> does not produce any visual output on the screen. It is intended to be used as an auxiliary tool to create interactions.</div>
+<div class="notice--info"><strong>IMPORTANT:</strong> <code>cvui::iarea()</code> does not produce any visual output on the screen. It is intended to be used as an auxiliary tool to create interactions.</div>
 
 Below is an example showing an interaction area and its interaction with the mouse cursor.
 

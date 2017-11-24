@@ -112,7 +112,7 @@ cvui::endColumn();
 
 You can also add an arbitrary amount of space between components by calling `cvui::space()`. Column 3 in the example above uses `cvui::space()` to customize the space between some components.
 
-<div class="notice--info"><code>cvui::space()</code> is context aware, so if it is used between <code>beginColumn()/endColumn()</code>, space will be vertical. If it is used between <code>beginRow()/endRow()</code>, space will be horizontal.</div>
+<div class="notice--info"><strong>Tip:</strong> <code>cvui::space()</code> is context aware, so if it is used between <code>beginColumn()/endColumn()</code>, space will be vertical. If it is used between <code>beginRow()/endRow()</code>, space will be horizontal.</div>
 
 ## Learn more
 
