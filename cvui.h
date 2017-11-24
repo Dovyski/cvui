@@ -1,7 +1,7 @@
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
 
- Version: 2.0.0
+ Version: 2.5.0
 
  Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
  Licensed under the MIT license.
@@ -1016,7 +1016,7 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #define _CVUI_NO_IMPLEMENTATION_NOTICE "cvui.h: implementation skipped. Ensure one of your C++ files included cvui.h after a #define CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/"
 
 // Lib version
-static const char *VERSION = "2.0.0";
+static const char *VERSION = "2.5.0";
 
 const int ROW = 0;
 const int COLUMN = 1;
