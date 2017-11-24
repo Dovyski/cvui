@@ -47,10 +47,10 @@ void init(const cv::String& theWindowName, int theDelayWaitKey = -1, bool theCre
  so you don't have to worry about it. The value passed to `theDelayWaitKey` will be
  used as the delay for `cv::waitKey()`.
 
- \param theWindowNames array containing the name of the windows where components will be added. Those windows will be automatically created by cvui if `theCreateNamedWindows` is `true`.
+ \param theWindowNames array containing the name of the windows where components will be added. Those windows will be automatically if `theCreateNamedWindows` is `true`.
  \param theHowManyWindows how many window names exist in the `theWindowNames` array.
  \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
- \param theCreateNamedWindow if OpenCV windows named according to `theWindowName` should be created during the initialization. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you call `cv::namedWindow(WINDOW_NAME)` for all windows *before* initializing cvui, otherwise it will not be able to track UI interactions.
+ \param theCreateNamedWindows if OpenCV windows named according to `theWindowNames` should be created during the initialization. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you call `cv::namedWindow(WINDOW_NAME)` for all windows *before* initializing cvui, otherwise it will not be able to track UI interactions.
 
  \sa watch()
  \sa context()
@@ -65,19 +65,19 @@ void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDe
  you need to call `cvui::watch()` on those windows yourself. `cvui::watch()` can
  automatically create a window before watching it, if it does not exist.
 
- \param theWindowName name of the window where whose UI interactions will be tracked.
+ \param theWindowName name of the window whose UI interactions will be tracked.
  \param theCreateNamedWindow if an OpenCV window named `theWindowName` should be created before it is watched. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you have called `cv::namedWindow(WINDOW_NAME)` to create the window, otherwise cvui will not be able to track its UI interactions.
 
  \sa init()
  \sa context()
 */
-void watch(const cv::String& theWindowName, bool theCreateNamedWindows = true);
+void watch(const cv::String& theWindowName, bool theCreateNamedWindow = true);
 
 /**
  Inform cvui that all subsequent component calls belong to a window in particular.
  When using cvui with multiple OpenCV windows, you must call cvui component calls
  between `cvui::contex(NAME)` and `cvui::update(NAME)`, where `NAME` is the name of
- the window. That way, cviu knows which window you are using (`NAME` in this case),
+ the window. That way, cvui knows which window you are using (`NAME` in this case),
  so it can track mouse events, for instance.
 
  E.g.
@@ -100,7 +100,7 @@ void watch(const cv::String& theWindowName, bool theCreateNamedWindows = true);
  cv::imshow(frame);
  ```
 
- Pay attention to the pair `cvui::context(NAME)/cviu::update(NAME)`, which
+ Pay attention to the pair `cvui::context(NAME)` and `cviu::update(NAME)`, which
  encloses the component calls for that window. You need such pair for each window
  of your application.
 
@@ -759,9 +759,6 @@ bool button(cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown);
 
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
- \param theWhere the image/frame where the provded image should be rendered.
- \param theX position X where the image should be placed.
- \param theY position Y where the image should be placed.
  \param theImage an image to be rendered in the specified destination.
 
  \sa button()

@@ -6,57 +6,52 @@ A (very) simple UI lib built on top of OpenCV drawing primitives. Other UI libs,
 
 Features
 --------
-- Lightweight and simple to use user interface.
-- Header-only with no external dependencies (except OpenCV).
-- Based on OpenCV drawing primitives only (OpenGL or Qt are not required).
-- Friendly and C-like API (no classes/objects, etc).
-- Easily render components without worrying about their position (using rows/columns).
-- MIT licensed.
+- Lightweight and simple to use user interface;
+- Header-only with no external dependencies (except OpenCV);
+- Based on OpenCV drawing primitives only (OpenGL or Qt are not required);
+- Friendly and C-like API (no classes/objects, etc);
+- Easily render components without worrying about their position (using rows/columns);
+- Simple (yet powerful) mouse API;
+- Modest number of UI components (11 in total).
 
 Build
 -----
-The only dependency is OpenCV (version `2.x` or `3.x`), which you are probably already using. Just add `cvui.h` to your project and you are ready to go.
+cvui is a header-only lib that does not require a build. Just add `cvui.h` to your project and you are ready to go. The only dependency is OpenCV (version `2.x` or `3.x`), which you are probably using already.
 
 Usage
 -----
-Check the [examples](https://github.com/Dovyski/cvui/tree/master/example) folder for some code, but the general idea is the following:
+Check the [online documentation](https://dovyski.github.io/cvui) or the [examples](https://github.com/Dovyski/cvui/tree/master/example) folder to learn how to use cvui. The general idea is the following:
 
-```c++
-#include <iostream>
+```cpp
 #include <opencv2/opencv.hpp>
 
+// One (and only one) of your C++ files must define CVUI_IMPLEMENTATION
+// before the inclusion of cvui.h to ensure its implementaiton is compiled.
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME "CVUI Test"
+#define WINDOW_NAME "CVUI Hello World!"
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat frame = cv::Mat(250, 600, CV_8UC3);
-	bool checked = false;
-	int count = 0;
+	// Create a frame where components will be rendered to.
+	cv::Mat frame = cv::Mat(200, 500, CV_8UC3);
 
+	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME);
 
 	while (true) {
+		// Fill the frame with a nice color
 		frame = cv::Scalar(49, 52, 49);
 
-		cvui::text(frame, 50, 30, "Hey there!");
-		cvui::text(frame, 200, 30, "Use hex 0xRRGGBB colors easily", 0.4, 0xff0000);
+		// Render UI components to the frame
+		cvui::text(frame, 110, 80, "Hello, world!");
+		cvui::text(frame, 110, 120, "cvui is awesome!");
 
-		if (cvui::button(frame, 50, 50, "Button")) {
-			std::cout << "Button clicked!" << std::endl;
-		}
+		// Update cvui stuff and show everything on the screen
+		cvui::imshow(WINDOW_NAME, frame);
 
-		cvui::window(frame, 50, 100, 120, 100, "Window");
-		cvui::counter(frame, 200, 100, &count);
-		cvui::checkbox(frame, 200, 150, "Checkbox", &checked);
-
-		cvui::update();
-
-		cv::imshow(WINDOW_NAME, frame);
-        
-		if (cv::waitKey(30) == 27) {
+		if (cv::waitKey(20) == 27) {
 			break;
 		}
 	}
@@ -67,8 +62,8 @@ int main(int argc, const char *argv[])
 
 License
 -----
-Copyright (c) 2016 Fernando Bevilacqua. Licensed under the MIT license.
+Copyright (c) 2016 Fernando Bevilacqua. Licensed under the [MIT license](LICENSE.md).
 
 Change log
 -----
-See all changes in the [CHANGELOG](https://github.com/Dovyski/cvui/tree/master/CHANGELOG.md) file.
+See all changes in the [CHANGELOG](CHANGELOG.md) file.
