@@ -22,8 +22,8 @@
 namespace cvui
 {
 /**
- Initializes the library. You must provide the name of the window where
- the components will be added. It is also possible to tell cvui to handle
+ Initializes cvui. You must provide the name of the window where
+ components will be added. It is also possible to tell cvui to handle
  OpenCV's event queue automatically (by informing a value greater than zero
  in the `theDelayWaitKey` parameter of function). In that case, cvui will
  automatically call `cv::waitKey()` within `cvui::update()`, so you don't
@@ -32,32 +32,124 @@ namespace cvui
  
  \param theWindowName name of the window where the components will be added.
  \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
+ \param theCreateNamedWindow if an OpenCV window named `theWindowName` should be created during the initialization. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you call `cv::namedWindow(WINDOW_NAME)` *before* initializing cvui, otherwise it will not be able to track UI interactions. 
+
+ \sa watch()
+ \sa context()
 */
 void init(const cv::String& theWindowName, int theDelayWaitKey = -1, bool theCreateNamedWindow = true);
 
 /**
- TODO: add docs
+ Initialize cvui using a list of names of windows where components will be added.
+ It is also possible to tell cvui to handle OpenCV's event queue automatically
+ (by informing a value greater than zero in the `theDelayWaitKey` parameter of function).
+ In that case, cvui will automatically call `cv::waitKey()` within `cvui::update()`,
+ so you don't have to worry about it. The value passed to `theDelayWaitKey` will be
+ used as the delay for `cv::waitKey()`.
+
+ \param theWindowNames array containing the name of the windows where components will be added. Those windows will be automatically created by cvui if `theCreateNamedWindows` is `true`.
+ \param theHowManyWindows how many window names exist in the `theWindowNames` array.
+ \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
+ \param theCreateNamedWindow if OpenCV windows named according to `theWindowName` should be created during the initialization. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you call `cv::namedWindow(WINDOW_NAME)` for all windows *before* initializing cvui, otherwise it will not be able to track UI interactions.
+
+ \sa watch()
+ \sa context()
 */
 void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDelayWaitKey = -1, bool theCreateNamedWindows = true);
 
 /**
- TODO: add docs
+ Track UI interactions of a particular window. This function must be invoked
+ for any window that will receive cvui components. cvui automatically calls `cvui::watch()`
+ for any window informed in `cvui::init()`, so generally you don't have to watch them
+ yourself. If you initialized cvui and told it *not* to create windows automatically,
+ you need to call `cvui::watch()` on those windows yourself. `cvui::watch()` can
+ automatically create a window before watching it, if it does not exist.
 
- \param theWindowName name of the window where the components will be added
+ \param theWindowName name of the window where whose UI interactions will be tracked.
+ \param theCreateNamedWindow if an OpenCV window named `theWindowName` should be created before it is watched. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you have called `cv::namedWindow(WINDOW_NAME)` to create the window, otherwise cvui will not be able to track its UI interactions.
+
+ \sa init()
+ \sa context()
 */
 void watch(const cv::String& theWindowName, bool theCreateNamedWindows = true);
 
 /**
- TODO: add docs
+ Inform cvui that all subsequent component calls belong to a window in particular.
+ When using cvui with multiple OpenCV windows, you must call cvui component calls
+ between `cvui::contex(NAME)` and `cvui::update(NAME)`, where `NAME` is the name of
+ the window. That way, cviu knows which window you are using (`NAME` in this case),
+ so it can track mouse events, for instance.
 
- \param theWindowName name of the window that will receive components.
+ E.g.
+
+ ```
+ // Code for window "window1".
+ cvui::context("window1");
+ cviu::text(frame, ...);
+ cviu::button(frame, ...);
+ cviu::update("window1");
+
+
+ // somewhere else, code for "window2"
+ cvui::context("window2");
+ cviu::printf(frame, ...);
+ cviu::printf(frame, ...);
+ cviu::update("window2");
+
+ // Show everything in a window
+ cv::imshow(frame);
+ ```
+
+ Pay attention to the pair `cvui::context(NAME)/cviu::update(NAME)`, which
+ encloses the component calls for that window. You need such pair for each window
+ of your application.
+
+ After calling `cvui::update()`, you can show the result in a window using `cv::imshow()`.
+ If you want to save some typing, you can use `cvui::imshow()`, which calls `cvui::update()`
+ for you and then shows the frame in a window.
+
+ E.g.:
+
+ ```
+ // Code for window "window1".
+ cvui::context("window1");
+ cviu::text(frame, ...);
+ cviu::button(frame, ...);
+ cviu::imshow("window1");
+
+ // somewhere else, code for "window2"
+ cvui::context("window2");
+ cviu::printf(frame, ...);
+ cviu::printf(frame, ...);
+ cviu::imshow("window2");
+ ```
+
+ In that case, you don't have to bother calling `cvui::update()` yourself, since
+ `cvui::imshow()` will do it for you.
+
+ \param theWindowName name of the window that will receive components from all subsequent cvui calls.
+
+ \sa init()
+ \sa watch()
 */
 void context(const cv::String& theWindowName);
 
 /**
- TODO: add docs
+ Display an image in the specified window and update the internal structures of cvui.
+ This function can be used as a replacement for `cv::imshow()`. If you want to use
+ `cv::imshow() instead of `cvui::imshow()`, you must ensure you call `cvui::update()`
+ *after* all component calls and *before* `cv::imshow()`, so cvui can update its
+ internal structures.
 
- \param theWindowName name of the window that will receive components.
+ In general, it is easier to call `cvui::imshow()` alone instead of calling
+ `cvui::update()' immediately followed by `cv::imshow()`.
+
+ \param theWindowName name of the window that will be shown.
+ \param theFrame image, i.e. `cv::Mat`, to be shown in the window.
+
+ \sa update()
+ \sa context()
+ \sa watch()
 */
 void imshow(const cv::String& theWindowName, cv::InputArray theFrame);
 
@@ -72,43 +164,76 @@ int lastKeyPressed();
 
 /**
  Return the last position of the mouse.
- TODO: add docs
 
- \param theWindowName name of the window where the components will be added
+ \param theWindowName name of the window whose mouse cursor will be used. If nothing is informed (default), the function will return the position of the mouse cursor for the default window (the one informed in `cvui::init()`).
+ \return a point containing the position of the mouse cursor in the speficied window.
 */
 cv::Point mouse(const cv::String& theWindowName = "");
 
 /**
- Return the last position of the mouse.
- TODO: add docs
+ Query the mouse for events, e.g. "is any button down now?". Available queries are:
+ 
+ * `cvui::DOWN`: any mouse button was pressed. `cvui::mouse()` returns `true` for a single frame only.
+ * `cvui::UP`: any mouse button was released.  `cvui::mouse()` returns `true` for a single frame only.
+ * `cvui::CLICK`: any mouse button was clicked (went down then up, no matter the amount of frames in between). `cvui::mouse()` returns `true` for a single frame only.
+ * `cvui::IS_DOWN`: any mouse button is currently pressed. `cvui::mouse()` returns `true` for as long as the button is down/pressed.
 
- \param theQuery TODO: write docs
+ It is easier to think of this function as the answer to a questions. For instance, asking if any mouse button went down:
+
+ ```
+ if (cvui::mouse(cvui::DOWN)) {
+   // Any mouse button just went down.
+ }
+ ```
+
+ The window whose mouse will be queried depends on the context. If `cvui::mouse(query)` is being called after
+ `cvui::context()`, the window informed in the context will be queried. If no context is available, the default
+ window (informed in `cvui::init()`) will be used.
+
+ \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+
+ \sa mouse(const cv::String&)
+ \sa mouse(const cv::String&, int)
+ \sa mouse(const cv::String&, int, int)
+ \sa mouse(int, int)
 */
 bool mouse(int theQuery);
 
 /**
- Return the last position of the mouse.
- TODO: add docs
+ Query the mouse for events in a particular window. This function behave exactly like `cvui::mouse(int theQuery)`
+ with the difference that queries are targeted at a particular window.
 
- \param theWindowName name of the window where the components will be added
- \param theQuery TODO: write docs
+ \param theWindowName name of the window that will be queried.
+ \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+
+ \sa mouse(const cv::String&)
+ \sa mouse(const cv::String&, int, int)
+ \sa mouse(int, int)
+ \sa mouse(int)
 */
 bool mouse(const cv::String& theWindowName, int theQuery);
 
 /**
- Return the last position of the mouse.
- TODO: add docs
+ Query the mouse for events in a particular button. This function behave exactly like `cvui::mouse(int theQuery)`,
+ with the difference that queries are targeted at a particular mouse button instead.
 
- \param theQuery TODO: write docs
+ \param theButton an integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
+ \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+
+ \sa mouse(const cv::String&)
+ \sa mouse(const cv::String&, int, int)
+ \sa mouse(int)
 */
 bool mouse(int theButton, int theQuery);
 
 /**
- Return the last position of the mouse.
- TODO: add docs
+ Query the mouse for events in a particular button in a particular window. This function behave exactly
+ like `cvui::mouse(int theButton, int theQuery)`, with the difference that queries are targeted at
+ a particular mouse button in a particular window instead.
 
- \param theWindowName name of the window where the components will be added
- \param theQuery TODO: write docs
+ \param theWindowName name of the window that will be queried.
+ \param theButton an integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
+ \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
 */
 bool mouse(const cv::String& theWindowName, int theButton, int theQuery);
 
