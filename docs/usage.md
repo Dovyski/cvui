@@ -154,10 +154,10 @@ int main() {
     // Update cvui internal stuff
     cvui::update();
 
-	// Show window content
+    // Show window content
     cv::imshow(WINDOW1_NAME, frame);
 
-	if (cv::waitKey(20) == 27) {
+    if (cv::waitKey(20) == 27) {
       break;
     }
   }
@@ -166,14 +166,14 @@ int main() {
 }
 {% endhighlight %}
 
-## (Optional) 4. Disable compilation messages
+## (Optional) 4. Disable cvui compilation messages
 
 The compilation process of cvui will produce a few console messages to help developers debug possible problems, e.g. inclusion of `cvui.h` using `#define CVUI_IMPLEMENTATION`. The two possible messages are:
 
 * *cvui.h: compiling implementation because of CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/*
 * *cvui.h: implementation skipped. Ensure one of your C++ files included cvui.h after a #define CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/*
 
-You can disable such compile messages by defining `CVUI_DISABLE_COMPILATION_NOTICES` before including `cvui.h`. E.g.:
+You can disable such compilation messages by defining `CVUI_DISABLE_COMPILATION_NOTICES` before including `cvui.h`. E.g.:
 
 {% highlight c++ %}
 #include <opencv2/opencv.hpp>
