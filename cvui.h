@@ -997,13 +997,6 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 	#define sprintf_s sprintf
 #endif
 
-// Check for Unix stuff
-#ifdef __GNUC__
-	// just to remove the warning under gcc that is introduced by the VERSION variable below
-	// (needed for those who compile with -Werror (make warning as errors)
-	#pragma GCC diagnostic ignored "-Wunused-variable"
-#endif
-
 // Define a few platform-dependent macros
 #ifdef _MSC_VER
 	#define _CVUI_COMPILE_MESSAGE(x) message(x)
@@ -1030,6 +1023,13 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #undef LEFT_BUTTON
 #undef MIDDLE_BUTTON
 #undef RIGHT_BUTTON
+
+// Check for Unix stuff
+#ifdef __GNUC__
+	// just to remove the warning under gcc that is introduced by the VERSION variable below
+	// (needed for those who compile with -Werror (make warning as errors)
+	#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 
 // Lib version
 static const char *VERSION = "2.5.0-BETA";
