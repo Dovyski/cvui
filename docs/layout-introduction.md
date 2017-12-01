@@ -116,4 +116,4 @@ You can also add an arbitrary amount of space between components by calling `cvu
 
 ## Learn more
 
-Check out the [row-column](https://github.com/Dovyski/cvui/tree/master/example/src/row-column) example for more information about rows and columns. Continue to the [Nesting](/layout-nesting) section to learn how to nest rows and columns.
+Check out the [row-column](https://github.com/Dovyski/cvui/tree/master/example/src/row-column) example for more information about rows and columns. Continue to the [Nesting]({{ site.url }}/layout-nesting) section to learn how to nest rows and columns.

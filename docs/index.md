@@ -9,7 +9,7 @@ cvui is a (very) simple UI lib built on top of OpenCV drawing primitives. Other 
 
 It is not the case with cvui, which uses *only* OpenCV drawing primitives to do all the rendering (no OpenGL or Qt required).
 
-![image](https://raw.githubusercontent.com/Dovyski/depository/master/cvui.png?20160819)
+![image](https://raw.githubusercontent.com/Dovyski/depository/master/cvui.png?20171201)
 
 ## Features
 

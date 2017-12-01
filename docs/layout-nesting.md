@@ -5,7 +5,7 @@ title: layout-nesting
 
 # Nesting rows and columns
 
-[Rows and columns](/layout-introduction) can be nested to create even more complex layouts without positioning components individually.
+[Rows and columns]({{ site.url }}/layout-introduction) can be nested to create even more complex layouts without positioning components individually.
 
 When a column or row is nested within another, it behaves like any ordinary component: you don't inform the frame where it is being rendered nor its `(x,y)` coordinates, only its width and height, if desired.
 

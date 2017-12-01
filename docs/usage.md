@@ -67,7 +67,7 @@ int main() {
 }
 {% endhighlight %}
 
-<div class="notice--info"><strong>Tip:</strong> if you need to use cvui with multiple windows, or you want more control over the process of creating windows, check the <a href="/advanced-multiple-windows">Multiple OpenCV windows</a> page and the <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows">multiple-windows</a> and <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows-complex">multiple-windows-complex</a> examples.</div>
+<div class="notice--info"><strong>Tip:</strong> if you need to use cvui with multiple windows, or you want more control over the process of creating windows, check the <a href="{{ site.url }}/advanced-multiple-windows">Multiple OpenCV windows</a> page and the <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows">multiple-windows</a> and <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows-complex">multiple-windows-complex</a> examples.</div>
 
 ## 3. Render cvui components
 
@@ -185,4 +185,4 @@ You can disable such compilation messages by defining `CVUI_DISABLE_COMPILATION_
 
 ## Learn more
 
-Check out the [examples](/examples) page for more usage demonstrations of cvui.
+Check out the [examples]({{ site.url }}/examples) page for more usage demonstrations of cvui.

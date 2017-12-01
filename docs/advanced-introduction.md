@@ -11,7 +11,7 @@ The only thing you need to consider when using multiple OpenCV windows (containi
 <div class="notice--info"><strong>Tip:</strong> all cvui functions are context aware, so they will try as best as possible to guess on which window they are working.</div>
 
 ## Mouse
-cvui has its own mouse API which facilitates the tracking of mouse clicks and cursor position. Check out the [mouse page](/advanced-mouse) to learn more.
+cvui has its own mouse API which facilitates the tracking of mouse clicks and cursor position. Check out the [mouse page]({{ site.url }}/advanced-mouse) to learn more.
 
 ## Multiple OpenCV windows with cvui compoments
-If your application uses multiple OpenCV windows (via `cv::imshow()`) and at least two of them use cvui compoments, you need some additional (yet simple) configuration. Check out the [multiple windows page](/advanced-multiple-windows) to learn more.
+If your application uses multiple OpenCV windows (via `cv::imshow()`) and at least two of them use cvui compoments, you need some additional (yet simple) configuration. Check out the [multiple windows page]({{ site.url }}/advanced-multiple-windows) to learn more.
