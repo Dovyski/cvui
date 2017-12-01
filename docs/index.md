@@ -13,9 +13,10 @@ It is not the case with cvui, which uses *only* OpenCV drawing primitives to do 
 
 ## Features
 
-- Lightweight and simple to use user interface.
-- No external dependencies (except OpenCV).
-- Based on OpenCV drawing primitives only (OpenGL or Qt are not required).
-- Friendly and C-like API (no classes/objects, etc).
-- Easily render components without worrying about their position (using rows/columns).
-- MIT licensed.
+- Lightweight and simple to use user interface;
+- Header-only with no external dependencies (except OpenCV);
+- Based on OpenCV drawing primitives only (OpenGL or Qt are not required);
+- Friendly and C-like API (no classes/objects, etc);
+- Easily render components without worrying about their position (using rows/columns);
+- Simple (yet powerful) mouse API;
+- Modest number of UI components (11 in total).

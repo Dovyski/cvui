@@ -20,7 +20,7 @@ double value = 3.14;
 cvui::printf(frame, 90, 50, "value = %.2f", value);
 {% endhighlight %}
 
-![Button](/img/printf.png)
+![printf component]({{ site.url }}/img/printf.png)
 <p class="img-caption">Figure 1: printf component.</p>
 
 ## Text size and color
@@ -48,7 +48,7 @@ double value = 3.14;
 cvui::printf(frame, 90, 50, 0.8, 0x00ff00, "value = %.2f", value);
 {% endhighlight %}
 
-![printf]({{ site.url }}/img/printf-tweaked.png)
+![printf with customized size and color]({{ site.url }}/img/printf-tweaked.png)
 <p class="img-caption">Figure 2: text with customized size and color.</p>
 
 ## Learn more
