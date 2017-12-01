@@ -1015,6 +1015,22 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #define _CVUI_IMPLEMENTATION_NOTICE "cvui.h: compiling implementation because of CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/"
 #define _CVUI_NO_IMPLEMENTATION_NOTICE "cvui.h: implementation skipped. Ensure one of your C++ files included cvui.h after a #define CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/"
 
+// Below is paranoic, dramatic bug-fixing action to ensure no evil macro
+// have already defined our names. For some bizarre reason, cvui did not
+// compile in one of my projects because OUT was already defined. So be it.
+#undef VERSION
+#undef ROW
+#undef COLUMN
+#undef DOWN
+#undef CLICK
+#undef OVER
+#undef OUT
+#undef UP
+#undef IS_DOWN
+#undef LEFT_BUTTON
+#undef MIDDLE_BUTTON
+#undef RIGHT_BUTTON
+
 // Lib version
 static const char *VERSION = "2.5.0";
 
