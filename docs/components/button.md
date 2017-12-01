@@ -26,7 +26,7 @@ if (cvui::button(frame, 100, 40, "Button")) {
 }
 {% endhighlight %}
 
-![Button](/img/button.png)
+![Button]({{ site.url }}/img/button.png)
 <p class="img-caption">Figure 1: Button with auto-adjusted width.</p>
 
 It is also possible to specify the width and height of a button (shown in Figure 2):
@@ -38,7 +38,7 @@ if (cvui::button(frame, 100, 40, 100, 30, "Button")) {
 }
 {% endhighlight %}
 
-![Button](/img/button-width.png)
+![Button]({{ site.url }}/img/button-width.png)
 <p class="img-caption">Figure 2: Button with custom width.</p>
 
 ## Image buttons
