@@ -93,7 +93,7 @@ cvui::endRow();
 
 The code above will produce the following on the screen:
 
-![Example of cvui::beginRow() and cvui::endRow()](/img/row-nested-no-padding.png)
+![Example of cvui::beginRow() and cvui::endRow()]({{ site.url }}/img/row-nested-no-padding.png)
 <p class="img-caption">Figure 1: row with several components, including nested columns.</p>
 
 Nested columns (and rows) behave like any other components. In this example, they are placed one beside another by cvui because they belong to a row.
@@ -137,7 +137,7 @@ cvui::endRow();
 
 The code above will produce the following on the screen:
 
-![Example of cvui::beginRow() and cvui::endRow()](/img/row-nested-padding.png)
+![Example of cvui::beginRow() and cvui::endRow()]({{ site.url }}/img/row-nested-padding.png)
 <p class="img-caption">Figure 2: row with components and nested columns. Code is same as in Figure 1, except a padding of 10px and all rows/columns having their dimention calculated automatically by cvui.</p>
 
 ## More examples

@@ -29,7 +29,7 @@ bool checked = false;
 cvui::checkbox(frame, 90, 50, "Checkbox label", &checked);
 {% endhighlight %}
 
-![Button](/img/checkbox.png)
+![Checkbox]({{ site.url }}/img/checkbox.png)
 <p class="img-caption">Figure 1: checkbox component.</p>
 
 ## Learn more

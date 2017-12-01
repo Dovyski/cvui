@@ -26,7 +26,7 @@ Below is an example of the text component. The result on the screen is shown in 
 cvui::text(frame, 90, 50, "Hello world");
 {% endhighlight %}
 
-![Button](/img/text.png)
+![Text]({{ site.url }}/img/text.png)
 <p class="img-caption">Figure 1: text component.</p>
 
 ## Learn more

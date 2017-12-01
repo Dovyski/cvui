@@ -20,7 +20,7 @@ cv::Mat lena_face = cv::imread("lena_face.jpg", cv::IMREAD_COLOR);
 cvui::image(frame, 10, 10, lena_face);
 {% endhighlight %}
 
-![Button](/img/image.png)
+![Image]({{ site.url }}/img/image.png)
 <p class="img-caption">Figure 1: image <code>lena_face.jpg</code> displayed on the screen.</p>
 
 ## Learn more

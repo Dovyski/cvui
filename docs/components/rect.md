@@ -27,7 +27,7 @@ Below is an example showing a rectangle with no filling color (transparent). The
 cvui::rect(frame, 60, 10, 130, 90, 0xff0000);
 {% endhighlight %}
 
-![Rectangle with no filling](/img/rect.png)
+![Rectangle with no filling]({{ site.url }}/img/rect.png)
 <p class="img-caption">Figure 1: rect component.</p>
 
 Rectangles can be filled with a solid color, as demonstrated below. Result on the screen shown in Figure 2.
@@ -36,7 +36,7 @@ Rectangles can be filled with a solid color, as demonstrated below. Result on th
 cvui::rect(frame, 60, 10, 130, 90, 0xff0000, 0x00ff00);
 {% endhighlight %}
 
-![Button](/img/rect-filled.png)
+![Color-filled rectangle]({{ site.url }}/img/rect-filled.png)
 <p class="img-caption">Figure 2: rect component filled with a solid color.</p>
 
 <div class="notice--warning"><strong>Notice:</strong> currently it is not possible to define an alpha value different than <code>0xff000000</code> for the rectangle's filling transparency.</div>

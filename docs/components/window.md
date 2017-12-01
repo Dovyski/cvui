@@ -26,12 +26,12 @@ Below is an example showing a window. The result on the screen is shown in Figur
 cvui::window(frame, 60, 10, 130, 90, "Title");
 {% endhighlight %}
 
-![Button](/img/window.png)
+![Window]({{ site.url }}/img/window.png)
 <p class="img-caption">Figure 1: window component.</p>
 
 <code>cvui::window()</code> is useful to be used as a background for other UI components, particularly to distinguish them from other elements on the screen. Below is an illustration of `cvui::window()` used as background for another component:
 
-![Button](/img/canny-ui.png)
+![Window background for other UI components]({{ site.url }}/img/canny-ui.png)
 <p class="img-caption">Figure 2: <code>cvui::window()</code> used as background for other UI components.</p>
 
 ## Learn more

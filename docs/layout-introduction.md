@@ -45,7 +45,7 @@ cvui::endRow();
 
 The code above will produce the following on the screen:
 
-![Example of cvui::beginRow() and cvui::endRow()](/img/row-no-padding.png)
+![Example of cvui::beginRow() and cvui::endRow()]({{ site.url }}/img/row-no-padding.png)
 <p class="img-caption">Figure 1: row with several components automatically placed by cvui.</p>
 
 In the example above, the row will be rendered to `frame` at coordinates `(10, 20)`. Notice that all component calls between `beginRow()` and `endRow()` **do not** specify `(x, y)` coordinates, only width and height when needed, e.g. `cvui::window(80, 80, "window")` and `cvui::button(100, 30, "Fixed")`.
@@ -69,7 +69,7 @@ cvui::endRow();
 
 The result on the screen will be:
 
-![Example of cvui::beginRow() and cvui::endRow() with padding](/img/row-padding.png)
+![Example of cvui::beginRow() and cvui::endRow() with padding]({{ site.url }}/img/row-padding.png)
 <p class="img-caption">Figure 2: row with several components, spaced using a padding of 50 pixels.</p>
 
 You can create columns in the same fashion. Below is an example showing how to create three adjacent columns, which use different padding configurations.
@@ -107,7 +107,7 @@ cvui::endColumn();
 
 {% endhighlight %}
 
-![Example of cvui::beginRow() and cvui::endRow() with padding](/img/columns-padding-spacing.png)
+![Example of cvui::beginRow() and cvui::endRow() with padding]({{ site.url }}/img/columns-padding-spacing.png)
 <p class="img-caption">Figure 3: columns with different spacing configurations. Column #1: no padding. Column #2: padding of 10px. Column #3: no padding, but spaced using <code>cvui::space()</code>.</p>
 
 You can also add an arbitrary amount of space between components by calling `cvui::space()`. Column 3 in the example above uses `cvui::space()` to customize the space between some components.

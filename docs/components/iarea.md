@@ -37,7 +37,7 @@ switch (status) {
 }
 {% endhighlight %}
 
-![iarea](/img/iarea.gif)
+![iarea]({{ site.url }}/img/iarea.gif)
 <p class="img-caption">Figure 1: tracked interaction within an interaction area (iarea).</p>
 
 ## Learn more

@@ -34,7 +34,7 @@ for (std::vector<double>::size_type i = 0; i < 30; i++) {
 cvui::sparkline(frame, values, 10, 10, 280, 100);
 {% endhighlight %}
 
-![Sparkline](/img/sparkline.png)
+![Sparkline]({{ site.url }}/img/sparkline.png)
 <p class="img-caption">Figure 1: sparkline component.</p>
 
 ## Learn more

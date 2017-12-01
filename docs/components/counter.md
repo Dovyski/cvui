@@ -40,7 +40,7 @@ int count = 2;
 cvui::counter(frame, 90, 50, &count);
 {% endhighlight %}
 
-![Button](/img/counter.png)
+![Counter]({{ site.url }}/img/counter.png)
 <p class="img-caption">Figure 1: counter component.</p>
 
 ## Learn more

@@ -39,7 +39,7 @@ double value = 12.4;
 cvui::trackbar(frame, 40, 30, 220, &value, (double)10.0, (double)15.0);
 {% endhighlight %}
 
-![Trackbar](/img/trackbar.png)
+![Trackbar]({{ site.url }}/img/trackbar.png)
 <p class="img-caption">Figure 1: trackbar component using double values.</p>
 
 ## Customization
@@ -59,10 +59,10 @@ Parameter `theOptions` provide options to customize the behavior/appearance of t
 
 The parameter `theDiscreteStep` is the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option `TRACKBAR_DISCRETE` is active). Figures 2 and 3 illustrate the differences.
 
-![Trackbar](/img/trackbar.gif)
+![Trackbar without discrete step]({{ site.url }}/img/trackbar.gif)
 <p class="img-caption">Figure 2: trackbar component without discrete step.</p>
 
-![Trackbar](/img/trackbar-discrete.gif)
+![Trackbar using a discrete step]({{ site.url }}/img/trackbar-discrete.gif)
 <p class="img-caption">Figure 3: trackbar component using a discrete step.</p>
 
 ## Learn more
