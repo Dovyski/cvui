@@ -7,7 +7,7 @@ title: window
 
 `cvui::window()` renders a window (a block with a title and a body). The signature of the function is:
 
-{% highlight c++ %}
+```cpp
 void window (
     cv::Mat& theWhere,
     int theX,
@@ -16,15 +16,15 @@ void window (
     int theHeight,
     const cv::String& theTitle
 )
-{% endhighlight %}
+```
 
 where `theWhere` is the image/frame where the image will be rendered, `theX` is the position X, `theY` is the position Y, `theWidth` is the width of the window, `theHeight` is the height of the window, and `theTitle` is the text displayed as the title of the window.
 
 Below is an example showing a window. The result on the screen is shown in Figure 1.
 
-{% highlight c++ %}
+```cpp
 cvui::window(frame, 60, 10, 130, 90, "Title");
-{% endhighlight %}
+```
 
 ![Window]({{ site.url }}/img/window.png)
 <p class="img-caption">Figure 1: window component.</p>

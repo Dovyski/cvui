@@ -7,7 +7,7 @@ title: checkbox
 
 `cvui::checkbox()` renders a checkbox. The signature of the function is:
 
-{% highlight c++ %}
+```cpp
 bool checkbox (
     cv::Mat& theWhere,
     int theX,
@@ -16,7 +16,7 @@ bool checkbox (
     bool *theState,
     unsigned int theColor = 0xCECECE
 )
-{% endhighlight %}
+```
 
 where `theWhere` is the image/frame where the image will be rendered, `theX` is the position X, `theY` is the position Y, `theLabel` is text displayed besides the clickable checkbox square, `theState` describes the current state of the checkbox (`true` means the checkbox is checked) and `theColor` is color of the label in the format `0xRRGGBB`, e.g. `0xff0000` for red.
 
@@ -24,10 +24,10 @@ where `theWhere` is the image/frame where the image will be rendered, `theX` is 
 
 Below is an example showing a checkbox. The result on the screen is shown in Figure 1.
 
-{% highlight c++ %}
+```cpp
 bool checked = false;
 cvui::checkbox(frame, 90, 50, "Checkbox label", &checked);
-{% endhighlight %}
+```
 
 ![Checkbox]({{ site.url }}/img/checkbox.png)
 <p class="img-caption">Figure 1: checkbox component.</p>

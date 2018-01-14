@@ -7,7 +7,7 @@ title: trackbar
 
 `cvui::trackbar()` renders a trackbar for numeric values that users can increase/decrease by clicking and/or dragging the marker right or left. The signature of the function is:
 
-{% highlight c++ %}
+```cpp
 template <typename T>
 bool trackbar (
     cv::Mat& theWhere,
@@ -22,7 +22,7 @@ bool trackbar (
     unsigned int theOptions = 0,
     T theDiscreteStep = 1
 )
-{% endhighlight %}
+```
 
 where `theWhere` is the image/frame where the image will be rendered, `theX` is the position X, `theY` is the position Y, `theWidth` is the width of the trackbar, `theValue` is the current value of the trackbar, `theMin` is the minimum value allowed for the trackbar, `theMax` is the maximum value allowed for the trackbar.
 
@@ -34,10 +34,10 @@ The parameter `theValue`  will be modified when the user interacts with the trac
 
 Below is an example showing a trackbar. The result on the screen is shown in Figure 1.
 
-{% highlight c++ %}
+```cpp
 double value = 12.4;
 cvui::trackbar(frame, 40, 30, 220, &value, (double)10.0, (double)15.0);
-{% endhighlight %}
+```
 
 ![Trackbar]({{ site.url }}/img/trackbar.png)
 <p class="img-caption">Figure 1: trackbar component using double values.</p>
