@@ -11,7 +11,7 @@ When a column or row is nested within another, it behaves like any ordinary comp
 
 Below is an example showing the general idea of nesting rows and columns:
 
-{% highlight c++ %}
+```cpp
 cv::Mat frame = cv::Mat(300, 800, CV_8UC3);
 
 // beginRow(cv::mat, x, y, width, height);
@@ -28,11 +28,11 @@ cvui::beginRow(frame, 10, 50, 100, 150);
     cvui::button("button1");
   cvui::endColumn();
 cvui::endRow();
-{% endhighlight %}
+```
 
 You could omit the width/height of (nested or not) rows/columns, so cvui will calculate its dimensions based on its components:
 
-{% highlight c++ %}
+```cpp
 // beginRow(cv::mat, x, y);
 cvui::beginRow(frame, 10, 50);
   cvui::beginColumn();
@@ -45,13 +45,13 @@ cvui::beginRow(frame, 10, 50);
     cvui::button("button1");
   cvui::endColumn();
 cvui::endRow();
-{% endhighlight %}
+```
 
 ## Example of row with nested columns
 
 Below is an example of a row whose components are texts, buttons and columns.
 
-{% highlight c++ %}
+```cpp
 // Define a row at position (10, 50) with width 100 and height 150.
 // beginRow(cv::mat, x, y, width, height, padding);
 cvui::beginRow(frame, 10, 50, 100, 150);
@@ -89,7 +89,7 @@ cvui::beginRow(frame, 10, 50, 100, 150);
   cvui::text("this is the ");
   cvui::text("end of the row!");
 cvui::endRow();
-{% endhighlight %}
+```
 
 The code above will produce the following on the screen:
 
@@ -102,7 +102,7 @@ Nested columns (and rows) behave like any other components. In this example, the
 
 Below is the same example as before, however the main row has a padding of `10px` and all rows/columns have automatically calculated dimensions:
 
-{% highlight c++ %}
+```cpp
 // beginRow(cv::mat, x, y, width, height, padding);
 cvui::beginRow(frame, 10, 50, -1, -1, 10);
   cvui::text("Row starts");
@@ -133,7 +133,7 @@ cvui::beginRow(frame, 10, 50, -1, -1, 10);
   cvui::text("this is the ");
   cvui::text("end of the row!");
 cvui::endRow();
-{% endhighlight %}
+```
 
 The code above will produce the following on the screen:
 

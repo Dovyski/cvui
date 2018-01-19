@@ -7,9 +7,9 @@ title: iarea
 
 `cvui::iarea()` creates an interaction area that reports mouse cursor activity. The signature of the function is:
 
-{% highlight c++ %}
+```cpp
 int iarea(int theX, int theY, int theWidth, int theHeight);
-{% endhighlight %}
+```
 
 where `theX` is the position X, `theY` is the position Y, `theWidth` is the width of the interaction area, and `theHeight` is the height of the interaction area.
 
@@ -23,7 +23,7 @@ where `theX` is the position X, `theY` is the position Y, `theWidth` is the widt
 
 Below is an example showing an interaction area and its interaction with the mouse cursor.
 
-{% highlight c++ %}
+```cpp
 int status = cvui::iarea(30, 70, 90, 100);
 
 // render a rectangle in the iarea, so we can see it
@@ -35,7 +35,7 @@ switch (status) {
   case cvui::OVER:   cvui::printf(frame, 240, 70, "Mouse is: OVER"); break;
   case cvui::OUT:    cvui::printf(frame, 240, 70, "Mouse is: OUT"); break;
 }
-{% endhighlight %}
+```
 
 ![iarea]({{ site.url }}/img/iarea.gif)
 <p class="img-caption">Figure 1: tracked interaction within an interaction area (iarea).</p>
