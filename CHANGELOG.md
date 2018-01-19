@@ -16,7 +16,7 @@ All notable changes to this project are documented in this file. The format is b
 ### Changed
 - cvui can now be included in multiple files (help from Luca Del Tongo; [read more](https://dovyski.github.io/cvui/usage/)).
 - Requirement that one (**and only one**) of your C++ files must include `cvui.h` after a `#define CVUI_IMPLEMENTATION` ([read more](https://dovyski.github.io/cvui/usage/)).
-- [Documentation](https://github.com/Dovyski/cvui/tree/master/docs/) was significantfly improved, e.g. code samples, figures, etc.
+- [Documentation](https://dovyski.github.io/cvui/) was significantfly improved, e.g. code samples, figures, etc.
 
 ### Fixed
 - `sparkline()` crashes with empty vector ([#23](https://github.com/Dovyski/cvui/issues/23)).
