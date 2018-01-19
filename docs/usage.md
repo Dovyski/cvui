@@ -19,7 +19,7 @@ Download the [latest release](https://github.com/Dovyski/cvui/releases/latest) a
 <div class="notice--warning">
 <strong>IMPORTANT:</strong> if you are using <code>cvui.h</code> in multiple files, e.g. different layout classes, you need to use <code>#define CVUI_IMPLEMENTATION</code> in <strong>one (and only one) of your C++ files</strong>. All other files should include <code>cvui.h</code> without <code>#define CVUI_IMPLEMENTATION</code>. E.g:
 
-```cpp
+{% highlight c++ %}
 // File: main.cpp
 #define CVUI_IMPLEMENTATION      <-- CVUI_IMPLEMENTATION defined in one (and only one) C++ source file.
 #include "cvui.h"
@@ -35,7 +35,7 @@ Download the [latest release](https://github.com/Dovyski/cvui/releases/latest) a
 #include "cvui.h"
 // (...)
 /////////////////////////////////////////////
-```
+{% endhighlight %}
 </div>
 
 <div class="notice--info"><strong>Tip:</strong> check the <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-files">multiple-files</a> example to learn more about the use of cvui in projects with multiple files that include <code>cvui.h</code>.</div>
@@ -106,7 +106,7 @@ int main() {
 
 After rendering your components, show the final result using `cvui::imshow()`, which is cvui's improved version of OpenCV's `cv::imshow()`:
 
-{% highlight c++ hl_lines="5" %}
+```cpp
 #include <opencv2/opencv.hpp>
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
