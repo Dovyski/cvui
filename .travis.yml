@@ -16,7 +16,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      env: COMPILER=g++-4.9 OPENCV=2.4.13
+      env: COMPILER=g++-4.9 OPENCV=2.4.13.5
 
     - compiler: gcc
       addons:
@@ -25,7 +25,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      env: COMPILER=g++-4.9 OPENCV=2.4.13.2
+      env: COMPILER=g++-4.9 OPENCV=2.4.13.4
 
     - compiler: gcc
       addons:
@@ -53,6 +53,24 @@ matrix:
           packages:
             - g++-4.9
       env: COMPILER=g++-4.9 OPENCV=3.2.0
+
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env: COMPILER=g++-4.9 OPENCV=3.3.0
+
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env: COMPILER=g++-4.9 OPENCV=3.4.0
 
 before_install:
     - sudo apt-get update -qq
