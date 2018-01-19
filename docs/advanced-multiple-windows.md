@@ -13,7 +13,7 @@ cvui uses OpenCV `cv::setMouseCallback()` to monitor interactions on each window
 
 The easiest way is to let cvui create the windows for you in `cvui::init()`. Below is an example where `cvui::init()` is called with an array of window names, so cvui will create the windows automatically:
 
-{% highlight c++ %}
+```cpp
 #define WINDOW1_NAME "Window 1"
 #define WINDOW2_NAME "Windows 2"
 #define WINDOW3_NAME "Windows 3"
@@ -33,7 +33,7 @@ int main() {
     // your logic here
   }
 }
-{% endhighlight %}
+```
 
 ## 1.1 (Optional) Create your own windows
 
@@ -41,7 +41,7 @@ If you want to create the windows youself, ensure you create them using `cv::nam
 
 When initializing cvui using `cvui::init()`, you still need to inform the name of a window (which will be the default window), then call `cvui::watch()` for each subsequent window to be monitored by cvui:
 
-{% highlight c++ %}
+```cpp
 #define WINDOW1_NAME "Window 1"
 #define WINDOW2_NAME "Windows 2"
 #define WINDOW3_NAME "Windows 3"
@@ -74,7 +74,7 @@ int main() {
     // your logic here
   }
 }
-{% endhighlight %}
+```
 
 ## 2. Tell cvui about the window, then render it
 
@@ -82,7 +82,7 @@ When using cvui components with multiple windows, you need to inform cvui which 
 
 The example below shows how to render a few components in two different window, e.g. `"window1"` and `"window2"`, assuming those windows were already created and cvui properly initialized before:
 
-{% highlight c++ %}
+```cpp
 // Create a frame for the windows
 cv::Mat frame = cv::Mat(200, 500, CV_8UC3);
 
@@ -93,7 +93,7 @@ cvui::imshow("window1", frame);              // update cvui interactions on wind
 cvui::context("window1");                     // Inform cvui that the components to be rendered from now one belong to "window2"
 cvui::text(frame, 5, 5, "Hey, window2");
 cvui::imshow("window1", frame);               // update cvui interactions on window "window2"
-{% endhighlight %}
+```
 
 ## 2.1 (Optional) Fine control update and show
 
@@ -105,7 +105,7 @@ In that case, you enclose all cvui component calls between the pair `cvui::conte
 
 The example below shows how to separately update and render a few components in two different window, e.g. `"window1"` and `"window2"`, assuming those windows were already created and cvui properly initialized before:
 
-{% highlight c++ %}
+```cpp
 // Create a frame for this window and fill it with a nice color
 cv::Mat frame = cv::Mat(200, 500, CV_8UC3);
 
@@ -123,4 +123,4 @@ cvui::update("window1");                      // update cvui interactions on win
 // Show the content of window "window2" on the screen
 cvui::imshow("window2", frame);
 
-{% endhighlight %}
+```

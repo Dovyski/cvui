@@ -11,20 +11,20 @@ cvui has its own mouse API to track mouse clicks and cursor position, for instan
 
 You can query the position of the mouse cursor any moment by calling `cvui::mouse()`, which returns a `cv::Point`:
 
-{% highlight c++ %}
+```cpp
 cv::Point mouse(const cv::String& theWindowName = "")
-{% endhighlight %}
+```
 
 Usage example:
 
-{% highlight c++ %}
+```cpp
 // Save the mouse cursor to a point object
 cv::Point cursor = cvui::mouse();
 std::cout << "x: " << cursor.x << " y: " << cursor.y << std::endl;
 
 // or access the position directly
 std::cout << "x: " << cvui::mouse().x << " y: " << cvui::mouse().y << std::endl;
-{% endhighlight %}
+```
 
 Calls to `cvui::mouse()` follow the cvui philosophy of always returning current information, so you don't have to listen to mouse events, for instance. Just call `cvui::mouse()` and you get the most up-to-date position of the mouse cursor.
 
@@ -32,9 +32,9 @@ Calls to `cvui::mouse()` follow the cvui philosophy of always returning current 
 
 You can query the state of the mouse, e.g. clicks, by calling `cvui::mouse(int)`, whose signature is:
 
-{% highlight c++ %}
+```cpp
 bool mouse(int theQuery)
-{% endhighlight %}
+```
 
 The parameter `theQuery` is an integer that specifies your query. Available queries are:
 
@@ -47,19 +47,19 @@ The parameter `theQuery` is an integer that specifies your query. Available quer
 
 Below is an example that shows a message when any mouse button is pressed:
 
-{% highlight c++ %}
+```cpp
 if (cvui::mouse(cvui::DOWN)) {
 	std::cout << "Any mouse button just went down." << std::endl;
 }
-{% endhighlight %}
+```
 
 Below is an example that shows a message only when any mouse button is clicked (pressed then released):
 
-{% highlight c++ %}
+```cpp
 if (cvui::mouse(cvui::CLICK)) {
 	std::cout << "A mouse click just happened." << std::endl;
 }
-{% endhighlight %}
+```
 
 ## Check mouse buttons individually
 
@@ -67,9 +67,9 @@ You can also query the state of a particular mouse button, e.g. react to clicks 
 
 Specific mouse buttons can be queried via `cvui::mouse(int, int)`, whose signature is:
 
-{% highlight c++ %}
+```cpp
 bool mouse(int theButton, int theQuery)
-{% endhighlight %}
+```
 
 The parameter `theButton` allows you to specify which mouse button you want to query. Available buttons are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::RIGHT_BUTTON`.
 
@@ -77,19 +77,19 @@ The function `cvui::mouse(int theButton, int theQuery)` works exactly as `cvui::
 
 Below is an example that prints a message when the left mouse button is pressed:
 
-{% highlight c++ %}
+```cpp
 if (cvui::mouse(cvui::LEFT_BUTTON, cvui::DOWN)) {
 	std::cout << "Left mouse button just went down." << std::endl;
 }
-{% endhighlight %}
+```
 
 Here is another example that shows a message only when the left mouse button is clicked (pressed then released):
 
-{% highlight c++ %}
+```cpp
 if (cvui::mouse(cvui::LEFT_BUTTON, cvui::CLICK)) {
 	std::cout << "Left mouse button click just happened." << std::endl;
 }
-{% endhighlight %}
+```
 
 ## Learn more
 

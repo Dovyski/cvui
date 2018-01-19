@@ -9,7 +9,7 @@ One of the most annoying tasks when building UI is to calculate the position of 
 
 You create rows by using `beginRow()` and `endRow()`. Similarly you create columns by using `beginColumn()` and `endColumn()`. The signature of `cvui::begin*()` is:
 
-{% highlight c++ %}
+```cpp
 void begin{Row,Column} (
   cv::Mat &theWhere,
   int theX,
@@ -18,7 +18,7 @@ void begin{Row,Column} (
   int theHeight = -1,
   int thePadding = 0
 )
-{% endhighlight %}
+```
 
 Both `cvui::beginRow()` and `cvui::beginColumn()` require you to inform the frame where the row/column will be rendered and its `(x, y)` coordinate on the screen. Opitionally you can inform the width, height and padding of the row/column.
 
@@ -30,7 +30,7 @@ You can create a row/column in three steps: use `begin*()` to start a group (row
 
 Here is an example of a row:
 
-{% highlight c++ %}
+```cpp
 cv::Mat frame = cv::Mat(300, 800, CV_8UC3);
 
 // beginRow(cv::Mat, x, y)
@@ -41,7 +41,7 @@ cvui::beginRow(frame, 10, 20);
   cvui::button(100, 30, "Fixed");
   cvui::text("with text.");  
 cvui::endRow();
-{% endhighlight %}
+```
 
 The code above will produce the following on the screen:
 
@@ -56,7 +56,7 @@ Width and height of a row/column are `-1` by default, which means cvui will calc
 
 Padding of a row/column is `0` by defalut, which means components will be placed with no spacing between them. The parameter `thePadding` allows you to change the spacing of components in a row/column. Below is another row as example, however using `50` as padding:
 
-{% highlight c++ %}
+```cpp
 // beginRow(cv::Mat, x, y, width, height, padding)
 cvui::beginRow(frame, 10, 20, -1, -1, 50);
   cvui::text("This is another row");
@@ -65,7 +65,7 @@ cvui::beginRow(frame, 10, 20, -1, -1, 50);
   cvui::button(100, 30, "Fixed");
   cvui::text("with text.");  
 cvui::endRow();
-{% endhighlight %}
+```
 
 The result on the screen will be:
 
@@ -74,7 +74,7 @@ The result on the screen will be:
 
 You can create columns in the same fashion. Below is an example showing how to create three adjacent columns, which use different padding configurations.
 
-{% highlight c++ %}
+```cpp
 // cv::Mat, x, y, width, height, padding
 cvui::beginColumn(frame, 50, 50, 100, 200);
   cvui::text("Column 1 (no padding)");
@@ -105,7 +105,7 @@ cvui::beginColumn(frame, 550, 50, 100, 200);
   cvui::text("End of column 2 (40px below)");
 cvui::endColumn();
 
-{% endhighlight %}
+```
 
 ![Example of cvui::beginRow() and cvui::endRow() with padding]({{ site.url }}/img/columns-padding-spacing.png)
 <p class="img-caption">Figure 3: columns with different spacing configurations. Column #1: no padding. Column #2: padding of 10px. Column #3: no padding, but spaced using <code>cvui::space()</code>.</p>
