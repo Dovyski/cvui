@@ -44,6 +44,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multiple-files", "src\multi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multiple-windows-complex-mouse", "src\multiple-windows-complex-mouse\multiple-windows-complex-mouse.vcxproj", "{ECBD6377-E016-4846-B6CC-81349836A199}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multiple-windows-complex-dynamic", "src\multiple-windows-complex-dynamic\multiple-windows-complex-dynamic.vcxproj", "{5A51E582-AF0D-4A4A-88A3-4C896EDE8C17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -134,6 +136,10 @@ Global
 		{ECBD6377-E016-4846-B6CC-81349836A199}.Debug|x64.Build.0 = Debug|x64
 		{ECBD6377-E016-4846-B6CC-81349836A199}.Release|x64.ActiveCfg = Release|x64
 		{ECBD6377-E016-4846-B6CC-81349836A199}.Release|x64.Build.0 = Release|x64
+		{5A51E582-AF0D-4A4A-88A3-4C896EDE8C17}.Debug|x64.ActiveCfg = Debug|x64
+		{5A51E582-AF0D-4A4A-88A3-4C896EDE8C17}.Debug|x64.Build.0 = Debug|x64
+		{5A51E582-AF0D-4A4A-88A3-4C896EDE8C17}.Release|x64.ActiveCfg = Release|x64
+		{5A51E582-AF0D-4A4A-88A3-4C896EDE8C17}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
