@@ -25,7 +25,7 @@ int main(int argc, const char *argv[])
 	cvui::init(WINDOW_NAME, 20);
 
 	while (true) {
-		frame = cv::Scalar(49, 52, 49);
+		frame = cv::Scalar(49, 52, 255);
 
 		cvui::text(frame, 40, 40, "To exit this app click the button below or press Q (shortcut for the button below).");
 
@@ -33,7 +33,7 @@ int main(int argc, const char *argv[])
 		// It can be pressed because of a mouse click or because 
 		// the user pressed the "q" key on the keyboard, which is
 		// marked as a shortcut in the button label ("&Quit").
-		if (cvui::button(frame, 300, 80, "&Quit")) {
+		if (cvui::button(frame, 300, 80, "&Break")) {
 			break;
 		}
 

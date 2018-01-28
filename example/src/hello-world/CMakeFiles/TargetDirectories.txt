@@ -1,0 +1,7 @@
+/home/ironman/workspace/cvui/example/src/hello-world/CMakeFiles/rebuild_cache.dir
+/home/ironman/workspace/cvui/example/src/hello-world/CMakeFiles/install/strip.dir
+/home/ironman/workspace/cvui/example/src/hello-world/CMakeFiles/install/local.dir
+/home/ironman/workspace/cvui/example/src/hello-world/CMakeFiles/hello-world.dir
+/home/ironman/workspace/cvui/example/src/hello-world/CMakeFiles/list_install_components.dir
+/home/ironman/workspace/cvui/example/src/hello-world/CMakeFiles/install.dir
+/home/ironman/workspace/cvui/example/src/hello-world/CMakeFiles/edit_cache.dir

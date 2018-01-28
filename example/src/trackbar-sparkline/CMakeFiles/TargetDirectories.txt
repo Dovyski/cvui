@@ -1,0 +1,7 @@
+/home/ironman/workspace/cvui/example/src/trackbar-sparkline/CMakeFiles/rebuild_cache.dir
+/home/ironman/workspace/cvui/example/src/trackbar-sparkline/CMakeFiles/install/strip.dir
+/home/ironman/workspace/cvui/example/src/trackbar-sparkline/CMakeFiles/trackbar-sparkline.dir
+/home/ironman/workspace/cvui/example/src/trackbar-sparkline/CMakeFiles/install.dir
+/home/ironman/workspace/cvui/example/src/trackbar-sparkline/CMakeFiles/install/local.dir
+/home/ironman/workspace/cvui/example/src/trackbar-sparkline/CMakeFiles/list_install_components.dir
+/home/ironman/workspace/cvui/example/src/trackbar-sparkline/CMakeFiles/edit_cache.dir

@@ -17,9 +17,9 @@ Licensed under the MIT license.
 int main(int argc, const char *argv[])
 {
 	cv::Mat frame = cv::Mat(300, 600, CV_8UC3);
-	cv::Mat out = cv::imread("./lena-face.jpg", cv::IMREAD_COLOR);
-	cv::Mat down = cv::imread("./lena-face-red.jpg", cv::IMREAD_COLOR);
-	cv::Mat over = cv::imread("./lena-face-gray.jpg", cv::IMREAD_COLOR);
+	cv::Mat out = cv::imread("../../data/lena-face.jpg", cv::IMREAD_COLOR);
+	cv::Mat down = cv::imread("../../data/lena-face-red.jpg", cv::IMREAD_COLOR);
+	cv::Mat over = cv::imread("../../data/lena-face-gray.jpg", cv::IMREAD_COLOR);
 
 	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME);

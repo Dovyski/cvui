@@ -20,7 +20,7 @@ Licensed under the MIT license.
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat lena = cv::imread("lena.jpg");
+	cv::Mat lena = cv::imread("../../data/lena.jpg");
 	cv::Mat frame = lena.clone();
 	cv::Point anchors[3]; // one anchor for each mouse button
 	cv::Rect rois[3]; // one ROI for each mouse button

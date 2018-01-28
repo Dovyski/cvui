@@ -1,0 +1,7 @@
+/home/ironman/workspace/cvui/example/src/mouse/CMakeFiles/rebuild_cache.dir
+/home/ironman/workspace/cvui/example/src/mouse/CMakeFiles/install/strip.dir
+/home/ironman/workspace/cvui/example/src/mouse/CMakeFiles/install/local.dir
+/home/ironman/workspace/cvui/example/src/mouse/CMakeFiles/list_install_components.dir
+/home/ironman/workspace/cvui/example/src/mouse/CMakeFiles/mouse.dir
+/home/ironman/workspace/cvui/example/src/mouse/CMakeFiles/install.dir
+/home/ironman/workspace/cvui/example/src/mouse/CMakeFiles/edit_cache.dir

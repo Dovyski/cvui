@@ -1,0 +1,7 @@
+/home/ironman/workspace/cvui/example/src/interaction-area/CMakeFiles/rebuild_cache.dir
+/home/ironman/workspace/cvui/example/src/interaction-area/CMakeFiles/install/strip.dir
+/home/ironman/workspace/cvui/example/src/interaction-area/CMakeFiles/interaction-area.dir
+/home/ironman/workspace/cvui/example/src/interaction-area/CMakeFiles/edit_cache.dir
+/home/ironman/workspace/cvui/example/src/interaction-area/CMakeFiles/install.dir
+/home/ironman/workspace/cvui/example/src/interaction-area/CMakeFiles/install/local.dir
+/home/ironman/workspace/cvui/example/src/interaction-area/CMakeFiles/list_install_components.dir

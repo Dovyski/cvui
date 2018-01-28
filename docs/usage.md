@@ -106,7 +106,7 @@ int main() {
 
 After rendering your components, show the final result using `cvui::imshow()`, which is cvui's improved version of OpenCV's `cv::imshow()`:
 
-{% highlight c++ hl_lines="5" %}
+```cpp
 #include <opencv2/opencv.hpp>
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"

@@ -1,0 +1,7 @@
+/home/ironman/workspace/cvui/example/src/main-app/CMakeFiles/rebuild_cache.dir
+/home/ironman/workspace/cvui/example/src/main-app/CMakeFiles/install/strip.dir
+/home/ironman/workspace/cvui/example/src/main-app/CMakeFiles/main-app.dir
+/home/ironman/workspace/cvui/example/src/main-app/CMakeFiles/edit_cache.dir
+/home/ironman/workspace/cvui/example/src/main-app/CMakeFiles/install.dir
+/home/ironman/workspace/cvui/example/src/main-app/CMakeFiles/install/local.dir
+/home/ironman/workspace/cvui/example/src/main-app/CMakeFiles/list_install_components.dir
