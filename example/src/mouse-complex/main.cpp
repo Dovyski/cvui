@@ -18,7 +18,7 @@ Licensed under the MIT license.
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat lena = cv::imread("../../data/lena.jpg");
+	cv::Mat lena = cv::imread("lena.jpg");
 	cv::Mat frame = lena.clone();
 	cv::Point anchor;
 	cv::Rect roi(0, 0, 0, 0);

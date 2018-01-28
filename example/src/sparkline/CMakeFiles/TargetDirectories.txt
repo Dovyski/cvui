@@ -1,7 +1,0 @@
-/home/ironman/workspace/cvui/example/src/sparkline/CMakeFiles/rebuild_cache.dir
-/home/ironman/workspace/cvui/example/src/sparkline/CMakeFiles/install/strip.dir
-/home/ironman/workspace/cvui/example/src/sparkline/CMakeFiles/sparkline.dir
-/home/ironman/workspace/cvui/example/src/sparkline/CMakeFiles/install.dir
-/home/ironman/workspace/cvui/example/src/sparkline/CMakeFiles/install/local.dir
-/home/ironman/workspace/cvui/example/src/sparkline/CMakeFiles/list_install_components.dir
-/home/ironman/workspace/cvui/example/src/sparkline/CMakeFiles/edit_cache.dir

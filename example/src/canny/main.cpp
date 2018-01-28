@@ -13,7 +13,7 @@ Code licensed under the MIT license, check LICENSE file.
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat lena = cv::imread("../../data/lena.jpg");
+	cv::Mat lena = cv::imread("lena.jpg");
 	cv::Mat frame = lena.clone();
 	int low_threshold = 50, high_threshold = 150;
 	bool use_canny = false;

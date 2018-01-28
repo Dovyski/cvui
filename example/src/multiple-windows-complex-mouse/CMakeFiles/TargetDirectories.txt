@@ -1,7 +1,0 @@
-/home/ironman/workspace/cvui/example/src/multiple-windows-complex-mouse/CMakeFiles/rebuild_cache.dir
-/home/ironman/workspace/cvui/example/src/multiple-windows-complex-mouse/CMakeFiles/install/strip.dir
-/home/ironman/workspace/cvui/example/src/multiple-windows-complex-mouse/CMakeFiles/multiple-windows-complex-mouse.dir
-/home/ironman/workspace/cvui/example/src/multiple-windows-complex-mouse/CMakeFiles/edit_cache.dir
-/home/ironman/workspace/cvui/example/src/multiple-windows-complex-mouse/CMakeFiles/install.dir
-/home/ironman/workspace/cvui/example/src/multiple-windows-complex-mouse/CMakeFiles/install/local.dir
-/home/ironman/workspace/cvui/example/src/multiple-windows-complex-mouse/CMakeFiles/list_install_components.dir

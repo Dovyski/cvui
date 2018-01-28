@@ -1,7 +1,0 @@
-/home/ironman/workspace/cvui/example/src/nested-rows-columns/CMakeFiles/rebuild_cache.dir
-/home/ironman/workspace/cvui/example/src/nested-rows-columns/CMakeFiles/install/strip.dir
-/home/ironman/workspace/cvui/example/src/nested-rows-columns/CMakeFiles/nested-rows-columns.dir
-/home/ironman/workspace/cvui/example/src/nested-rows-columns/CMakeFiles/install/local.dir
-/home/ironman/workspace/cvui/example/src/nested-rows-columns/CMakeFiles/list_install_components.dir
-/home/ironman/workspace/cvui/example/src/nested-rows-columns/CMakeFiles/install.dir
-/home/ironman/workspace/cvui/example/src/nested-rows-columns/CMakeFiles/edit_cache.dir

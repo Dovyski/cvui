@@ -1,7 +1,0 @@
-/home/ironman/workspace/cvui/example/src/trackbar-complex/CMakeFiles/rebuild_cache.dir
-/home/ironman/workspace/cvui/example/src/trackbar-complex/CMakeFiles/install/strip.dir
-/home/ironman/workspace/cvui/example/src/trackbar-complex/CMakeFiles/trackbar-complex.dir
-/home/ironman/workspace/cvui/example/src/trackbar-complex/CMakeFiles/install.dir
-/home/ironman/workspace/cvui/example/src/trackbar-complex/CMakeFiles/install/local.dir
-/home/ironman/workspace/cvui/example/src/trackbar-complex/CMakeFiles/list_install_components.dir
-/home/ironman/workspace/cvui/example/src/trackbar-complex/CMakeFiles/edit_cache.dir

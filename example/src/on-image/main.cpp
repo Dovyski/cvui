@@ -14,7 +14,7 @@ Author: Pascal Thomet
 
 int main(int argc, const char *argv[])
 {
-	cv::Mat lena = cv::imread("../../data/lena.jpg");
+	cv::Mat lena = cv::imread("lena.jpg");
 	cv::Mat frame = lena.clone();
 	cv::Mat doubleBuffer = frame.clone();
 	int trackbarWidth = 130;

@@ -1,7 +1,0 @@
-/home/ironman/workspace/cvui/example/src/mouse-complex/CMakeFiles/rebuild_cache.dir
-/home/ironman/workspace/cvui/example/src/mouse-complex/CMakeFiles/install/strip.dir
-/home/ironman/workspace/cvui/example/src/mouse-complex/CMakeFiles/mouse-complex.dir
-/home/ironman/workspace/cvui/example/src/mouse-complex/CMakeFiles/install.dir
-/home/ironman/workspace/cvui/example/src/mouse-complex/CMakeFiles/install/local.dir
-/home/ironman/workspace/cvui/example/src/mouse-complex/CMakeFiles/list_install_components.dir
-/home/ironman/workspace/cvui/example/src/mouse-complex/CMakeFiles/edit_cache.dir
