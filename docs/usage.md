@@ -185,4 +185,4 @@ You can disable such compilation messages by defining `CVUI_DISABLE_COMPILATION_
 
 ## Learn more
 
-Check out the [examples]({{ site.url }}/examples) page for more usage demonstrations of cvui.
+Check out the [examples](https://dovyski.github.io/cvui/examples) page for more usage demonstrations of cvui.
