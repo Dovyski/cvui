@@ -19,7 +19,7 @@ Download the [latest release](https://github.com/Dovyski/cvui/releases/latest) a
 <div class="notice--warning">
 <strong>IMPORTANT:</strong> if you are using <code>cvui.h</code> in multiple files, e.g. different layout classes, you need to use <code>#define CVUI_IMPLEMENTATION</code> in <strong>one (and only one) of your C++ files</strong>. All other files should include <code>cvui.h</code> without <code>#define CVUI_IMPLEMENTATION</code>. E.g:
 
-{% highlight c++ %}
+```cpp
 // File: main.cpp
 #define CVUI_IMPLEMENTATION      <-- CVUI_IMPLEMENTATION defined in one (and only one) C++ source file.
 #include "cvui.h"
@@ -35,7 +35,7 @@ Download the [latest release](https://github.com/Dovyski/cvui/releases/latest) a
 #include "cvui.h"
 // (...)
 /////////////////////////////////////////////
-{% endhighlight %}
+```
 </div>
 
 <div class="notice--info"><strong>Tip:</strong> check the <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-files">multiple-files</a> example to learn more about the use of cvui in projects with multiple files that include <code>cvui.h</code>.</div>
@@ -185,4 +185,4 @@ You can disable such compilation messages by defining `CVUI_DISABLE_COMPILATION_
 
 ## Learn more
 
-Check out the [examples]({{ site.url }}/examples) page for more usage demonstrations of cvui.
+Check out the [examples](https://dovyski.github.io/cvui/examples) page for more usage demonstrations of cvui.

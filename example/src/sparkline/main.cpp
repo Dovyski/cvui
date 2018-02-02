@@ -40,7 +40,7 @@ int main(int argc, const char *argv[])
 	cvui::init(WINDOW_NAME);
 
 	// Load some data points from a file
-	std::vector<double> points = load("sparkline.csv");
+	std::vector<double> points = load("../../data/sparkline.csv");
 	
 	// Create less populated sets
 	std::vector<double> few_points;

@@ -39,9 +39,9 @@ int main(int argc, const char *argv[])
 	bool checked2 = false;
 	double value = 1.0, value2 = 1.0, value3 = 1.0;
 	int padding = 10;
-	cv::Mat img = cv::imread("./lena-face.jpg", cv::IMREAD_COLOR);
-	cv::Mat imgRed = cv::imread("./lena-face-red.jpg", cv::IMREAD_COLOR);
-	cv::Mat imgGray = cv::imread("./lena-face-gray.jpg", cv::IMREAD_COLOR);
+	cv::Mat img = cv::imread("../../data/lena-face.jpg", cv::IMREAD_COLOR);
+	cv::Mat imgRed = cv::imread("../../data/lena-face-red.jpg", cv::IMREAD_COLOR);
+	cv::Mat imgGray = cv::imread("../../data/lena-face-gray.jpg", cv::IMREAD_COLOR);
 
 	// Fill the vector with a few random values
 	for (std::vector<double>::size_type i = 0; i < 20; i++) {
