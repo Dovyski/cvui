@@ -85,22 +85,22 @@ void watch(const cv::String& theWindowName, bool theCreateNamedWindow = true);
  ```
  // Code for window "window1".
  cvui::context("window1");
- cviu::text(frame, ...);
- cviu::button(frame, ...);
- cviu::update("window1");
+ cvui::text(frame, ...);
+ cvui::button(frame, ...);
+ cvui::update("window1");
 
 
  // somewhere else, code for "window2"
  cvui::context("window2");
- cviu::printf(frame, ...);
- cviu::printf(frame, ...);
- cviu::update("window2");
+ cvui::printf(frame, ...);
+ cvui::printf(frame, ...);
+ cvui::update("window2");
 
  // Show everything in a window
  cv::imshow(frame);
  ```
 
- Pay attention to the pair `cvui::context(NAME)` and `cviu::update(NAME)`, which
+ Pay attention to the pair `cvui::context(NAME)` and `cvui::update(NAME)`, which
  encloses the component calls for that window. You need such pair for each window
  of your application.
 
@@ -113,15 +113,15 @@ void watch(const cv::String& theWindowName, bool theCreateNamedWindow = true);
  ```
  // Code for window "window1".
  cvui::context("window1");
- cviu::text(frame, ...);
- cviu::button(frame, ...);
- cviu::imshow("window1");
+ cvui::text(frame, ...);
+ cvui::button(frame, ...);
+ cvui::imshow("window1");
 
  // somewhere else, code for "window2"
  cvui::context("window2");
- cviu::printf(frame, ...);
- cviu::printf(frame, ...);
- cviu::imshow("window2");
+ cvui::printf(frame, ...);
+ cvui::printf(frame, ...);
+ cvui::imshow("window2");
  ```
 
  In that case, you don't have to bother calling `cvui::update()` yourself, since
