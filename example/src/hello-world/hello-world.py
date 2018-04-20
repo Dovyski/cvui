@@ -13,6 +13,9 @@ img = np.zeros((512,512,3), np.uint8)
 
 cv2.namedWindow('Window')
 
+# Change background color
+img[:] = (49, 52, 49)
+
 # Draw a diagonal blue line with thickness of 5 px
 cv2.line(img,(0,0),(511,511),(255,0,0),5)
 
