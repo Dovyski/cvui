@@ -997,9 +997,22 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 	#define sprintf_s sprintf
 #endif
 
-// Define a few platform-dependent macros
+// Adjust things accoridng to platform
 #ifdef _MSC_VER
 	#define _CVUI_COMPILE_MESSAGE(x) message(x)
+
+	// If windows.h has already been included, min() and max() will be defined.
+	// In such case, a shit storm will rain on us, producing all kinds of
+	// compilation problems with cvui. If min/max are already defined,
+	// let's undef them for now and redef them at the end of this file.
+	#ifdef min
+		#define __cvui_min min
+		#undef min
+	#endif
+	#ifdef max
+		#define __cvui_max max
+		#undef max
+	#endif
 #elif __GNUC__
 	#define _CVUI_COMPILE_MESSAGE(x) message x
 #endif
@@ -2402,4 +2415,19 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 }
 
 } // namespace cvui
+
+// Final adjustments that are platform-dependent
+#ifdef _MSC_VER
+	// Check if we salved the definitions of min and max, which could have
+	// been defined by windows.h. If that is the case, we have undef'd
+	// them at the begining of this file, so we need to restore the existing
+	// macros now. We want to do good, not make world burn. You're welcome.
+	#ifdef __cvui_min
+		#define min __cvui_min
+	#endif
+	#ifdef __cvui_max
+		#define max __cvui_max
+	#endif
+#endif
+
 #endif // CVUI_IMPLEMENTATION
