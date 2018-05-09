@@ -75,7 +75,7 @@ int main(int argc, const char *argv[])
 		}
 
 		// Render the rectangle
-		cvui::rect(frame, rectangle.x, rectangle.y, rectangle.width, rectangle.height, 0xff0000);
+		cvui::rect(frame, rectangle.x, rectangle.y, rectangle.width, rectangle.height, 0xff0000, 0xd00000ff);
 
 		// This function must be called *AFTER* all UI components. It does
 		// all the behind the scenes magic to handle mouse clicks, etc.
