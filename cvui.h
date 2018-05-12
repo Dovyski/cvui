@@ -2065,7 +2065,16 @@ namespace render
 		bool aHasFilling = aFilling[3] != 0xff;
 
 		if (aHasFilling) {
-			cv::rectangle(theBlock.where, thePos, aFilling, CVUI_FILLED, CVUI_ANTIALISED);
+			if (aFilling[3] == 0xff) {
+				// full opacity
+				cv::rectangle(theBlock.where, thePos, aFilling, CVUI_FILLED, CVUI_ANTIALISED);
+			}
+			else {
+				cv::Rect aClippedRect = thePos & cv::Rect(cv::Point(0, 0), theBlock.where.size());
+				double aAlpha = 1.00 - static_cast<double>(aFilling[3]) / 255;
+				cv::Mat aOverlay(aClippedRect.size(), theBlock.where.type(), aFilling);
+				cv::addWeighted(aOverlay, aAlpha, theBlock.where(aClippedRect), 1.00 - aAlpha, 0.0, theBlock.where(aClippedRect));
+			}
 		}
 
 		// Render the border
