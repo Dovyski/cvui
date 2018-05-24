@@ -37,6 +37,7 @@ example/build/*
 #Build paths
 build
 install
+bin
 
 # "Compiled" docs folder
 /docs/_site
@@ -45,3 +46,14 @@ install
 !example/build/README.txt
 !example/build/data/*
 html
+
+# eclipse
+.cproject
+.project
+.settings/
+
+# cmake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
