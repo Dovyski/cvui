@@ -6,27 +6,39 @@ import numpy as np
 import cv2
 import cvui
 
-cvui.random_number_generator(1, 2)
+WINDOW_NAME = 'CVUI Hello World!'
 
- # Create a black image
-img = np.zeros((512,512,3), np.uint8)
+def main():
+	frame = np.zeros((200, 500, 3), np.uint8)
+	count = 0;
 
-cv2.namedWindow('Window')
+	# Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
+	cvui.init(WINDOW_NAME)
 
-# Change background color
-img[:] = (49, 52, 49)
+	while (True):
+		# Fill the frame with a nice color
+		frame[:] = (49, 52, 49)
 
-# Draw a diagonal blue line with thickness of 5 px
-cv2.line(img,(0,0),(511,511),(255,0,0),5)
+		# Buttons will return true if they were clicked, which makes
+		# handling clicks a breeze.
+		if (cvui.button(frame, 110, 80, "Hello, world!")):
+			# The button was clicked, so let's increment our counter.
+			count += 1
 
-cv2.rectangle(img,(384,0),(510,128),(0,255,0),3)
-cv2.circle(img,(447,63), 63, (0,0,255), -1)
+		# Sometimes you want to show text that is not that simple, e.g. strings + numbers.
+		# You can use cvui::printf for that. It accepts a variable number of parameter, pretty
+		# much like printf does.
+		# Let's show how many times the button has been clicked.
+		#cvui::printf(frame, 250, 90, 0.4, 0xff0000, "Button click count: %d", count);
+		cvui.text(frame, 250, 90, 'Button click count:');
 
-font = cv2.FONT_HERSHEY_SIMPLEX
-cv2.putText(img,'OpenCV',(10,500), font, 4,(255,255,255),2,cv2.LINE_AA)
+		# Update cvui stuff and show everything on the screen
+		#cvui::imshow(WINDOW_NAME, frame);
+		cv2.imshow(WINDOW_NAME, frame)
 
-cv2.imshow('Window', img)
+		# Check if ESC key was pressed
+		if cv2.waitKey(20) == 27:
+			break
 
-k = cv2.waitKey(0)
-if k == 27:         # wait for ESC key to exit
-    cv2.destroyAllWindows()
+if __name__ == '__main__':
+    main()
