@@ -9,26 +9,65 @@ def main():
 if __name__ == '__main__':
     main()
 
-RIGHT_BUTTON = 0
+# Lib version
+VERSION = "2.5.0"
+
+# Constants regarding component interactions
+ROW = 0
+COLUMN = 1
+DOWN = 2
+CLICK = 3
+OVER = 4
+OUT = 5
+UP = 6
+IS_DOWN = 7
+
+# Constants regarding mouse buttons
+LEFT_BUTTON = 0
 MIDDLE_BUTTON = 1
-LEFT_BUTTON = 2
+RIGHT_BUTTON = 2
 
 # Class to represent 2D points
 class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+	def __init__(self, x = 0, y = 0):
+		self.x = x
+		self.y = y
+
+# Class to represent a rectangle
+class Rect:
+	def __init__(self, x = 0, y = 0, width = 0, height = 0):
+		self.x = x
+		self.y = y
+		self.width = width
+		self.height = height
+
 
 # Describes the block structure used by the lib to handle `begin*()` and `end*()` calls.
 class Block:
-    __slots__ = [
-        'where',       # where the block should be rendered to.
-        'rect',        # the size and position of the block.
-        'fill',        # the filled area occuppied by the block as it gets modified by its inner components.
-        'anchor',      # the point where the next component of the block should be rendered.
-        'padding',     # padding among components within this block.
-        'type'         # type of the block, e.g. ROW or COLUMN.
-    ]
+	def __init__(self):
+		self.where = None           # where the block should be rendered to.
+		self.rect = Rect()      # the size and position of the block.
+		self.fill = Rect()      # the filled area occuppied by the block as it gets modified by its inner components.
+		self.anchor = Point()       # the point where the next component of the block should be rendered.
+		self.padding = 0            # padding among components within this block.
+		self.type = ROW       		# type of the block, e.g. ROW or COLUMN.
+		
+		self.reset()
+
+	def reset(self):
+		self.rect.x = 0
+		self.rect.y = 0
+		self.rect.width = 0
+		self.rect.height = 0
+
+		self.fill = self.rect
+		self.fill.width = 0
+		self.fill.height = 0
+
+		self.anchor.x = 0
+		self.anchor.y = 0
+
+		self.padding = 0
 
 # Describes a component label, including info about a shortcut.
 # If a label contains "Re&start", then:
@@ -46,18 +85,21 @@ class Label:
 
 # Describe a mouse button
 class MouseButton:
-    __slots__ = [
-        'justReleased',  # if the mouse button was released, i.e. click event.
-        'justPressed',   # if the mouse button was just pressed, i.e. true for a frame when a button is down.
-        'pressed'        # if the mouse button is pressed or not.
-    ]
+	justReleased = False    # if the mouse button was released, i.e. click event.
+	justPressed = False     # if the mouse button was just pressed, i.e. true for a frame when a button is down.
+	pressed = False         # if the mouse button is pressed or not.
+
+	def reset(self):
+		self.justPressed = False
+		self.justReleased = False
+		self.pressed = False
 
 # Describe the information of the mouse cursor
 class Mouse:
     buttons = {                        # status of each button. Use cvui::{RIGHT,LEFT,MIDDLE}_BUTTON to access the buttons.
-		RIGHT_BUTTON: MouseButton(),
+		LEFT_BUTTON: MouseButton(),
 		MIDDLE_BUTTON: MouseButton(),
-		LEFT_BUTTON: MouseButton()
+		RIGHT_BUTTON: MouseButton()
 	}              
     anyButton = MouseButton()          # represent the behavior of all mouse buttons combined
     position = Point(0, 0)             # x and y coordinates of the mouse at the moment.
@@ -70,25 +112,49 @@ class Context:
 # This class contains all stuff that cvui uses internally to render
 # and control interaction with components
 class Internal:
-    defaultContext = ''
-    currentContext = ''
-    contexts = {} # indexed by the window name.
-    buffer = []
-    lastKeyPressed = -1 # TODO: collect it per window
-    delayWaitKey = -1
-    screen = Block()
-    stack = []
-    stackCount = -1
-    trackbarMarginX = 14
+	def __init__(self):
+		self.defaultContext = ''
+		self.currentContext = ''
+		self.contexts = {} # indexed by the window name.
+		self.buffer = []
+		self.lastKeyPressed = -1 # TODO: collect it per window
+		self.delayWaitKey = -1
+		self.screen = Block()
+		self.stack = []
+		self.stackCount = -1
+		self.trackbarMarginX = 14
 
-    def __init__(self):
-        self.defaultContext = ''
+	def init(self, theWindowName, theDelayWaitKey):
+		self.defaultContext = theWindowName
+		self.currentContext = theWindowName
+		self.delayWaitKey = theDelayWaitKey
+		self.lastKeyPressed = -1
 
-    def init(self, theWindowName, theDelayWaitKey):
-        self.defaultContext = theWindowName
-        self.currentContext = theWindowName
-        self.delayWaitKey = theDelayWaitKey
-        self.lastKeyPressed = -1
+	def error(self, theId, theMessage):
+		print('[CVUI] Fatal error (code ', theId, '): ', theMessage)
+		cv.waitKey(100000)
+		sys.exit(-1)
+
+	def getContext(self, theWindowName):
+		if len(theWindowName) != 0:
+			# Get context in particular
+			return self.contexts[theWindowName]
+
+		elif len(self.currentContext) != 0:
+			# No window provided, return currently active context.
+			return self.contexts[self.currentContext]
+
+		elif len(self.defaultContext) != 0:
+			# We have no active context, so let's use the default one.
+			return self.contexts[self.defaultContext]
+
+		else:
+			# Apparently we have no window at all! <o>
+			# This should not happen. Probably cvui::init() was never called.
+			self.error(5, "Unable to read context. Did you forget to call cvui::init()?")
+
+	def blockStackEmpty(self):
+		return self.stackCount == -1
 
 # Class that contains all rendering methods.
 class Render:
@@ -104,7 +170,7 @@ def _handleMouse(theEvent, theX, theY, theFlags, theContext):
 	aEventsDown = [cv2.EVENT_LBUTTONDOWN, cv2.EVENT_MBUTTONDOWN, cv2.EVENT_RBUTTONDOWN]
 	aEventsUp = [cv2.EVENT_LBUTTONUP, cv2.EVENT_MBUTTONUP, cv2.EVENT_RBUTTONUP]
 
-	for i in range(0, 3):
+	for i in range(LEFT_BUTTON, RIGHT_BUTTON + 1):
 		aBtn = aButtons[i]
 
 		if theEvent == aEventsDown[i]:
@@ -124,19 +190,18 @@ def _handleMouse(theEvent, theX, theY, theFlags, theContext):
 	print('_handleMouse', theEvent, theX, theY, theFlags)
 
 def watch(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
-    aContex = Context()
-
     if theCreateNamedWindow:
         cv2.namedWindow(theWindowName)
 
+    aContex = Context()
     aContex.windowName = theWindowName
     aContex.mouse.position.x = 0
     aContex.mouse.position.y = 0
 
-    #__internal.resetMouseButton(aContex.mouse.anyButton)
-    #__internal.resetMouseButton(aContex.mouse.buttons[RIGHT_BUTTON])
-    #__internal.resetMouseButton(aContex.mouse.buttons[MIDDLE_BUTTON])
-    #__internal.resetMouseButton(aContex.mouse.buttons[LEFT_BUTTON])
+    aContex.mouse.anyButton.reset()
+    aContex.mouse.buttons[RIGHT_BUTTON].reset()
+    aContex.mouse.buttons[MIDDLE_BUTTON].reset()
+    aContex.mouse.buttons[LEFT_BUTTON].reset()
 
     __internal.contexts[theWindowName] = aContex
     cv2.setMouseCallback(theWindowName, _handleMouse, __internal.contexts[theWindowName])
@@ -174,17 +239,35 @@ def button(where, x, y, label):
 	# Not implemented yet!
 	return False
 
-def update(window_name = ""):
+def update(theWindowName = ""):
 	"""
 	Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating
 	UI elements in order for them to react to mouse interactions.
 
 	Parameters
     ----------
-	window_name : str
+	theWindowName : str
 		Name of the window whose components are being updated. If no window name is provided, cvui uses the default window.
 
 	\sa init()
 	\sa watch()
 	\sa context()
 	"""
+	aContext = __internal.getContext(theWindowName)
+
+	aContext.mouse.anyButton.justReleased = False
+	aContext.mouse.anyButton.justPressed = False
+
+	for i in range(LEFT_BUTTON, RIGHT_BUTTON + 1):
+		aContext.mouse.buttons[i].justReleased = False
+		aContext.mouse.buttons[i].justPressed = False
+	
+	__internal.screen.reset()
+
+	# If we were told to keep track of the keyboard shortcuts, we
+	# proceed to handle opencv event queue.
+	if __internal.delayWaitKey > 0:
+		__internal.lastKeyPressed = cv2.waitKey(__internal.delayWaitKey)
+
+	if __internal.blockStackEmpty() == False:
+		__internal.error(2, "Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().")
