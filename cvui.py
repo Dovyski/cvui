@@ -54,9 +54,13 @@ class MouseButton:
 
 # Describe the information of the mouse cursor
 class Mouse:
-    buttons = {}             # status of each button. Use cvui::{RIGHT,LEFT,MIDDLE}_BUTTON to access the buttons.
-    anyButton = False        # represent the behavior of all mouse buttons combined
-    position = Point(0, 0)   # x and y coordinates of the mouse at the moment.
+    buttons = {                        # status of each button. Use cvui::{RIGHT,LEFT,MIDDLE}_BUTTON to access the buttons.
+		RIGHT_BUTTON: MouseButton(),
+		MIDDLE_BUTTON: MouseButton(),
+		LEFT_BUTTON: MouseButton()
+	}              
+    anyButton = MouseButton()          # represent the behavior of all mouse buttons combined
+    position = Point(0, 0)             # x and y coordinates of the mouse at the moment.
 
 # Describes a (window) context.
 class Context:
@@ -95,33 +99,29 @@ class Render:
 __internal = Internal()
 __render = Render()
 
-def _handleMouse(theEvent, theX, theY, theFlags, theData):
-	#int aButtons[3] = { cvui::LEFT_BUTTON, cvui::MIDDLE_BUTTON, cvui::RIGHT_BUTTON };
-	#int aEventsDown[3] = { cv::EVENT_LBUTTONDOWN, cv::EVENT_MBUTTONDOWN, cv::EVENT_RBUTTONDOWN };
-	#int aEventsUp[3] = { cv::EVENT_LBUTTONUP, cv::EVENT_MBUTTONUP, cv::EVENT_RBUTTONUP };
-	
-	#cvui_context_t *aContext = (cvui_context_t *)theData;
-	
-	#for (int i = 0; i < 3; i++) {
-	#	int aBtn = aButtons[i];
+def _handleMouse(theEvent, theX, theY, theFlags, theContext):
+	aButtons = [LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON]
+	aEventsDown = [cv2.EVENT_LBUTTONDOWN, cv2.EVENT_MBUTTONDOWN, cv2.EVENT_RBUTTONDOWN]
+	aEventsUp = [cv2.EVENT_LBUTTONUP, cv2.EVENT_MBUTTONUP, cv2.EVENT_RBUTTONUP]
 
-	#	if (theEvent == aEventsDown[i]) {
-	#		aContext->mouse.anyButton.justPressed = true;
-	#		aContext->mouse.anyButton.pressed = true;
-	#		aContext->mouse.buttons[aBtn].justPressed = true;
-	#		aContext->mouse.buttons[aBtn].pressed = true;
+	for i in range(0, 3):
+		aBtn = aButtons[i]
 
-	#	} else if (theEvent == aEventsUp[i]) {
-	#		aContext->mouse.anyButton.justReleased = true;
-	#		aContext->mouse.anyButton.pressed = false;
-	#		aContext->mouse.buttons[aBtn].justReleased = true;
-	#		aContext->mouse.buttons[aBtn].pressed = false;
-	#	}
-	#}
-	
-	#aContext->mouse.position.x = theX;
-	#aContext->mouse.position.y = theY;
-    print('_handleMouse', theEvent, theX, theY, theFlags, theData)
+		if theEvent == aEventsDown[i]:
+			theContext.mouse.anyButton.justPressed = True
+			theContext.mouse.anyButton.pressed = True
+			theContext.mouse.buttons[aBtn].justPressed = True
+			theContext.mouse.buttons[aBtn].pressed = True
+
+		elif theEvent == aEventsUp[i]:
+			theContext.mouse.anyButton.justReleased = True
+			theContext.mouse.anyButton.pressed = False
+			theContext.mouse.buttons[aBtn].justReleased = True
+			theContext.mouse.buttons[aBtn].pressed = False
+
+	theContext.mouse.position.x = theX
+	theContext.mouse.position.y = theY
+	print('_handleMouse', theEvent, theX, theY, theFlags)
 
 def watch(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
     aContex = Context()
