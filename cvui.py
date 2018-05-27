@@ -27,6 +27,9 @@ LEFT_BUTTON = 0
 MIDDLE_BUTTON = 1
 RIGHT_BUTTON = 2
 
+CVUI_ANTIALISED = cv2.LINE_AA
+CVUI_FILLED = -1
+
 # Class to represent 2D points
 class Point:
 	def __init__(self, x = 0, y = 0):
@@ -112,6 +115,8 @@ class Context:
 # This class contains all stuff that cvui uses internally to render
 # and control interaction with components
 class Internal:
+	_render = None
+
 	def __init__(self):
 		self.defaultContext = ''
 		self.currentContext = ''
@@ -153,17 +158,61 @@ class Internal:
 			# This should not happen. Probably cvui::init() was never called.
 			self.error(5, "Unable to read context. Did you forget to call cvui::init()?")
 
+	def updateLayoutFlow(self, theBlock, theSize):
+		aValue = 0
+
+		if theBlock.type == ROW:
+			aValue = theSize.width + theBlock.padding;
+
+			theBlock.anchor.x += aValue
+			theBlock.fill.width += aValue
+			theBlock.fill.height = max(theSize.height, theBlock.fill.height)
+
+		elif theBlock.type == COLUMN:
+			aValue = theSize.height + theBlock.padding
+
+			theBlock.anchor.y += aValue
+			theBlock.fill.height += aValue
+			theBlock.fill.width = max(theSize.width, theBlock.fill.width)
+
 	def blockStackEmpty(self):
 		return self.stackCount == -1
 
+	def text(self, theBlock, theX, theY, theText, theFontScale, theColor, theUpdateLayout):
+		aSizeInfo, aBaseline = cv2.getTextSize(theText, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
+		
+		aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
+		aPos = Point(theX, theY + aTextSize.height)
+
+		self._render.text(theBlock, theText, aPos, theFontScale, theColor)
+
+		if theUpdateLayout:
+			# Add an extra pixel to the height to overcome OpenCV font size problems.
+			aTextSize.height += 1
+			self.updateLayoutFlow(theBlock, aTextSize)
+
+	def hexToScalar(self, theColor):
+		aAlpha = (theColor >> 24) & 0xff
+		aRed = (theColor >> 16) & 0xff
+		aGreen = (theColor >> 8) & 0xff
+		aBlue = theColor & 0xff
+
+		return (aBlue, aGreen, aRed, aAlpha)
+
+
 # Class that contains all rendering methods.
 class Render:
-    def text(self, theBlock, theText, thePos, theFontScale, theColor):
-        print('not implemented yet')
+	_internal = None
 
-# Access point to the internal namespace.
+	def text(self, theBlock, theText, thePos, theFontScale, theColor):
+		cv2.putText(theBlock.where, theText, (thePos.x, thePos.y), cv2.FONT_HERSHEY_SIMPLEX, theFontScale, self._internal.hexToScalar(theColor), 1, cv2.LINE_AA)
+
+# Access points to internal namespaces.
+# TODO: re-factor this and make it less ugly.
 __internal = Internal()
 __render = Render()
+__internal._render = __render
+__render._internal = __internal
 
 def _handleMouse(theEvent, theX, theY, theFlags, theContext):
 	aButtons = [LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON]
@@ -228,8 +277,9 @@ def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
     __internal.init(theWindowName, theDelayWaitKey)
     watch(theWindowName, theCreateNamedWindow)
 
-def text(where, x, y, text, font_scale = 0.4, color = 0xCECECE):
-	cv2.putText(where, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), 1, cv2.LINE_AA)
+def text(theWhere, theX, theY, theText, theFontScale = 0.4, theColor = 0xCECECE):
+	__internal.screen.where = theWhere
+	__internal.text(__internal.screen, theX, theY, theText, theFontScale, theColor, True)
 
 def printf(theWhere, theX, theY, theFontScale, theColor, theFmt, *theArgs):
     aText = theFmt % theArgs
