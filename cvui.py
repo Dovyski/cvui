@@ -282,8 +282,10 @@ def text(theWhere, theX, theY, theText, theFontScale = 0.4, theColor = 0xCECECE)
 	__internal.text(__internal.screen, theX, theY, theText, theFontScale, theColor, True)
 
 def printf(theWhere, theX, theY, theFontScale, theColor, theFmt, *theArgs):
-    aText = theFmt % theArgs
-    text(theWhere, theX, theY, aText, theFontScale, theColor)
+	aText = theFmt % theArgs
+
+	__internal.screen.where = theWhere
+	__internal.text(__internal.screen, theX, theY, aText, theFontScale, theColor, True)
 
 def button(where, x, y, label):
 	# Not implemented yet!
@@ -321,3 +323,7 @@ def update(theWindowName = ""):
 
 	if __internal.blockStackEmpty() == False:
 		__internal.error(2, "Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().")
+
+def imshow(theWindowName, theFrame):
+	update(theWindowName)
+	cv2.imshow(theWindowName, theFrame)

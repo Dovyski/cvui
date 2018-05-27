@@ -29,12 +29,10 @@ def main():
 		# You can use cvui::printf for that. It accepts a variable number of parameter, pretty
 		# much like printf does.
 		# Let's show how many times the button has been clicked.
-		#cvui::printf(frame, 250, 90, 0.4, 0xff0000, "Button click count: %d", count);
-		cvui.text(frame, 250, 90, 'Button click count:');
+		cvui.printf(frame, 250, 90, 0.4, 0xff0000, "Button click count: %d", count);
 
 		# Update cvui stuff and show everything on the screen
-		#cvui::imshow(WINDOW_NAME, frame);
-		cv2.imshow(WINDOW_NAME, frame)
+		cvui.imshow(WINDOW_NAME, frame);
 
 		# Check if ESC key was pressed
 		if cv2.waitKey(20) == 27:
