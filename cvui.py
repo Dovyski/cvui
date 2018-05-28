@@ -131,6 +131,18 @@ class Internal:
 		self.stackCount = -1
 		self.trackbarMarginX = 14
 
+	def isMouseButton(self, theButton, theQuery):
+		aRet = False
+
+		if theQuery == CLICK or theQuery == UP:
+			aRet = theButton.justReleased
+		elif theQuery == DOWN:
+			aRet = theButton.justPressed
+		elif theQuery == IS_DOWN:
+			aRet = theButton.pressed
+
+		return aRet
+
 	def init(self, theWindowName, theDelayWaitKey):
 		self.defaultContext = theWindowName
 		self.currentContext = theWindowName
@@ -403,6 +415,98 @@ def printf(theWhere, theX, theY, theFmt, *theArgs):
 def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
 	__internal.screen.where = theWhere
 	return __internal.checkbox(__internal.screen, theX, theY, theLabel, theState, theColor)
+
+def mouse(theWindowName = ''):
+	"""
+	 Return the last position of the mouse.
+
+	 \param theWindowName name of the window whose mouse cursor will be used. If nothing is informed (default), the function will return the position of the mouse cursor for the default window (the one informed in `cvui::init()`).
+	 \return a point containing the position of the mouse cursor in the speficied window.
+	"""
+	return __internal.getContext(theWindowName).mouse.position
+
+def mouse2(theQuery):
+	"""
+	Query the mouse for events, e.g. "is any button down now?". Available queries are:
+ 
+	* `cvui::DOWN`: any mouse button was pressed. `cvui::mouse()` returns `true` for a single frame only.
+	* `cvui::UP`: any mouse button was released.  `cvui::mouse()` returns `true` for a single frame only.
+	* `cvui::CLICK`: any mouse button was clicked (went down then up, no matter the amount of frames in between). `cvui::mouse()` returns `true` for a single frame only.
+	* `cvui::IS_DOWN`: any mouse button is currently pressed. `cvui::mouse()` returns `true` for as long as the button is down/pressed.
+
+	It is easier to think of this function as the answer to a questions. For instance, asking if any mouse button went down:
+
+	```
+	if (cvui::mouse(cvui::DOWN)) {
+	  // Any mouse button just went down.
+	}
+	```
+
+	The window whose mouse will be queried depends on the context. If `cvui::mouse(query)` is being called after
+	`cvui::context()`, the window informed in the context will be queried. If no context is available, the default
+	window (informed in `cvui::init()`) will be used.
+
+	Parameters
+    ----------
+	theQuery: int
+		Integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+
+	\sa mouse(const cv::String&)
+	\sa mouse(const cv::String&, int)
+	\sa mouse(const cv::String&, int, int)
+	\sa mouse(int, int)
+	"""
+	return mouse3('', theQuery)
+
+def mouse3(theWindowName, theQuery):
+	"""
+	 Query the mouse for events in a particular window. This function behave exactly like `cvui::mouse(int theQuery)`
+	 with the difference that queries are targeted at a particular window.
+
+	 \param theWindowName name of the window that will be queried.
+	 \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+
+	 \sa mouse(const cv::String&)
+	 \sa mouse(const cv::String&, int, int)
+	 \sa mouse(int, int)
+	 \sa mouse(int)
+	"""
+	aButton = __internal.getContext(theWindowName).mouse.anyButton
+	aRet = __internal.isMouseButton(aButton, theQuery)
+
+	return aRet
+
+def mouse4(theButton, theQuery):
+	"""
+	 Query the mouse for events in a particular button. This function behave exactly like `cvui::mouse(int theQuery)`,
+	 with the difference that queries are targeted at a particular mouse button instead.
+
+	 \param theButton an integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
+	 \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+
+	 \sa mouse(const cv::String&)
+	 \sa mouse(const cv::String&, int, int)
+	 \sa mouse(int)
+	"""
+	return mouse5('', theButton, theQuery)
+
+def mouse5(theWindowName, theButton, theQuery):
+	"""
+	 Query the mouse for events in a particular button in a particular window. This function behave exactly
+	 like `cvui::mouse(int theButton, int theQuery)`, with the difference that queries are targeted at
+	 a particular mouse button in a particular window instead.
+
+	 \param theWindowName name of the window that will be queried.
+	 \param theButton an integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
+	 \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+	"""
+	if theButton != RIGHT_BUTTON and theButton != MIDDLE_BUTTON and theButton != LEFT_BUTTON:
+		__internal.error(6, 'Invalid mouse button. Are you using one of the available: cvui.{RIGHT,MIDDLE,LEFT}_BUTTON ?')
+
+	aButton = __internal.getContext(theWindowName).mouse.buttons[theButton]
+	aRet = __internal.isMouseButton(aButton, theQuery)
+
+	return aRet
 
 def button(where, x, y, label):
 	# Not implemented yet!
