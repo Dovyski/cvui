@@ -220,6 +220,42 @@ class Internal:
 
 		return theState[0]
 
+	def iarea(self, theX, theY, theWidth, theHeight):
+		aMouse = self.getContext().mouse
+
+		# By default, return that the mouse is out of the interaction area.
+		aRet = OUT
+
+		# Check if the mouse is over the interaction area.
+		aMouseIsOver = Rect(theX, theY, theWidth, theHeight).contains(aMouse.position)
+
+		if aMouseIsOver:
+			if aMouse.anyButton.pressed:
+				aRet = DOWN
+			else:
+				aRet = OVER
+
+		# Tell if the button was clicked or not
+		if aMouseIsOver and aMouse.anyButton.justReleased:
+			aRet = CLICK
+
+		return aRet
+
+	def rect(self, theBlock, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor):
+		aAnchor = Point(theX, theY);
+		aRect = Rect(theX, theY, theWidth, theHeight);
+		
+		aRect.x = aAnchor.x + aRect.width if aRect.width < 0 else aAnchor.x
+		aRect.y = aAnchor.y + aRect.height if aRect.height < 0 else aAnchor.y
+		aRect.width = abs(aRect.width)
+		aRect.height = abs(aRect.height)
+
+		self._render.rect(theBlock, aRect, theBorderColor, theFillingColor)
+
+		# Update the layout flow
+		aSize = Rect(aRect.width, aRect.height)
+		self.updateLayoutFlow(theBlock, aSize)
+
 	def hexToScalar(self, theColor):
 		aAlpha = (theColor >> 24) & 0xff
 		aRed = (theColor >> 16) & 0xff
@@ -265,6 +301,18 @@ class Render:
 		theShape.width -= 2
 		theShape.height -= 2
 		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0xFF, 0xBF, 0x75), CVUI_FILLED)
+
+	def rect(self, theBlock, thePos, theBorderColor, theFillingColor):
+		aBorder = self._internal.hexToScalar(theBorderColor)
+		aFilling = self._internal.hexToScalar(theFillingColor)
+
+		aHasFilling = aFilling[3] != 0xff
+
+		if aHasFilling:
+			cv2.rectangle(theBlock.where, (thePos.x, thePos.y), (thePos.x + thePos.width, thePos.y + thePos.height), aFilling, CVUI_FILLED, CVUI_ANTIALISED)
+
+		# Render the border
+		cv2.rectangle(theBlock.where, (thePos.x, thePos.y), (thePos.x + thePos.width, thePos.y + thePos.height), aBorder, 1, CVUI_ANTIALISED);
 
 # Access points to internal namespaces.
 # TODO: re-factor this and make it less ugly.
@@ -346,6 +394,12 @@ def printf(theWhere, theX, theY, theFontScale, theColor, theFmt, *theArgs):
 	__internal.screen.where = theWhere
 	__internal.text(__internal.screen, theX, theY, aText, theFontScale, theColor, True)
 
+def printf(theWhere, theX, theY, theFmt, *theArgs):
+	aText = theFmt % theArgs
+
+	__internal.screen.where = theWhere
+	__internal.text(__internal.screen, theX, theY, aText, 0.4, 0xCECECE, True)
+
 def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
 	__internal.screen.where = theWhere
 	return __internal.checkbox(__internal.screen, theX, theY, theLabel, theState, theColor)
@@ -353,6 +407,13 @@ def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
 def button(where, x, y, label):
 	# Not implemented yet!
 	return False
+
+def rect(theWhere, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000):
+	__internal.screen.where = theWhere
+	__internal.rect(__internal.screen, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor)
+
+def iarea(theX, theY, theWidth, theHeight):
+	return __internal.iarea(theX, theY, theWidth, theHeight)	
 
 def update(theWindowName = ""):
 	"""
