@@ -2,6 +2,8 @@
 # so I can test how it works.
 
 import cv2
+import numpy as np
+import sys
 
 def main():
       print("cvui main")
@@ -29,6 +31,9 @@ RIGHT_BUTTON = 2
 
 CVUI_ANTIALISED = cv2.LINE_AA
 CVUI_FILLED = -1
+
+# Internal things
+_IS_PY2 = sys.version_info.major == 2
 
 # Class to represent 2D points
 class Point:
@@ -276,6 +281,8 @@ class Internal:
 
 		return (aBlue, aGreen, aRed, aAlpha)
 
+	def isString(self, theObj):
+		return isinstance(theObj, basestring if _IS_PY2 else str)
 
 # Class that contains all rendering methods.
 class Render:
@@ -400,17 +407,32 @@ def text(theWhere, theX, theY, theText, theFontScale = 0.4, theColor = 0xCECECE)
 	__internal.screen.where = theWhere
 	__internal.text(__internal.screen, theX, theY, theText, theFontScale, theColor, True)
 
-def printf(theWhere, theX, theY, theFontScale, theColor, theFmt, *theArgs):
-	aText = theFmt % theArgs
+def printf(*theArgs):
+	if isinstance(theArgs[0], np.ndarray):
+		# Not row/column function, signature is printf(theWhere, theX, theY, ...)
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		__internal.screen.where = aWhere
 
-	__internal.screen.where = theWhere
-	__internal.text(__internal.screen, theX, theY, aText, theFontScale, theColor, True)
+		if __internal.isString(theArgs[3]):
+			# Signature: printf(theWhere, theX, theY, theFmt, *theArgs)
+			aFontScale = 0.4
+			aColor = 0xCECECE
+			aFmt = theArgs[3]
+			aArgs= theArgs[4:]
+		else:
+			# Signature: printf(theWhere, theX, theY, theFontScale, theColor, theFmt, *theArgs)
+			aFontScale = theArgs[3]
+			aColor = theArgs[4]
+			aFmt = theArgs[5]
+			aArgs = theArgs[6:]
 
-def printf(theWhere, theX, theY, theFmt, *theArgs):
-	aText = theFmt % theArgs
-
-	__internal.screen.where = theWhere
-	__internal.text(__internal.screen, theX, theY, aText, 0.4, 0xCECECE, True)
+		aText = aFmt % aArgs
+		__internal.text(__internal.screen, aX, aY, aText, aFontScale, aColor, True)
+	else:
+		# row/column function, signature is printf(theX, theY, ...)
+		print('Not implemented yet')
 
 def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
 	__internal.screen.where = theWhere
