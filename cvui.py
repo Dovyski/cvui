@@ -6,13 +6,14 @@ import numpy as np
 import sys
 
 def main():
-      print("cvui main")
+	# TODO: make something here?
+	return 0
 
 if __name__ == '__main__':
     main()
 
 # Lib version
-VERSION = "2.5.0"
+VERSION = '2.5.0'
 
 # Constants regarding component interactions
 ROW = 0
@@ -55,12 +56,12 @@ class Rect:
 # Describes the block structure used by the lib to handle `begin*()` and `end*()` calls.
 class Block:
 	def __init__(self):
-		self.where = None           # where the block should be rendered to.
-		self.rect = Rect()      # the size and position of the block.
-		self.fill = Rect()      # the filled area occuppied by the block as it gets modified by its inner components.
-		self.anchor = Point()       # the point where the next component of the block should be rendered.
-		self.padding = 0            # padding among components within this block.
-		self.type = ROW       		# type of the block, e.g. ROW or COLUMN.
+		self.where = None              # where the block should be rendered to.
+		self.rect = Rect()             # the size and position of the block.
+		self.fill = Rect()             # the filled area occuppied by the block as it gets modified by its inner components.
+		self.anchor = Point()          # the point where the next component of the block should be rendered.
+		self.padding = 0               # padding among components within this block.
+		self.type = ROW       		   # type of the block, e.g. ROW or COLUMN.
 		
 		self.reset()
 
@@ -95,9 +96,9 @@ class Label:
 
 # Describe a mouse button
 class MouseButton:
-	justReleased = False    # if the mouse button was released, i.e. click event.
-	justPressed = False     # if the mouse button was just pressed, i.e. true for a frame when a button is down.
-	pressed = False         # if the mouse button is pressed or not.
+	justReleased = False               # if the mouse button was released, i.e. click event.
+	justPressed = False                # if the mouse button was just pressed, i.e. true for a frame when a button is down.
+	pressed = False                    # if the mouse button is pressed or not.
 
 	def reset(self):
 		self.justPressed = False
@@ -106,7 +107,7 @@ class MouseButton:
 
 # Describe the information of the mouse cursor
 class Mouse:
-    buttons = {                        # status of each button. Use cvui::{RIGHT,LEFT,MIDDLE}_BUTTON to access the buttons.
+    buttons = {                        # status of each button. Use cvui.{RIGHT,LEFT,MIDDLE}_BUTTON to access the buttons.
 		LEFT_BUTTON: MouseButton(),
 		MIDDLE_BUTTON: MouseButton(),
 		RIGHT_BUTTON: MouseButton()
@@ -116,8 +117,8 @@ class Mouse:
 
 # Describes a (window) context.
 class Context:
-	windowName = '',       # name of the window related to this context.
-	mouse = Mouse()        # the mouse cursor related to this context.
+	windowName = '',                   # name of the window related to this context.
+	mouse = Mouse()                    # the mouse cursor related to this context.
 
 # This class contains all stuff that cvui uses internally to render
 # and control interaction with components
@@ -127,9 +128,9 @@ class Internal:
 	def __init__(self):
 		self.defaultContext = ''
 		self.currentContext = ''
-		self.contexts = {} # indexed by the window name.
+		self.contexts = {}             # indexed by the window name.
 		self.buffer = []
-		self.lastKeyPressed = -1 # TODO: collect it per window
+		self.lastKeyPressed = -1       # TODO: collect it per window
 		self.delayWaitKey = -1
 		self.screen = Block()
 		self.stack = []
@@ -175,7 +176,7 @@ class Internal:
 		else:
 			# Apparently we have no window at all! <o>
 			# This should not happen. Probably cvui::init() was never called.
-			self.error(5, "Unable to read context. Did you forget to call cvui::init()?")
+			self.error(5, 'Unable to read context. Did you forget to call cvui.init()?')
 
 	def updateLayoutFlow(self, theBlock, theSize):
 		aValue = 0
@@ -285,9 +286,9 @@ class Internal:
 
 	def hexToScalar(self, theColor):
 		aAlpha = (theColor >> 24) & 0xff
-		aRed = (theColor >> 16) & 0xff
-		aGreen = (theColor >> 8) & 0xff
-		aBlue = theColor & 0xff
+		aRed   = (theColor >> 16) & 0xff
+		aGreen = (theColor >> 8)  & 0xff
+		aBlue  = theColor & 0xff
 
 		return (aBlue, aGreen, aRed, aAlpha)
 
@@ -298,27 +299,33 @@ class Internal:
 class Render:
 	_internal = None
 
+	def rectangle(self, theWhere, theShape, theColor, theThickness = 1):
+		aStartPoint = (theShape.x, theShape.y)
+		aEndPoint = (theShape.x + theShape.width, theShape.y + theShape.height)
+
+		cv2.rectangle(theWhere, aStartPoint, aEndPoint, theColor, theThickness)
+
 	def text(self, theBlock, theText, thePos, theFontScale, theColor):
 		aPosition = (int(thePos.x), int(thePos.y))
 		cv2.putText(theBlock.where, theText, aPosition, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, self._internal.hexToScalar(theColor), 1, cv2.LINE_AA)
 
 	def checkbox(self, theBlock, theState, theShape):
 		# Outline
-		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0x63, 0x63, 0x63) if theState == OUT else (0x80, 0x80, 0x80))
+		self.rectangle(theBlock.where, theShape, (0x63, 0x63, 0x63) if theState == OUT else (0x80, 0x80, 0x80))
 
 		# Border
 		theShape.x += 1
 		theShape.y+=1
 		theShape.width -= 2
 		theShape.height -= 2
-		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0x17, 0x17, 0x17))
+		self.rectangle(theBlock.where, theShape, (0x17, 0x17, 0x17))
 
 		# Inside
 		theShape.x += 1
 		theShape.y += 1
 		theShape.width -= 2
 		theShape.height -= 2
-		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0x29, 0x29, 0x29), CVUI_FILLED)
+		self.rectangle(theBlock.where, theShape, (0x29, 0x29, 0x29), CVUI_FILLED)
 		
 	def checkboxLabel(self, theBlock, theRect, theLabel, theTextSize, theColor):
 		aPos = Point(theRect.x + theRect.width + 6, theRect.y + theTextSize.height + theRect.height / 2 - theTextSize.height / 2 - 1)
@@ -329,7 +336,7 @@ class Render:
 		theShape.y += 1
 		theShape.width -= 2
 		theShape.height -= 2
-		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0xFF, 0xBF, 0x75), CVUI_FILLED)
+		self.rectangle(theBlock.where, theShape, (0xFF, 0xBF, 0x75), CVUI_FILLED)
 
 	def window(self, theBlock, theTitleBar, theContent, theTitle):
 		aTransparecy = False
@@ -337,47 +344,47 @@ class Render:
 		aOverlay = theBlock.where.copy()
 
 		# Render borders in the title bar
-		cv2.rectangle(theBlock.where, (theTitleBar.x, theTitleBar.y), (theTitleBar.x + theTitleBar.width, theTitleBar.y + theTitleBar.height), (0x4A, 0x4A, 0x4A));
+		self.rectangle(theBlock.where, theTitleBar, (0x4A, 0x4A, 0x4A));
 		
 		# Render the inside of the title bar
 		theTitleBar.x += 1
 		theTitleBar.y += 1
 		theTitleBar.width -= 2
 		theTitleBar.height -= 2
-		cv2.rectangle(theBlock.where, (theTitleBar.x, theTitleBar.y), (theTitleBar.x + theTitleBar.width, theTitleBar.y + theTitleBar.height), (0x21, 0x21, 0x21), CVUI_FILLED);
+		self.rectangle(theBlock.where, theTitleBar, (0x21, 0x21, 0x21), CVUI_FILLED);
 
 		# Render title text.
 		aPos = Point(theTitleBar.x + 5, theTitleBar.y + 12)
 		cv2.putText(theBlock.where, theTitle, (aPos.x, aPos.y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
 
 		# Render borders of the body
-		cv2.rectangle(theBlock.where, (theContent.x, theContent.y), (theContent.x + theContent.width, theContent.y + theContent.height), (0x4A, 0x4A, 0x4A))
+		self.rectangle(theBlock.where, theContent, (0x4A, 0x4A, 0x4A))
 
 		# Render the body filling.
 		theContent.x += 1
 		theContent.y += 1
 		theContent.width -= 2
 		theContent.height -= 2
-		cv2.rectangle(aOverlay, (theContent.x, theContent.y), (theContent.x + theContent.width, theContent.y + theContent.height), (0x31, 0x31, 0x31), CVUI_FILLED)
+		self.rectangle(aOverlay, theContent, (0x31, 0x31, 0x31), CVUI_FILLED)
 
 		if aTransparecy:
 			np.copyto(aOverlay, theBlock.where) # theBlock.where.copyTo(aOverlay);
-			cv2.rectangle(aOverlay, (theContent.x, theContent.y), (theContent.x + theContent.width, theContent.y + theContent.height), (0x31, 0x31, 0x31), CVUI_FILLED)
+			self.rectangle(aOverlay, theContent, (0x31, 0x31, 0x31), CVUI_FILLED)
 			cv2.addWeighted(aOverlay, aAlpha, theBlock.where, 1.0 - aAlpha, 0.0, theBlock.where)
 		else:
-			cv2.rectangle(theBlock.where, (theContent.x, theContent.y), (theContent.x + theContent.width, theContent.y + theContent.height), (0x31, 0x31, 0x31), CVUI_FILLED)
+			self.rectangle(theBlock.where, theContent, (0x31, 0x31, 0x31), CVUI_FILLED)
 
 	def rect(self, theBlock, thePos, theBorderColor, theFillingColor):
-		aBorder = self._internal.hexToScalar(theBorderColor)
-		aFilling = self._internal.hexToScalar(theFillingColor)
+		aBorderColor = self._internal.hexToScalar(theBorderColor)
+		aFillingColor = self._internal.hexToScalar(theFillingColor)
 
 		aHasFilling = aFilling[3] != 0xff
 
 		if aHasFilling:
-			cv2.rectangle(theBlock.where, (thePos.x, thePos.y), (thePos.x + thePos.width, thePos.y + thePos.height), aFilling, CVUI_FILLED, CVUI_ANTIALISED)
+			self.rectangle(theBlock.where, thePos, aFillingColor, CVUI_FILLED, CVUI_ANTIALISED)
 
 		# Render the border
-		cv2.rectangle(theBlock.where, (thePos.x, thePos.y), (thePos.x + thePos.width, thePos.y + thePos.height), aBorder, 1, CVUI_ANTIALISED);
+		self.rectangle(theBlock.where, thePos, aBorderColor, 1, CVUI_ANTIALISED)
 
 # Access points to internal namespaces.
 # TODO: re-factor this and make it less ugly.
@@ -387,28 +394,27 @@ __internal._render = __render
 __render._internal = __internal
 
 def _handleMouse(theEvent, theX, theY, theFlags, theContext):
-	aButtons = [LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON]
+	aButtons    = [LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON]
 	aEventsDown = [cv2.EVENT_LBUTTONDOWN, cv2.EVENT_MBUTTONDOWN, cv2.EVENT_RBUTTONDOWN]
-	aEventsUp = [cv2.EVENT_LBUTTONUP, cv2.EVENT_MBUTTONUP, cv2.EVENT_RBUTTONUP]
+	aEventsUp   = [cv2.EVENT_LBUTTONUP, cv2.EVENT_MBUTTONUP, cv2.EVENT_RBUTTONUP]
 
 	for i in range(LEFT_BUTTON, RIGHT_BUTTON + 1):
 		aBtn = aButtons[i]
 
 		if theEvent == aEventsDown[i]:
-			theContext.mouse.anyButton.justPressed = True
-			theContext.mouse.anyButton.pressed = True
-			theContext.mouse.buttons[aBtn].justPressed = True
-			theContext.mouse.buttons[aBtn].pressed = True
+			theContext.mouse.anyButton.justPressed      = True
+			theContext.mouse.anyButton.pressed          = True
+			theContext.mouse.buttons[aBtn].justPressed  = True
+			theContext.mouse.buttons[aBtn].pressed      = True
 
 		elif theEvent == aEventsUp[i]:
-			theContext.mouse.anyButton.justReleased = True
-			theContext.mouse.anyButton.pressed = False
+			theContext.mouse.anyButton.justReleased     = True
+			theContext.mouse.anyButton.pressed          = False
 			theContext.mouse.buttons[aBtn].justReleased = True
-			theContext.mouse.buttons[aBtn].pressed = False
+			theContext.mouse.buttons[aBtn].pressed      = False
 
 	theContext.mouse.position.x = theX
 	theContext.mouse.position.y = theY
-	print('_handleMouse', theEvent, theX, theY, theFlags)
 
 def watch(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
     if theCreateNamedWindow:
@@ -622,11 +628,11 @@ def update(theWindowName = ""):
 	aContext = __internal.getContext(theWindowName)
 
 	aContext.mouse.anyButton.justReleased = False
-	aContext.mouse.anyButton.justPressed = False
+	aContext.mouse.anyButton.justPressed  = False
 
 	for i in range(LEFT_BUTTON, RIGHT_BUTTON + 1):
 		aContext.mouse.buttons[i].justReleased = False
-		aContext.mouse.buttons[i].justPressed = False
+		aContext.mouse.buttons[i].justPressed  = False
 	
 	__internal.screen.reset()
 
@@ -636,7 +642,7 @@ def update(theWindowName = ""):
 		__internal.lastKeyPressed = cv2.waitKey(__internal.delayWaitKey)
 
 	if __internal.blockStackEmpty() == False:
-		__internal.error(2, "Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().")
+		__internal.error(2, 'Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().')
 
 def imshow(theWindowName, theFrame):
 	update(theWindowName)
