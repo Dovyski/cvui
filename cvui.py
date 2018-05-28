@@ -32,18 +32,20 @@ CVUI_FILLED = -1
 
 # Class to represent 2D points
 class Point:
-	def __init__(self, x = 0, y = 0):
-		self.x = x
-		self.y = y
+	def __init__(self, theX = 0, theY = 0):
+		self.x = theX
+		self.y = theY
 
 # Class to represent a rectangle
 class Rect:
-	def __init__(self, x = 0, y = 0, width = 0, height = 0):
-		self.x = x
-		self.y = y
-		self.width = width
-		self.height = height
-
+	def __init__(self, theX = 0, theY = 0, theWidth = 0, theHeight = 0):
+		self.x = theX
+		self.y = theY
+		self.width = theWidth
+		self.height = theHeight
+	
+	def contains(self, thePoint):
+		return thePoint.x >= self.x and thePoint.x <= (self.x + self.width) and thePoint.y >= self.y and thePoint.y <= (self.y + self.height)
 
 # Describes the block structure used by the lib to handle `begin*()` and `end*()` calls.
 class Block:
@@ -140,7 +142,7 @@ class Internal:
 		cv.waitKey(100000)
 		sys.exit(-1)
 
-	def getContext(self, theWindowName):
+	def getContext(self, theWindowName = ''):
 		if len(theWindowName) != 0:
 			# Get context in particular
 			return self.contexts[theWindowName]
@@ -191,6 +193,33 @@ class Internal:
 			aTextSize.height += 1
 			self.updateLayoutFlow(theBlock, aTextSize)
 
+	def checkbox(self, theBlock, theX, theY, theLabel, theState, theColor):
+		aMouse = self.getContext().mouse
+		aRect = Rect(theX, theY, 15, 15)
+		aSizeInfo, aBaseline = cv2.getTextSize(theLabel, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+		aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
+		aHitArea = Rect(theX, theY, aRect.width + aTextSize.width + 6, aRect.height)
+		aMouseIsOver = aHitArea.contains(aMouse.position)
+
+		if aMouseIsOver:
+			self._render.checkbox(theBlock, OVER, aRect)
+
+			if aMouse.anyButton.justReleased:
+				theState[0] = not theState[0]
+		else:
+			self._render.checkbox(theBlock, OUT, aRect)
+
+		self._render.checkboxLabel(theBlock, aRect, theLabel, aTextSize, theColor)
+
+		if theState[0]:
+			self._render.checkboxCheck(theBlock, aRect)
+
+		# Update the layout flow
+		aSize = Rect(aHitArea.width, aHitArea.height)
+		self.updateLayoutFlow(theBlock, aSize)
+
+		return theState[0]
+
 	def hexToScalar(self, theColor):
 		aAlpha = (theColor >> 24) & 0xff
 		aRed = (theColor >> 16) & 0xff
@@ -205,7 +234,37 @@ class Render:
 	_internal = None
 
 	def text(self, theBlock, theText, thePos, theFontScale, theColor):
-		cv2.putText(theBlock.where, theText, (thePos.x, thePos.y), cv2.FONT_HERSHEY_SIMPLEX, theFontScale, self._internal.hexToScalar(theColor), 1, cv2.LINE_AA)
+		aPosition = (int(thePos.x), int(thePos.y))
+		cv2.putText(theBlock.where, theText, aPosition, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, self._internal.hexToScalar(theColor), 1, cv2.LINE_AA)
+
+	def checkbox(self, theBlock, theState, theShape):
+		# Outline
+		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0x63, 0x63, 0x63) if theState == OUT else (0x80, 0x80, 0x80))
+
+		# Border
+		theShape.x += 1
+		theShape.y+=1
+		theShape.width -= 2
+		theShape.height -= 2
+		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0x17, 0x17, 0x17))
+
+		# Inside
+		theShape.x += 1
+		theShape.y += 1
+		theShape.width -= 2
+		theShape.height -= 2
+		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0x29, 0x29, 0x29), CVUI_FILLED)
+		
+	def checkboxLabel(self, theBlock, theRect, theLabel, theTextSize, theColor):
+		aPos = Point(theRect.x + theRect.width + 6, theRect.y + theTextSize.height + theRect.height / 2 - theTextSize.height / 2 - 1)
+		self.text(theBlock, theLabel, aPos, 0.4, theColor)
+		
+	def checkboxCheck(self, theBlock, theShape):
+		theShape.x += 1
+		theShape.y += 1
+		theShape.width -= 2
+		theShape.height -= 2
+		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0xFF, 0xBF, 0x75), CVUI_FILLED)
 
 # Access points to internal namespaces.
 # TODO: re-factor this and make it less ugly.
@@ -286,6 +345,10 @@ def printf(theWhere, theX, theY, theFontScale, theColor, theFmt, *theArgs):
 
 	__internal.screen.where = theWhere
 	__internal.text(__internal.screen, theX, theY, aText, theFontScale, theColor, True)
+
+def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
+	__internal.screen.where = theWhere
+	return __internal.checkbox(__internal.screen, theX, theY, theLabel, theState, theColor)
 
 def button(where, x, y, label):
 	# Not implemented yet!
