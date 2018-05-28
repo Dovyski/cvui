@@ -258,6 +258,16 @@ class Internal:
 
 		return aRet
 
+	def window(self, theBlock, theX, theY, theWidth, theHeight, theTitle):
+		aTitleBar = Rect(theX, theY, theWidth, 20)
+		aContent = Rect(theX, theY + aTitleBar.height, theWidth, theHeight - aTitleBar.height)
+
+		self._render.window(theBlock, aTitleBar, aContent, theTitle)
+
+		# Update the layout flow
+		aSize = Rect(theWidth, theHeight)
+		self.updateLayoutFlow(theBlock, aSize)
+
 	def rect(self, theBlock, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor):
 		aAnchor = Point(theX, theY);
 		aRect = Rect(theX, theY, theWidth, theHeight);
@@ -320,6 +330,42 @@ class Render:
 		theShape.width -= 2
 		theShape.height -= 2
 		cv2.rectangle(theBlock.where, (theShape.x, theShape.y), (theShape.x + theShape.width, theShape.y + theShape.height), (0xFF, 0xBF, 0x75), CVUI_FILLED)
+
+	def window(self, theBlock, theTitleBar, theContent, theTitle):
+		aTransparecy = False
+		aAlpha = 0.3
+		aOverlay = theBlock.where.copy()
+
+		# Render borders in the title bar
+		cv2.rectangle(theBlock.where, (theTitleBar.x, theTitleBar.y), (theTitleBar.x + theTitleBar.width, theTitleBar.y + theTitleBar.height), (0x4A, 0x4A, 0x4A));
+		
+		# Render the inside of the title bar
+		theTitleBar.x += 1
+		theTitleBar.y += 1
+		theTitleBar.width -= 2
+		theTitleBar.height -= 2
+		cv2.rectangle(theBlock.where, (theTitleBar.x, theTitleBar.y), (theTitleBar.x + theTitleBar.width, theTitleBar.y + theTitleBar.height), (0x21, 0x21, 0x21), CVUI_FILLED);
+
+		# Render title text.
+		aPos = Point(theTitleBar.x + 5, theTitleBar.y + 12)
+		cv2.putText(theBlock.where, theTitle, (aPos.x, aPos.y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
+
+		# Render borders of the body
+		cv2.rectangle(theBlock.where, (theContent.x, theContent.y), (theContent.x + theContent.width, theContent.y + theContent.height), (0x4A, 0x4A, 0x4A))
+
+		# Render the body filling.
+		theContent.x += 1
+		theContent.y += 1
+		theContent.width -= 2
+		theContent.height -= 2
+		cv2.rectangle(aOverlay, (theContent.x, theContent.y), (theContent.x + theContent.width, theContent.y + theContent.height), (0x31, 0x31, 0x31), CVUI_FILLED)
+
+		if aTransparecy:
+			np.copyto(aOverlay, theBlock.where) # theBlock.where.copyTo(aOverlay);
+			cv2.rectangle(aOverlay, (theContent.x, theContent.y), (theContent.x + theContent.width, theContent.y + theContent.height), (0x31, 0x31, 0x31), CVUI_FILLED)
+			cv2.addWeighted(aOverlay, aAlpha, theBlock.where, 1.0 - aAlpha, 0.0, theBlock.where)
+		else:
+			cv2.rectangle(theBlock.where, (theContent.x, theContent.y), (theContent.x + theContent.width, theContent.y + theContent.height), (0x31, 0x31, 0x31), CVUI_FILLED)
 
 	def rect(self, theBlock, thePos, theBorderColor, theFillingColor):
 		aBorder = self._internal.hexToScalar(theBorderColor)
@@ -533,6 +579,24 @@ def mouse5(theWindowName, theButton, theQuery):
 def button(where, x, y, label):
 	# Not implemented yet!
 	return False
+
+def window(theWhere, theX, theY, theWidth, theHeight, theTitle):
+	"""
+	Display a window (a block with a title and a body).
+
+	Parameters
+    ----------
+	\param theWhere the image/frame where the component should be rendered.
+	\param theX position X where the component should be placed.
+	\param theY position Y where the component should be placed.
+	\param theWidth width of the window.
+	\param theHeight height of the window.
+	\param theTitle text displayed as the title of the window.
+
+	\sa rect()
+	"""
+	__internal.screen.where = theWhere
+	__internal.window(__internal.screen, theX, theY, theWidth, theHeight, theTitle)
 
 def rect(theWhere, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000):
 	__internal.screen.where = theWhere
