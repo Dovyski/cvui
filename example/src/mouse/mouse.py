@@ -43,13 +43,13 @@ def main():
 		#	- cvui.IS_DOWN: any mouse button is currently pressed. cvui.mouse() returns true for as long as the button is down/pressed.
 
 		# Did any mouse button go down?
-		if cvui.mouse2(cvui.DOWN):
+		if cvui.mouse(cvui.DOWN):
 			# Position the rectangle at the mouse pointer.
 			rectangle.x = cvui.mouse().x
 			rectangle.y = cvui.mouse().y
 
 		# Is any mouse button down (pressed)?
-		if cvui.mouse2(cvui.IS_DOWN):
+		if cvui.mouse(cvui.IS_DOWN):
 			# Adjust rectangle dimensions according to mouse pointer
 			rectangle.width = cvui.mouse().x - rectangle.x
 			rectangle.height = cvui.mouse().y - rectangle.y
@@ -59,7 +59,7 @@ def main():
 			cvui.printf(frame, cvui.mouse().x + 5, cvui.mouse().y + 5, 0.3, 0xff0000, 'w:%d, h:%d', rectangle.width, rectangle.height)
 
 		# Did any mouse button go up?
-		if cvui.mouse2(cvui.UP):
+		if cvui.mouse(cvui.UP):
 			# Hide the rectangle
 			rectangle.x = 0
 			rectangle.y = 0
@@ -67,7 +67,7 @@ def main():
 			rectangle.height = 0
 
 		# Was the mouse clicked (any button went down then up)?
-		if cvui.mouse2(cvui.CLICK):
+		if cvui.mouse(cvui.CLICK):
 			cvui.text(frame, 10, 70, 'Mouse was clicked!')
 
 		# Render the rectangle
