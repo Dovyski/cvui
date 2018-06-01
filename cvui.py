@@ -417,7 +417,7 @@ class Render:
 		aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
 
 		aPos = Point(theShape.x + theShape.width / 2 - aTextSize.width / 2, theShape.y + aTextSize.height / 2 + theShape.height / 2)
-		cv2.putText(theBlock.where, theValue, (aPos.x, aPos.y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
+		cv2.putText(theBlock.where, theValue, (int(aPos.x), int(aPos.y)), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
 
 	def button(self, theBlock, theState, theShape, theLabel):
 		# Outline

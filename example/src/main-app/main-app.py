@@ -20,7 +20,7 @@ def main():
 	checked = [False]
 	checked2 = [True]
 	count = [0]
-	countFloat = 0.0
+	countFloat = [0.0]
 	trackbarValue = 0.0
 
 	# Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
@@ -68,7 +68,7 @@ def main():
 		# the counter's step (how much it should change
 		# its value after each button press), as well as the format
 		# used to print the value.
-		# TODO: cvui.counter(frame, 320, 120, &countFloat, 0.1, '%.1f')
+		cvui.counter(frame, 320, 120, countFloat, 0.1, '%.1f')
 
 		# The trackbar component can be used to create scales.
 		# It works with all numerical types (including chars).
