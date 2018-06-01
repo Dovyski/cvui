@@ -19,7 +19,7 @@ def main():
 	frame = np.zeros((300, 600, 3), np.uint8)
 	checked = [False]
 	checked2 = [True]
-	count = 0
+	count = [0]
 	countFloat = 0.0
 	trackbarValue = 0.0
 
@@ -44,8 +44,8 @@ def main():
 
 		# Buttons will return true if they were clicked, which makes
 		# handling clicks a breeze.
-		# TODO: if cvui.button(frame, 50, 60, 'Button'):
-		# TODO: 	print('Button clicked')
+		if cvui.button(frame, 50, 60, 'Button'):
+			print('Button clicked')
 
 		# If you do not specify the button width/height, the size will be
 		# automatically adjusted to properly house the label.
@@ -62,7 +62,7 @@ def main():
 		# The counter component can be used to alter int variables. Use
 		# the 4th parameter of the function to point it to the variable
 		# to be changed.
-		# TODO: cvui.counter(frame, 200, 120, &count)
+		cvui.counter(frame, 200, 120, count)
 
 		# Counter can be used with doubles too. You can also specify
 		# the counter's step (how much it should change

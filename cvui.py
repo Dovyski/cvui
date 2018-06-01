@@ -198,6 +198,32 @@ class Internal:
 	def blockStackEmpty(self):
 		return self.stackCount == -1
 
+	def createLabel(self, theLabel):
+		aBefore = ''
+		aAfter = ''
+
+		aLabel = Label()
+		aLabel.hasShortcut = False
+		aLabel.shortcut = 0
+		aLabel.textBeforeShortcut = ''
+		aLabel.textAfterShortcut = ''
+
+		for i in range(0, len(theLabel)):
+			c = theLabel[i]
+			if c == '&' and i < len(theLabel) - 1:
+				aLabel.hasShortcut = True
+				aLabel.shortcut = theLabel[i + 1]
+				i += 1
+			elif aLabel.hasShortcut == False:
+				aBefore += c
+			else:
+				aAfter += c
+
+		aLabel.textBeforeShortcut = aBefore
+		aLabel.textAfterShortcut = aAfter
+
+		return aLabel		
+
 	def text(self, theBlock, theX, theY, theText, theFontScale, theColor, theUpdateLayout):
 		aSizeInfo, aBaseline = cv2.getTextSize(theText, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
 		
@@ -211,6 +237,24 @@ class Internal:
 			aTextSize.height += 1
 			self.updateLayoutFlow(theBlock, aTextSize)
 
+	def counter(self, theBlock, theX, theY, theValue, theStep, theFormat):
+		aContentArea = Rect(theX + 22, theY, 48, 22)
+
+		if self.buttonWH(theBlock, theX, theY, 22, 22, '-', False):
+			theValue[0] -= theStep
+
+		aText = theFormat % theValue[0]
+		self._render.counter(theBlock, aContentArea, aText)
+
+		if self.buttonWH(theBlock, aContentArea.x + aContentArea.width, theY, 22, 22, "+", False):
+			theValue[0] += theStep
+
+		# Update the layout flow
+		aSize = Rect(22 * 2 + aContentArea.width, aContentArea.height)
+		self.updateLayoutFlow(theBlock, aSize)
+
+		return theValue[0]		
+	
 	def checkbox(self, theBlock, theX, theY, theLabel, theState, theColor):
 		aMouse = self.getContext().mouse
 		aRect = Rect(theX, theY, 15, 15)
@@ -258,6 +302,62 @@ class Internal:
 			aRet = CLICK
 
 		return aRet
+
+	def buttonWH(self, theBlock, theX, theY, theWidth, theHeight, theLabel, theUpdateLayout):
+		# Calculate the space that the label will fill
+		aSizeInfo, aBaseline = cv2.getTextSize(theLabel, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+		aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
+
+		# Make the button big enough to house the label
+		aRect = Rect(theX, theY, theWidth, theHeight)
+
+		# Render the button according to mouse interaction, e.g. OVER, DOWN, OUT.
+		aStatus = self.iarea(theX, theY, aRect.width, aRect.height)
+		self._render.button(theBlock, aStatus, aRect, theLabel)
+		self._render.buttonLabel(theBlock, aStatus, aRect, theLabel, aTextSize)
+
+		# Update the layout flow according to button size
+		# if we were told to update.
+		if theUpdateLayout:
+			aSize = Rect(theWidth, theHeight)
+			self.updateLayoutFlow(theBlock, aSize)
+
+		aWasShortcutPressed = False
+
+		# Handle keyboard shortcuts
+		if self.lastKeyPressed != -1:
+			aLabel = self.createLabel(theLabel)
+
+			if aLabel.hasShortcut and aLabel.shortcut.lower() == self.lastKeyPressed.lower():
+				aWasShortcutPressed = True
+
+		# Return true if the button was clicked
+		return aStatus == CLICK or aWasShortcutPressed
+
+	def button(self, theBlock, theX, theY, theLabel):
+		# Calculate the space that the label will fill
+		aSizeInfo, aBaseline = cv2.getTextSize(theLabel, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+		aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
+
+		# Create a button based on the size of the text
+		return self.buttonWH(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, True)
+
+	def buttonI(self, theBlock, theX, theY, theIdle, theOver, theDown, theUpdateLayout):
+		aRect = Rect(theX, theY, theIdle.cols, theIdle.rows)
+		aStatus = self.iarea(theX, theY, aRect.width, aRect.height)
+
+		if   aStatus == OUT:  self._render.image(theBlock, aRect, theIdle)
+		elif aStatus == OVER: self._render.image(theBlock, aRect, theOver)
+		elif aStatus == DOWN: self._render.image(theBlock, aRect, theDown)
+
+		# Update the layout flow according to button size
+		# if we were told to update.
+		if theUpdateLayout:
+			aSize = Rect(aRect.width, aRect.height)
+			self.updateLayoutFlow(theBlock, aSize)
+
+		# Return true if the button was clicked
+		return aStatus == CLICK
 
 	def window(self, theBlock, theX, theY, theWidth, theHeight, theTitle):
 		aTitleBar = Rect(theX, theY, theWidth, 20)
@@ -308,6 +408,80 @@ class Render:
 	def text(self, theBlock, theText, thePos, theFontScale, theColor):
 		aPosition = (int(thePos.x), int(thePos.y))
 		cv2.putText(theBlock.where, theText, aPosition, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, self._internal.hexToScalar(theColor), 1, cv2.LINE_AA)
+
+	def counter(self, theBlock, theShape, theValue):
+		self.rectangle(theBlock.where, theShape, (0x29, 0x29, 0x29), CVUI_FILLED) # fill
+		self.rectangle(theBlock.where, theShape, (0x45, 0x45, 0x45))              # border
+
+		aSizeInfo, aBaseline = cv2.getTextSize(theValue, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+		aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
+
+		aPos = Point(theShape.x + theShape.width / 2 - aTextSize.width / 2, theShape.y + aTextSize.height / 2 + theShape.height / 2)
+		cv2.putText(theBlock.where, theValue, (aPos.x, aPos.y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
+
+	def button(self, theBlock, theState, theShape, theLabel):
+		# Outline
+		self.rectangle(theBlock.where, theShape, (0x29, 0x29, 0x29))
+
+		# Border
+		theShape.x += 1
+		theShape.y +=1
+		theShape.width -= 2
+		theShape.height -= 2
+		self.rectangle(theBlock.where, theShape, (0x4A, 0x4A, 0x4A))
+
+		# Inside
+		theShape.x += 1
+		theShape.y +=1
+		theShape.width -= 2
+		theShape.height -= 2
+		self.rectangle(theBlock.where, theShape, (0x42, 0x42, 0x42) if theState == OUT else ((0x52, 0x52, 0x52) if theState == OVER else (0x32, 0x32, 0x32)), CVUI_FILLED)
+		
+	def putText(self, theBlock, theState, theColor, theText, thePosition):
+		aFontScale = 0.39 if theState == DOWN else 0.4
+
+		if theText != '':
+			aPosition = (int(thePosition.x), int(thePosition.y))
+			cv2.putText(theBlock.where, theText, aPosition, cv2.FONT_HERSHEY_SIMPLEX, aFontScale, theColor, 1, CVUI_ANTIALISED)
+			
+			aSizeInfo, aBaseline = cv2.getTextSize(theText, cv2.FONT_HERSHEY_SIMPLEX, aFontScale, 1)
+			aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
+
+		return aTextSize.width
+
+	def putTextCentered(self, theBlock, thePosition, theText):
+		aFontScale = 0.3
+
+		aSizeInfo, aBaseline = cv2.getTextSize(theText, cv2.FONT_HERSHEY_SIMPLEX, aFontScale, 1)
+		aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
+		aPositionDecentered = Point(thePosition.x - aTextSize.width / 2, thePosition.y)
+		cv2.putText(theBlock.where, theText, (aPositionDecentered.x, aPositionDecentered.y), cv2.FONT_HERSHEY_SIMPLEX, aFontScale, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
+
+		return aTextSize.width
+
+	def buttonLabel(self, theBlock, theState, theRect, theLabel, theTextSize):
+		aPos = Point(theRect.x + theRect.width / 2 - theTextSize.width / 2, theRect.y + theRect.height / 2 + theTextSize.height / 2)
+		aColor = (0xCE, 0xCE, 0xCE)
+
+		aLabel = self._internal.createLabel(theLabel)
+
+		if aLabel.hasShortcut == False:
+			self.putText(theBlock, theState, aColor, theLabel, aPos);
+
+		else:
+			aWidth = self.putText(theBlock, theState, aColor, aLabel.textBeforeShortcut, aPos)
+			aStart = aPos.x + aWidth
+			aPos.x += aWidth
+
+			aShortcut = ''
+			aShortcut += aLabel.shortcut
+
+			aWidth = self.putText(theBlock, theState, aColor, aShortcut, aPos)
+			aEnd = aStart + aWidth
+			aPos.x += aWidth
+
+			self.putText(theBlock, theState, aColor, aLabel.textAfterShortcut, aPos)
+			cv2.line(theBlock.where, (aStart, aPos.y + 3), (aEnd, aPos.y + 3), aColor, 1, CVUI_ANTIALISED)
 
 	def checkbox(self, theBlock, theState, theShape):
 		# Outline
@@ -486,6 +660,28 @@ def printf(*theArgs):
 		# row/column function, signature is printf(theX, theY, ...)
 		print('Not implemented yet')
 
+def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = "%d"):
+	"""
+	Display a counter for integer values that the user can increase/descrease
+	by clicking the up and down arrows.
+
+	Parameters
+    ----------
+	\param theWhere the image/frame where the component should be rendered.
+	\param theX position X where the component should be placed.
+	\param theY position Y where the component should be placed.
+	\param theValue the current value of the counter.
+	\param theStep the amount that should be increased/decreased when the user interacts with the counter buttons
+	\param theFormat how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `"%d"` means the value will be displayed as an integer, `"%0d"` integer with one leading zero, etc.
+	
+	Returns
+    -------
+    int
+		Integer corresponding to the current value of the counter.
+	"""
+	__internal.screen.where = theWhere
+	return __internal.counter(__internal.screen, theX, theY, theValue, theStep, theFormat)
+
 def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
 	__internal.screen.where = theWhere
 	return __internal.checkbox(__internal.screen, theX, theY, theLabel, theState, theColor)
@@ -582,9 +778,9 @@ def mouse5(theWindowName, theButton, theQuery):
 
 	return aRet
 
-def button(where, x, y, label):
-	# Not implemented yet!
-	return False
+def button(theWhere, theX, theY, theLabel):
+	__internal.screen.where = theWhere
+	return __internal.button(__internal.screen, theX, theY, theLabel)
 
 def window(theWhere, theX, theY, theWidth, theHeight, theTitle):
 	"""
