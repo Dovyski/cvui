@@ -2065,7 +2065,7 @@ namespace render
 		bool aHasFilling = aFilling[3] != 0xff;
 
 		if (aHasFilling) {
-			if (aFilling[3] == 0xff) {
+			if (aFilling[3] == 0x00) {
 				// full opacity
 				cv::rectangle(theBlock.where, thePos, aFilling, CVUI_FILLED, CVUI_ANTIALISED);
 			}
