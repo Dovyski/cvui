@@ -291,6 +291,7 @@ class Internal:
 		return self.stackCount == -1
 
 	def createLabel(self, theLabel):
+		i = 0
 		aBefore = ''
 		aAfter = ''
 
@@ -300,7 +301,7 @@ class Internal:
 		aLabel.textBeforeShortcut = ''
 		aLabel.textAfterShortcut = ''
 
-		for i in range(0, len(theLabel)):
+		while i < len(theLabel):
 			c = theLabel[i]
 			if c == '&' and i < len(theLabel) - 1:
 				aLabel.hasShortcut = True
@@ -310,6 +311,7 @@ class Internal:
 				aBefore += c
 			else:
 				aAfter += c
+			i += 1
 
 		aLabel.textBeforeShortcut = aBefore
 		aLabel.textAfterShortcut = aAfter
