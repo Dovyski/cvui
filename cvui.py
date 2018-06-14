@@ -494,6 +494,20 @@ class Internal:
 		aSize = Rect(aRect.width, aRect.height)
 		self.updateLayoutFlow(theBlock, aSize)
 
+	def sparkline(self, theBlock, theValues, theX, theY, theWidth, theHeight, theColor):
+		aRect = Rect(theX, theY, theWidth, theHeight)
+		aHowManyValues = len(theValues)
+
+		if (aHowManyValues >= 2):
+			aMin,aMax = self.findMinMax(theValues)
+			self._render.sparkline(theBlock, theValues, aRect, aMin, aMax, theColor)
+		else:
+			self.text(theBlock, theX, theY, 'No data.' if aHowManyValues == 0 else 'Insufficient data points.', 0.4, 0xCECECE, False)
+
+		# Update the layout flow
+		aSize = Rect(theWidth, theHeight)
+		self.updateLayoutFlow(theBlock, aSize)
+
 	def hexToScalar(self, theColor):
 		aAlpha = (theColor >> 24) & 0xff
 		aRed   = (theColor >> 16) & 0xff
@@ -504,6 +518,20 @@ class Internal:
 
 	def isString(self, theObj):
 		return isinstance(theObj, basestring if _IS_PY2 else str)
+
+	# Find the min and max values of a vector
+	def findMinMax(self, theValues):
+		aMin = theValues[0]
+		aMax = theValues[0]
+
+		for aValue in theValues:
+			if aValue < aMin:
+				aMin = aValue
+
+			if aValue > aMax:
+				aMax = aValue
+
+		return (aMin, aMax)
 
 # Class that contains all rendering methods.
 class Render:
@@ -673,6 +701,27 @@ class Render:
 
 		# Render the border
 		self.rectangle(theBlock.where, thePos, aBorderColor)
+
+	def sparkline(self, theBlock, theValues, theRect, theMin, theMax, theColor):
+		aSize = len(theValues)
+		i = 0
+		aScale = theMax - theMin
+		aGap = theRect.width / aSize
+		aPosX = theRect.x
+
+		while i <= aSize - 2:
+			x = aPosX;
+			y = (theValues[i] - theMin) / aScale * -(theRect.height - 5) + theRect.y + theRect.height - 5
+			aPoint1 = Point(x, y)
+
+			x = aPosX + aGap
+			y = (theValues[i + 1] - theMin) / aScale * -(theRect.height - 5) + theRect.y + theRect.height - 5
+			aPoint2 = Point(x, y)
+
+			cv2.line(theBlock.where, (int(aPoint1.x), int(aPoint1.y)), (int(aPoint2.x), int(aPoint2.y)), self._internal.hexToScalar(theColor))
+			aPosX += aGap
+			
+			i += 1
 
 # Access points to internal namespaces.
 # TODO: re-factor this and make it less ugly.
@@ -899,6 +948,23 @@ def window(theWhere, theX, theY, theWidth, theHeight, theTitle):
 def rect(theWhere, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000):
 	__internal.screen.where = theWhere
 	__internal.rect(__internal.screen, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor)
+
+def sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0x00FF00):
+	"""
+	Display the values of a vector as a sparkline.
+
+	\param theWhere the image/frame where the component should be rendered.
+	\param theValues a vector containing the values to be used in the sparkline.
+	\param theX position X where the component should be placed.
+	\param theY position Y where the component should be placed.
+	\param theWidth width of the sparkline.
+	\param theHeight height of the sparkline.
+	\param theColor color of sparkline in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+
+	\sa trackbar()
+	"""
+	__internal.screen.where = theWhere
+	__internal.sparkline(__internal.screen, theValues, theX, theY, theWidth, theHeight, theColor)
 
 def iarea(theX, theY, theWidth, theHeight):
 	return __internal.iarea(theX, theY, theWidth, theHeight)	
