@@ -49,10 +49,10 @@ def main():
 
 		# If you do not specify the button width/height, the size will be
 		# automatically adjusted to properly house the label.
-		# TODO: cvui.button(frame, 200, 70, 'Button with large label')
+		cvui.button(frame, 200, 70, 'Button with large label')
 		
 		# You can tell the width and height you want
-		# TODO: cvui.button(frame, 410, 70, 15, 15, 'x')
+		cvui.button(frame, 410, 70, 15, 15, 'x')
 
 		# Window components are useful to create HUDs and similars. At the
 		# moment, there is no implementation to constraint content within a

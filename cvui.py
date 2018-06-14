@@ -420,7 +420,7 @@ class Internal:
 		if self.lastKeyPressed != -1:
 			aLabel = self.createLabel(theLabel)
 
-			if aLabel.hasShortcut and aLabel.shortcut.lower() == self.lastKeyPressed.lower():
+			if aLabel.hasShortcut and aLabel.shortcut.lower() == chr(self.lastKeyPressed).lower():
 				aWasShortcutPressed = True
 
 		# Return true if the button was clicked
@@ -435,7 +435,10 @@ class Internal:
 		return self.buttonWH(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, True)
 
 	def buttonI(self, theBlock, theX, theY, theIdle, theOver, theDown, theUpdateLayout):
-		aRect = Rect(theX, theY, theIdle.cols, theIdle.rows)
+		aIdleRows = theIdle.shape[0]
+		aIdleCols = theIdle.shape[1]
+
+		aRect = Rect(theX, theY, aIdleCols, aIdleRows)
 		aStatus = self.iarea(theX, theY, aRect.width, aRect.height)
 
 		if   aStatus == OUT:  self._render.image(theBlock, aRect, theIdle)
@@ -450,6 +453,19 @@ class Internal:
 
 		# Return true if the button was clicked
 		return aStatus == CLICK
+
+	def image(self, theBlock, theX, theY, theImage):
+		aImageRows = theImage.shape[0]
+		aImageCols = theImage.shape[1]
+
+		aRect = Rect(theX, theY, aImageCols, aImageRows)
+
+		# TODO: check for render outside the frame area
+		self._render.image(theBlock, aRect, theImage)
+
+		# Update the layout flow according to image size
+		aSize = Rect(aImageCols, aImageRows)
+		self.updateLayoutFlow(theBlock, aSize)
 
 	def window(self, theBlock, theX, theY, theWidth, theHeight, theTitle):
 		aTitleBar = Rect(theX, theY, theWidth, 20)
@@ -529,8 +545,12 @@ class Render:
 		theShape.height -= 2
 		self.rectangle(theBlock.where, theShape, (0x42, 0x42, 0x42) if theState == OUT else ((0x52, 0x52, 0x52) if theState == OVER else (0x32, 0x32, 0x32)), CVUI_FILLED)
 		
+	def image(self, theBlock, theRect, theImage):
+		theBlock.where[theRect.y: theRect.y + theRect.height, theRect.x: theRect.x + theRect.width] = theImage
+
 	def putText(self, theBlock, theState, theColor, theText, thePosition):
 		aFontScale = 0.39 if theState == DOWN else 0.4
+		aTextSize = Rect()
 
 		if theText != '':
 			aPosition = (int(thePosition.x), int(thePosition.y))
@@ -573,7 +593,7 @@ class Render:
 			aPos.x += aWidth
 
 			self.putText(theBlock, theState, aColor, aLabel.textAfterShortcut, aPos)
-			cv2.line(theBlock.where, (aStart, aPos.y + 3), (aEnd, aPos.y + 3), aColor, 1, CVUI_ANTIALISED)
+			cv2.line(theBlock.where, (int(aStart), int(aPos.y + 3)), (int(aEnd), int(aPos.y + 3)), aColor, 1, CVUI_ANTIALISED)
 
 	def checkbox(self, theBlock, theState, theShape):
 		# Outline
@@ -806,9 +826,55 @@ def mouse(*theArgs):
 		aWindowName = theArgs[0] if len(theArgs) == 1 else ''
 		return __internal.mouseW(aWindowName)
 
-def button(theWhere, theX, theY, theLabel):
+def button(*theArgs):
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: button(Mat, ...)
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+
+		__internal.screen.where = aWhere
+
+		if len(theArgs) == 4:
+			# Signature: button(theWhere, theX, theY, theLabel)
+			aLabel= theArgs[3]
+			return __internal.button(__internal.screen, aX, aY, aLabel)
+
+		elif len(theArgs) == 6:
+			# Signature: button(theWhere, int theX, int theY, ...)
+			if isinstance(theArgs[3], int):
+				# Signature: button(theWhere, theX, theY, theWidth, theHeight, theLabel)
+				aWidth = theArgs[3]
+				aHeight = theArgs[4]
+				aLabel= theArgs[5]
+				return __internal.buttonWH(__internal.screen, aX, aY, aWidth, aHeight, aLabel, True)
+			else:
+				# Signature: button(theWhere, theX, theY, theIdle, theOver, theDown)
+				aIdle = theArgs[3]
+				aOver = theArgs[4]
+				aDown= theArgs[5]
+				return __internal.buttonI(__internal.screen, aX, aY, aIdle, aOver, aDown, True)
+		else:
+			# TODO: check this case here
+			print('Problem?')
+	else:
+		# Row/column function, signature is button(...)
+		print('Not implemented yet')
+
+def image(theWhere, theX, theY, theImage):
+	"""
+	Display an image (cv::Mat). 
+
+	\param theWhere the image/frame where the provded image should be rendered.
+	\param theX position X where the image should be placed.
+	\param theY position Y where the image should be placed.
+	\param theImage an image to be rendered in the specified destination.
+
+	\sa button()
+	\sa iarea()
+	"""
 	__internal.screen.where = theWhere
-	return __internal.button(__internal.screen, theX, theY, theLabel)
+	__internal.image(__internal.screen, theX, theY, theImage)
 
 def window(theWhere, theX, theY, theWidth, theHeight, theTitle):
 	"""
