@@ -53,6 +53,15 @@ class Rect:
 	def contains(self, thePoint):
 		return thePoint.x >= self.x and thePoint.x <= (self.x + self.width) and thePoint.y >= self.y and thePoint.y <= (self.y + self.height)
 
+# Class to represent the size of something, i.e. width and height.
+# The class is a simplified version of Rect where x and y are zero.
+class Size(Rect):
+	def __init__(self, theWidth = 0, theHeight = 0):
+		self.x = 0
+		self.y = 0
+		self.width = theWidth
+		self.height = theHeight
+
 # Describes the block structure used by the lib to handle `begin*()` and `end*()` calls.
 class Block:
 	def __init__(self):
@@ -133,7 +142,7 @@ class Internal:
 		self.lastKeyPressed = -1       # TODO: collect it per window
 		self.delayWaitKey = -1
 		self.screen = Block()
-		self.stack = []
+		self.stack = [Block() for i in range(100)] # TODO: make it dynamic
 		self.stackCount = -1
 		self.trackbarMarginX = 14
 
@@ -271,10 +280,8 @@ class Internal:
 			self.error(5, 'Unable to read context. Did you forget to call cvui.init()?')
 
 	def updateLayoutFlow(self, theBlock, theSize):
-		aValue = 0
-
 		if theBlock.type == ROW:
-			aValue = theSize.width + theBlock.padding;
+			aValue = theSize.width + theBlock.padding
 
 			theBlock.anchor.x += aValue
 			theBlock.fill.width += aValue
@@ -289,6 +296,24 @@ class Internal:
 
 	def blockStackEmpty(self):
 		return self.stackCount == -1
+
+	def topBlock(self):
+		if self.stackCount < 0:
+			self.error(3, 'You are using a function that should be enclosed by begin*() and end*(), but you probably forgot to call begin*().')
+
+		return self.stack[self.stackCount]
+
+	def pushBlock(self):
+		self.stackCount += 1
+		return self.stack[self.stackCount]
+
+	def popBlock(self):
+		# Check if there is anything to be popped out from the stack.
+		if self.stackCount < 0:
+			self.error(1, 'Mismatch in the number of begin*()/end*() calls. You are calling one more than the other.')
+
+		self.stackCount -= 1
+		return self.stack[self.stackCount]
 
 	def createLabel(self, theLabel):
 		i = 0
@@ -466,7 +491,7 @@ class Internal:
 		self._render.image(theBlock, aRect, theImage)
 
 		# Update the layout flow according to image size
-		aSize = Rect(aImageCols, aImageRows)
+		aSize = Size(aImageCols, aImageRows)
 		self.updateLayoutFlow(theBlock, aSize)
 
 	def window(self, theBlock, theX, theY, theWidth, theHeight, theTitle):
@@ -518,6 +543,52 @@ class Internal:
 
 	def isString(self, theObj):
 		return isinstance(theObj, basestring if _IS_PY2 else str)
+
+	def begin(self, theType, theWhere, theX, theY, theWidth, theHeight, thePadding):
+		aBlock = self.pushBlock()
+
+		aBlock.where = theWhere
+
+		aBlock.rect.x = theX
+		aBlock.rect.y = theY
+		aBlock.rect.width = theWidth
+		aBlock.rect.height = theHeight
+
+		aBlock.fill = aBlock.rect
+		aBlock.fill.width = 0
+		aBlock.fill.height = 0
+
+		aBlock.anchor.x = theX
+		aBlock.anchor.y = theY
+
+		aBlock.padding = thePadding
+		aBlock.type = theType
+
+	def end(self, theType):
+		aBlock = self.popBlock()
+
+		if aBlock.type != theType:
+			self.error(4, 'Calling wrong type of end*(). E.g. endColumn() instead of endRow(). Check if your begin*() calls are matched with their appropriate end*() calls.')
+
+		# If we still have blocks in the stack, we must update
+		# the current top with the dimensions that were filled by
+		# the newly popped block.
+
+		if self.blockStackEmpty() == False:
+			aTop = self.topBlock()
+			aSize = Rect()
+
+			# If the block has rect.width < 0 or rect.heigth < 0, it means the
+			# user don't want to calculate the block's width/height. It's up to
+			# us do to the math. In that case, we use the block's fill rect to find
+			# out the occupied space. If the block's width/height is greater than
+			# zero, then the user is very specific about the desired size. In that
+			# case, we use the provided width/height, no matter what the fill rect
+			# actually is.
+			aSize.width = aBlock.fill.width if aBlock.rect.width < 0 else aBlock.rect.width
+			aSize.height = aBlock.fill.height if aBlock.rect.height < 0 else aBlock.rect.height
+
+			self.updateLayoutFlow(aTop, aSize)
 
 	# Find the min and max values of a vector
 	def findMinMax(self, theValues):
@@ -912,7 +983,7 @@ def button(*theArgs):
 		# Row/column function, signature is button(...)
 		print('Not implemented yet')
 
-def image(theWhere, theX, theY, theImage):
+def image(*theArgs):
 	"""
 	Display an image (cv::Mat). 
 
@@ -924,8 +995,21 @@ def image(theWhere, theX, theY, theImage):
 	\sa button()
 	\sa iarea()
 	"""
-	__internal.screen.where = theWhere
-	__internal.image(__internal.screen, theX, theY, theImage)
+	if isinstance(theArgs[0], np.ndarray) and len(theArgs) > 1:
+		# Signature: image(Mat, ...)
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		aImage = theArgs[3]
+
+		__internal.screen.where = theWhere
+		__internal.image(__internal.screen, theX, theY, theImage)
+	else:
+		# Row/column function, signature is image(...)
+		aImage = theArgs[0]
+		aBlock = __internal.topBlock()
+		
+		__internal.image(aBlock, aBlock.anchor.x, aBlock.anchor.y, aImage)
 
 def window(theWhere, theX, theY, theWidth, theHeight, theTitle):
 	"""
@@ -968,6 +1052,52 @@ def sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0
 
 def iarea(theX, theY, theWidth, theHeight):
 	return __internal.iarea(theX, theY, theWidth, theHeight)	
+
+def beginRow(*theArgs):
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: beginRow(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0):
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		aWidth = theArgs[3] if len(theArgs) >= 4 else -1
+		aHeight = theArgs[4] if len(theArgs) >= 5 else -1
+		aPadding = theArgs[5] if len(theArgs) >= 6 else 0
+
+		__internal.begin(ROW, aWhere, aX, aY, aWidth, aHeight, aPadding)
+	else:
+		# Signature: beginRow(theWidth = -1, theHeight = -1, thePadding = 0)
+		aWidth = theArgs[0] if len(theArgs) >= 1 else -1
+		aHeight = theArgs[1] if len(theArgs) >= 2 else -1
+		aPadding = theArgs[2] if len(theArgs) >= 3 else 0
+		
+		aBlock = __internal.topBlock()
+		__internal.begin(ROW, aBlock.where, aBlock.anchor.x, aBlock.anchor.y, aWidth, aHeight, aPadding)
+
+def beginColumn(*theArgs):
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: beginColumn(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0):
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		aWidth = theArgs[3] if len(theArgs) >= 4 else -1
+		aHeight = theArgs[4] if len(theArgs) >= 5 else -1
+		aPadding = theArgs[5] if len(theArgs) >= 6 else 0
+
+		__internal.begin(COLUMN, aWhere, aX, aY, aWidth, aHeight, aPadding)
+	else:
+		# Signature: beginColumn(theWidth = -1, theHeight = -1, thePadding = 0):
+		aWidth = theArgs[0] if len(theArgs) >= 1 else -1
+		aHeight = theArgs[1] if len(theArgs) >= 2 else -1
+		aPadding = theArgs[2] if len(theArgs) >= 3 else 0
+		
+		aBlock = __internal.topBlock()
+		__internal.begin(COLUMN, aBlock.where, aBlock.anchor.x, aBlock.anchor.y, aWidth, aHeight, aPadding)
+
+def endRow():
+	__internal.end(ROW)
+	
+def endColumn():
+	__internal.end(COLUMN)
 
 def update(theWindowName = ""):
 	"""
