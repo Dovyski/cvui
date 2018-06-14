@@ -258,7 +258,7 @@ class Internal:
 
 	def error(self, theId, theMessage):
 		print('[CVUI] Fatal error (code ', theId, '): ', theMessage)
-		cv.waitKey(100000)
+		cv2.waitKey(100000)
 		sys.exit(-1)
 
 	def getContext(self, theWindowName = ''):
@@ -501,7 +501,7 @@ class Internal:
 		self._render.window(theBlock, aTitleBar, aContent, theTitle)
 
 		# Update the layout flow
-		aSize = Rect(theWidth, theHeight)
+		aSize = Size(theWidth, theHeight)
 		self.updateLayoutFlow(theBlock, aSize)
 
 	def rect(self, theBlock, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor):
@@ -1011,7 +1011,7 @@ def image(*theArgs):
 		
 		__internal.image(aBlock, aBlock.anchor.x, aBlock.anchor.y, aImage)
 
-def window(theWhere, theX, theY, theWidth, theHeight, theTitle):
+def window(*theArgs):
 	"""
 	Display a window (a block with a title and a body).
 
@@ -1026,8 +1026,25 @@ def window(theWhere, theX, theY, theWidth, theHeight, theTitle):
 
 	\sa rect()
 	"""
-	__internal.screen.where = theWhere
-	__internal.window(__internal.screen, theX, theY, theWidth, theHeight, theTitle)
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: window(theWhere, theX, theY, theWidth, theHeight, theTitle)
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		aWidth = theArgs[3]
+		aHeight = theArgs[4]
+		aTitle = theArgs[5]
+
+		__internal.screen.where = aWhere
+		__internal.window(__internal.screen, aX, aY, aWidth, aHeight, aTitle)
+	else:
+		# Row/column function, signature: window(theWidth, theHeight, theTitle)
+		aWidth = theArgs[0]
+		aHeight = theArgs[1]
+		aTitle = theArgs[2]
+
+		aBlock = __internal.topBlock()
+		__internal.window(aBlock, aBlock.anchor.x, aBlock.anchor.y, aWidth, aHeight, aTitle)
 
 def rect(theWhere, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000):
 	__internal.screen.where = theWhere
