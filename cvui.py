@@ -863,9 +863,28 @@ def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
     __internal.init(theWindowName, theDelayWaitKey)
     watch(theWindowName, theCreateNamedWindow)
 
-def text(theWhere, theX, theY, theText, theFontScale = 0.4, theColor = 0xCECECE):
-	__internal.screen.where = theWhere
-	__internal.text(__internal.screen, theX, theY, theText, theFontScale, theColor, True)
+def text(*theArgs):
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: text(theWhere, theX, theY, theText, theFontScale = 0.4, theColor = 0xCECECE)
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		aText = theArgs[3]
+		aFontScale = theArgs[4] if len(theArgs) >= 5 else 0.4
+		aColor = theArgs[5] if len(theArgs) >= 6 else 0xCECECE
+
+		__internal.screen.where = theWhere
+		aBlock = __internal.screen
+	else:
+		# Signature: text(theText, theFontScale = 0.4, theColor = 0xCECECE)
+		aBlock = __internal.topBlock()
+		aX = aBlock.anchor.x
+		aY = aBlock.anchor.y
+		aText = theArgs[0]
+		aFontScale = theArgs[1] if len(theArgs) >= 2 else 0.4
+		aColor = theArgs[2] if len(theArgs) >= 3 else 0xCECECE
+	
+	__internal.text(aBlock, aX, aY, aText, aFontScale, aColor, True)
 
 def printf(*theArgs):
 	if isinstance(theArgs[0], np.ndarray):
