@@ -1123,7 +1123,7 @@ def rect(*theArgs):
 	
 	__internal.rect(aBlock, aX, aY, aWidth, aHeight, aBorderColor, aFillingColor)
 
-def sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0x00FF00):
+def sparkline(*theArgs):
 	"""
 	Display the values of a vector as a sparkline.
 
@@ -1137,8 +1137,29 @@ def sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0
 
 	\sa trackbar()
 	"""
-	__internal.screen.where = theWhere
-	__internal.sparkline(__internal.screen, theValues, theX, theY, theWidth, theHeight, theColor)
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0x00FF00)
+		aWhere = theArgs[0]
+		aValues = theArgs[1]
+		aX = theArgs[2]
+		aY = theArgs[3]
+		aWidth = theArgs[4]
+		aHeight = theArgs[5]
+		aColor = theArgs[6] if len(theArgs) >= 7 else 0x00FF00
+
+		__internal.screen.where = aWhere
+		aBlock = __internal.screen
+	else:
+		# Signature: sparkline(theValues, theWidth, theHeight, theColor = 0x00FF00)
+		aBlock = __internal.topBlock()
+		aValues = theArgs[0]
+		aX = aBlock.anchor.x
+		aY = aBlock.anchor.y
+		aWidth = theArgs[1]
+		aHeight = theArgs[2]
+		aColor = theArgs[3] if len(theArgs) >= 4 else 0x00FF00
+
+	__internal.sparkline(aBlock, aValues, aX, aY, aWidth, aHeight, aColor)
 
 def iarea(theX, theY, theWidth, theHeight):
 	return __internal.iarea(theX, theY, theWidth, theHeight)	
