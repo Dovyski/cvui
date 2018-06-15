@@ -890,30 +890,37 @@ def text(*theArgs):
 
 def printf(*theArgs):
 	if isinstance(theArgs[0], np.ndarray):
-		# Not row/column function, signature is printf(theWhere, theX, theY, ...)
+		# Signature: printf(theWhere, theX, theY, ...)
 		aWhere = theArgs[0]
 		aX = theArgs[1]
 		aY = theArgs[2]
+
 		__internal.screen.where = aWhere
+		aBlock = __internal.screen
 
-		if __internal.isString(theArgs[3]):
-			# Signature: printf(theWhere, theX, theY, theFmt, *theArgs)
-			aFontScale = 0.4
-			aColor = 0xCECECE
-			aFmt = theArgs[3]
-			aArgs= theArgs[4:]
-		else:
-			# Signature: printf(theWhere, theX, theY, theFontScale, theColor, theFmt, *theArgs)
-			aFontScale = theArgs[3]
-			aColor = theArgs[4]
-			aFmt = theArgs[5]
-			aArgs = theArgs[6:]
-
-		aText = aFmt % aArgs
-		__internal.text(__internal.screen, aX, aY, aText, aFontScale, aColor, True)
+		aArgs = theArgs[3:]
 	else:
-		# row/column function, signature is printf(theX, theY, ...)
-		print('Not implemented yet')
+		# Row/column function
+		aBlock = __internal.topBlock()
+		aX = aBlock.anchor.x
+		aY = aBlock.anchor.y
+		aArgs = theArgs
+
+	if __internal.isString(aArgs[0]):
+		# Signature: printf(theWhere, theX, theY, theFmt, ...)
+		aFontScale = 0.4
+		aColor = 0xCECECE
+		aFmt = aArgs[0]
+		aFmtArgs = aArgs[1:]
+	else:
+		# Signature: printf(theWhere, theX, theY, theFontScale, theColor, theFmt, ...)
+		aFontScale = aArgs[0]
+		aColor = aArgs[1]
+		aFmt = aArgs[2]
+		aFmtArgs = aArgs[3:]
+
+	aText = aFmt % aFmtArgs
+	__internal.text(aBlock, aX, aY, aText, aFontScale, aColor, True)
 
 def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = "%d"):
 	"""
