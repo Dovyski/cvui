@@ -312,8 +312,10 @@ class Internal:
 		if self.stackCount < 0:
 			self.error(1, 'Mismatch in the number of begin*()/end*() calls. You are calling one more than the other.')
 
+		aIndex = self.stackCount
 		self.stackCount -= 1
-		return self.stack[self.stackCount]
+
+		return self.stack[aIndex]
 
 	def createLabel(self, theLabel):
 		i = 0
