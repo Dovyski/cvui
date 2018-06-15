@@ -989,9 +989,8 @@ def mouse(*theArgs):
 		return __internal.mouseW(aWindowName)
 
 def button(*theArgs):
-	# TODO: re-factor this two identical blocks
 	if isinstance(theArgs[0], np.ndarray) and isinstance(theArgs[1], np.ndarray) == False:
-		# Signature: button(Mat, ...)
+		# Signature: button(Mat, theX, theY, ...)
 		aWhere = theArgs[0]
 		aX = theArgs[1]
 		aY = theArgs[2]
@@ -999,56 +998,35 @@ def button(*theArgs):
 		__internal.screen.where = aWhere
 		aBlock = __internal.screen
 
-		if len(theArgs) == 4:
-			# Signature: button(theWhere, theX, theY, theLabel)
-			aLabel= theArgs[3]
-			return __internal.button(aBlock, aX, aY, aLabel)
-
-		elif len(theArgs) == 6:
-			# Signature: button(theWhere, int theX, int theY, ...)
-			if isinstance(theArgs[3], int):
-				# Signature: button(theWhere, theX, theY, theWidth, theHeight, theLabel)
-				aWidth = theArgs[3]
-				aHeight = theArgs[4]
-				aLabel= theArgs[5]
-				return __internal.buttonWH(aBlock, aX, aY, aWidth, aHeight, aLabel, True)
-			else:
-				# Signature: button(theWhere, theX, theY, theIdle, theOver, theDown)
-				aIdle = theArgs[3]
-				aOver = theArgs[4]
-				aDown= theArgs[5]
-				return __internal.buttonI(aBlock, aX, aY, aIdle, aOver, aDown, True)
-		else:
-			# TODO: check this case here
-			print('Problem?')
+		aArgs = theArgs[3:]
 	else:
-		# Row/column function, signature is button(...)
+		# Row/column function
 		aBlock = __internal.topBlock()
 		aX = aBlock.anchor.x
 		aY = aBlock.anchor.y
+		aArgs = theArgs
 
-		if len(theArgs) == 1:
-			# Signature: button(theLabel)
-			aLabel = theArgs[0]
-			return __internal.button(aBlock, aX, aY, aLabel)
+	if len(aArgs) == 1:
+		# Signature: button(theLabel)
+		aLabel = aArgs[0]
+		return __internal.button(aBlock, aX, aY, aLabel)
 
-		elif len(theArgs) == 3:
-			# Signature: button(...)
-			if isinstance(theArgs[0], int):
-				# Signature: button(theWidth, theHeight, theLabel)
-				aWidth = theArgs[0]
-				aHeight = theArgs[1]
-				aLabel = theArgs[2]
-				return __internal.buttonWH(aBlock, aX, aY, aWidth, aHeight, aLabel, True)
-			else:
-				# Signature: button(theIdle, theOver, theDown)
-				aIdle = theArgs[0]
-				aOver = theArgs[1]
-				aDown= theArgs[2]
-				return __internal.buttonI(aBlock, aX, aY, aIdle, aOver, aDown, True)
+	elif len(aArgs) == 3:
+		if isinstance(aArgs[0], int):
+			# Signature: button(theWidth, theHeight, theLabel)
+			aWidth = aArgs[0]
+			aHeight = aArgs[1]
+			aLabel = aArgs[2]
+			return __internal.buttonWH(aBlock, aX, aY, aWidth, aHeight, aLabel, True)
 		else:
-			# TODO: check this case here
-			print('Problem?')
+			# Signature: button(theIdle, theOver, theDown)
+			aIdle = aArgs[0]
+			aOver = aArgs[1]
+			aDown= aArgs[2]
+			return __internal.buttonI(aBlock, aX, aY, aIdle, aOver, aDown, True)
+	else:
+		# TODO: check this case here
+		print('Problem?')
 
 def image(*theArgs):
 	"""
