@@ -21,7 +21,7 @@ def main():
 	checked2 = [True]
 	count = [0]
 	countFloat = [0.0]
-	trackbarValue = 0.0
+	trackbarValue = [0.0]
 
 	# Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui.init(WINDOW_NAME)
@@ -72,7 +72,7 @@ def main():
 
 		# The trackbar component can be used to create scales.
 		# It works with all numerical types (including chars).
-		# TODO: cvui.trackbar(frame, 420, 110, 150, &trackbarValue, 0., 50.)
+		cvui.trackbar(frame, 420, 110, 150, trackbarValue, 0., 50.)
 		
 		# Checkboxes also accept a pointer to a variable that controls
 		# the state of the checkbox (checked or not). cvui.checkbox() will

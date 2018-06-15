@@ -30,11 +30,18 @@ LEFT_BUTTON = 0
 MIDDLE_BUTTON = 1
 RIGHT_BUTTON = 2
 
-CVUI_ANTIALISED = cv2.LINE_AA
-CVUI_FILLED = -1
+# Constants regarding components
+TRACKBAR_HIDE_SEGMENT_LABELS = 1
+TRACKBAR_HIDE_STEP_SCALE = 2
+TRACKBAR_DISCRETE = 4
+TRACKBAR_HIDE_MIN_MAX_LABELS = 8
+TRACKBAR_HIDE_VALUE_LABEL = 16
+TRACKBAR_HIDE_LABELS = 32
 
 # Internal things
 _IS_PY2 = sys.version_info.major == 2
+CVUI_ANTIALISED = cv2.LINE_AA
+CVUI_FILLED = -1
 
 # Class to represent 2D points
 class Point:
@@ -124,10 +131,20 @@ class Mouse:
     anyButton = MouseButton()          # represent the behavior of all mouse buttons combined
     position = Point(0, 0)             # x and y coordinates of the mouse at the moment.
 
-# Describes a (window) context.
+# Describe a (window) context.
 class Context:
 	windowName = '',                   # name of the window related to this context.
 	mouse = Mouse()                    # the mouse cursor related to this context.
+
+# Describe the inner parts of the trackbar component 
+class TrackbarParams:
+	def __init__(self, theMin = 0., theMax = 25., theStep = 1., theSegments = 0, theLabelFormat = '%.0Lf', theOptions = 0):
+		self.min = theMin
+		self.max = theMax
+		self.step = theStep
+		self.segments = theSegments
+		self.options = theOptions
+		self.labelFormat = theLabelFormat
 
 # This class contains all stuff that cvui uses internally to render
 # and control interaction with components
@@ -255,6 +272,9 @@ class Internal:
 		self.currentContext = theWindowName
 		self.delayWaitKey = theDelayWaitKey
 		self.lastKeyPressed = -1
+
+	def bitsetHas(self, theBitset, theValue):
+		return (theBitset & theValue) != 0
 
 	def error(self, theId, theMessage):
 		print('[CVUI] Fatal error (code ', theId, '): ', theMessage)
@@ -403,6 +423,29 @@ class Internal:
 
 		return theState[0]
 
+	def clamp01(self, theValue):
+		theValue = 1. if theValue > 1. else theValue
+		theValue = 0. if theValue < 0. else theValue
+		return theValue
+
+	def trackbarForceValuesAsMultiplesOfSmallStep(self, theParams, theValue):
+		if self.bitsetHas(theParams.options, TRACKBAR_DISCRETE) and theParams.step != 0.:
+			k = (theValue - theParams.min) / theParams.step
+			k = round(k)
+			theValue[0] = theParams.min + theParams.step * k
+
+	def trackbarXPixelToValue(self, theParams, theBounding, thePixelX):
+		aRatio = (thePixelX - (theBounding.x + self.trackbarMarginX)) / (theBounding.width - 2 * self.trackbarMarginX)
+		aRatio = self.clamp01(aRatio)
+		aValue = theParams.min + aRatio * (theParams.max - theParams.min)
+		return aValue
+
+	def trackbarValueToXPixel(self, theParams, theBounding, theValue):
+		aRatio = (theValue - theParams.min) / (theParams.max - theParams.min)
+		aRatio = self.clamp01(aRatio)
+		aPixelsX = theBounding.x + self.trackbarMarginX + aRatio * (theBounding.width - 2 * self.trackbarMarginX)
+		return int(aPixelsX)
+
 	def iarea(self, theX, theY, theWidth, theHeight):
 		aMouse = self.getContext().mouse
 
@@ -495,6 +538,26 @@ class Internal:
 		# Update the layout flow according to image size
 		aSize = Size(aImageCols, aImageRows)
 		self.updateLayoutFlow(theBlock, aSize)
+
+	def trackbar(self, theBlock, theX, theY, theWidth, theValue, theParams):
+		aMouse = self.getContext().mouse
+		aContentArea = Rect(theX, theY, theWidth, 45)
+		aMouseIsOver = aContentArea.contains(aMouse.position)
+		aValue = theValue[0]
+
+		self._render.trackbar(theBlock, OVER if aMouseIsOver else OUT, aContentArea, theValue[0], theParams)
+
+		if aMouse.anyButton.pressed and aMouseIsOver:
+			theValue[0] = self.trackbarXPixelToValue(theParams, aContentArea, aMouse.position.x)
+
+			if self.bitsetHas(theParams.options, TRACKBAR_DISCRETE):
+				self.trackbarForceValuesAsMultiplesOfSmallStep(theParams, theValue)
+
+		# Update the layout flow
+		# TODO: use aSize = aContentArea.size()?
+		self.updateLayoutFlow(theBlock, aContentArea)
+
+		return theValue[0] != aValue
 
 	def window(self, theBlock, theX, theY, theWidth, theHeight, theTitle):
 		aTitleBar = Rect(theX, theY, theWidth, 20)
@@ -611,8 +674,8 @@ class Render:
 	_internal = None
 
 	def rectangle(self, theWhere, theShape, theColor, theThickness = 1, theLineType = CVUI_ANTIALISED):
-		aStartPoint = (theShape.x, theShape.y)
-		aEndPoint = (theShape.x + theShape.width, theShape.y + theShape.height)
+		aStartPoint = (int(theShape.x), int(theShape.y))
+		aEndPoint = (int(theShape.x + theShape.width), int(theShape.y + theShape.height))
 
 		cv2.rectangle(theWhere, aStartPoint, aEndPoint, theColor, theThickness, theLineType)
 
@@ -670,7 +733,7 @@ class Render:
 		aSizeInfo, aBaseline = cv2.getTextSize(theText, cv2.FONT_HERSHEY_SIMPLEX, aFontScale, 1)
 		aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
 		aPositionDecentered = Point(thePosition.x - aTextSize.width / 2, thePosition.y)
-		cv2.putText(theBlock.where, theText, (aPositionDecentered.x, aPositionDecentered.y), cv2.FONT_HERSHEY_SIMPLEX, aFontScale, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
+		cv2.putText(theBlock.where, theText, (int(aPositionDecentered.x), int(aPositionDecentered.y)), cv2.FONT_HERSHEY_SIMPLEX, aFontScale, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
 
 		return aTextSize.width
 
@@ -697,6 +760,112 @@ class Render:
 
 			self.putText(theBlock, theState, aColor, aLabel.textAfterShortcut, aPos)
 			cv2.line(theBlock.where, (int(aStart), int(aPos.y + 3)), (int(aEnd), int(aPos.y + 3)), aColor, 1, CVUI_ANTIALISED)
+
+	def trackbarHandle(self, theBlock, theState, theShape, theValue, theParams, theWorkingArea):
+		aBarTopLeft = Point(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2)
+		aBarHeight = 7
+
+		# Draw the rectangle representing the handle
+		aPixelX = self._internal.trackbarValueToXPixel(theParams, theShape, theValue)
+		aIndicatorWidth = 3
+		aIndicatorHeight = 4
+		aPoint1 = Point(aPixelX - aIndicatorWidth, aBarTopLeft.y - aIndicatorHeight)
+		aPoint2 = Point(aPixelX + aIndicatorWidth, aBarTopLeft.y + aBarHeight + aIndicatorHeight)
+		aRect = Rect(aPoint1.x, aPoint1.y, aPoint2.x - aPoint1.x, aPoint2.y - aPoint1.y)
+
+		aFillColor = 0x525252 if theState == OVER else 0x424242
+
+		self.rect(theBlock, aRect, 0x212121, 0x212121)
+		aRect.x += 1
+		aRect.y += 1
+		aRect.width -= 2
+		aRect.height -= 2
+		self.rect(theBlock, aRect, 0x515151, aFillColor)
+
+		aShowLabel = self._internal.bitsetHas(theParams.options, TRACKBAR_HIDE_VALUE_LABEL) == False
+
+		# Draw the handle label
+		if aShowLabel:
+			aTextPos = Point(aPixelX, aPoint2.y + 11)
+			aText = theParams.labelFormat % theValue
+			self.putTextCentered(theBlock, aTextPos, aText)
+
+	def trackbarPath(self, theBlock, theState, theShape, theValue, theParams, theWorkingArea):
+		aBarHeight = 7
+		aBarTopLeft = Point(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2)
+		aRect = Rect(aBarTopLeft.x, aBarTopLeft.y, theWorkingArea.width, aBarHeight)
+
+		aBorderColor = 0x4e4e4e if theState == OVER else 0x3e3e3e
+
+		self.rect(theBlock, aRect, aBorderColor, 0x292929)
+		cv2.line(theBlock.where, (int(aRect.x + 1), int(aRect.y + aBarHeight - 2)), (int(aRect.x + aRect.width - 2), int(aRect.y + aBarHeight - 2)), (0x0e, 0x0e, 0x0e))
+
+	def trackbarSteps(self, theBlock, theState, theShape, theValue, theParams, theWorkingArea):
+		aBarTopLeft = Point(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2)
+		aColor = (0x51, 0x51, 0x51)
+
+		aDiscrete = self._internal.bitsetHas(theParams.options, TRACKBAR_DISCRETE)
+		aFixedStep = theParams.step if aDiscrete else (theParams.max - theParams.min) / 20
+
+		# TODO: check min, max and step to prevent infinite loop.
+		aValue = theParams.min
+		while aValue <= theParams.max:
+			aPixelX = int(self._internal.trackbarValueToXPixel(theParams, theShape, aValue))
+			aPoint1 = (aPixelX, int(aBarTopLeft.y))
+			aPoint2 = (aPixelX, int(aBarTopLeft.y - 3))
+			cv2.line(theBlock.where, aPoint1, aPoint2, aColor)
+			aValue += aFixedStep
+
+	def trackbarSegmentLabel(self, theBlock, theShape, theParams, theValue, theWorkingArea, theShowLabel):
+		aColor = (0x51, 0x51, 0x51)
+		aBarTopLeft = Point(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2)
+
+		aPixelX = int(self._internal.trackbarValueToXPixel(theParams, theShape, theValue))
+
+		aPoint1 = (aPixelX, int(aBarTopLeft.y))
+		aPoint2 = (aPixelX, int(aBarTopLeft.y - 8))
+		cv2.line(theBlock.where, aPoint1, aPoint2, aColor)
+
+		if theShowLabel:
+			aText = theParams.labelFormat % theValue
+			aTextPos = Point(aPixelX, aBarTopLeft.y - 11)
+			self.putTextCentered(theBlock, aTextPos, aText)
+
+	def trackbarSegments(self, theBlock, theState, theShape, theValue, theParams, theWorkingArea):
+		aSegments = 1 if theParams.segments < 1 else theParams.segments
+		aSegmentLength = (theParams.max - theParams.min) / aSegments
+
+		aHasMinMaxLabels = self._internal.bitsetHas(theParams.options, TRACKBAR_HIDE_MIN_MAX_LABELS) == False
+
+		# Render the min value label
+		self.trackbarSegmentLabel(theBlock, theShape, theParams, theParams.min, theWorkingArea, aHasMinMaxLabels)
+
+		# Draw large steps and labels
+		aHasSegmentLabels = self._internal.bitsetHas(theParams.options, TRACKBAR_HIDE_SEGMENT_LABELS) == False
+		# TODO: check min, max and step to prevent infinite loop.
+		aValue = theParams.min
+		while aValue <= theParams.max:
+			self.trackbarSegmentLabel(theBlock, theShape, theParams, aValue, theWorkingArea, aHasSegmentLabels)
+			aValue += aSegmentLength
+
+		# Render the max value label
+		self.trackbarSegmentLabel(theBlock, theShape, theParams, theParams.max, theWorkingArea, aHasMinMaxLabels)
+
+	def trackbar(self, theBlock, theState, theShape, theValue, theParams):
+		aWorkingArea = Rect(theShape.x + self._internal.trackbarMarginX, theShape.y, theShape.width - 2 * self._internal.trackbarMarginX, theShape.height)
+
+		self.trackbarPath(theBlock, theState, theShape, theValue, theParams, aWorkingArea)
+
+		aHideAllLabels = self._internal.bitsetHas(theParams.options, TRACKBAR_HIDE_LABELS)
+		aShowSteps = self._internal.bitsetHas(theParams.options, TRACKBAR_HIDE_STEP_SCALE) == False
+
+		if aShowSteps and aHideAllLabels == False:
+			self.trackbarSteps(theBlock, theState, theShape, theValue, theParams, aWorkingArea)
+
+		if aHideAllLabels == False:
+			self.trackbarSegments(theBlock, theState, theShape, theValue, theParams, aWorkingArea)
+
+		self.trackbarHandle(theBlock, theState, theShape, theValue, theParams, aWorkingArea)
 
 	def checkbox(self, theBlock, theState, theShape):
 		# Outline
@@ -1085,6 +1254,44 @@ def image(*theArgs):
 		aBlock = __internal.topBlock()
 		
 		__internal.image(aBlock, aBlock.anchor.x, aBlock.anchor.y, aImage)
+
+def trackbar(*theArgs):
+	# TODO: re-factor this two similar blocks by slicing theArgs into aArgs
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: trackbar(theWhere, theX, theY, theWidth, theValue, theMin, theMax, theSegments = 1, theLabelFormat = "%.1Lf", theOptions = 0, theDiscreteStep = 1)
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		aWidth = theArgs[3]
+		aValue = theArgs[4]
+		aMin = theArgs[5]
+		aMax = theArgs[6]
+		aSegments = theArgs[7] if len(theArgs) >= 8 else 1
+		aLabelFormat = theArgs[8] if len(theArgs) >= 9 else '%.1Lf'
+		aOptions = theArgs[9] if len(theArgs) >= 10 else 0
+		aDiscreteStep = theArgs[10] if len(theArgs) >= 11 else 1
+
+		__internal.screen.where = aWhere
+		aBlock = __internal.screen
+	else:
+		# Signature: trackbar(theWidth, theValue, theMin, theMax, theSegments = 1, theLabelFormat = "%.1Lf", theOptions = 0, theDiscreteStep = 1)
+		aBlock = __internal.topBlock()
+		aX = aBlock.anchor.x
+		aY = aBlock.anchor.y
+		aWidth = theArgs[0]
+		aValue = theArgs[1]
+		aMin = theArgs[2]
+		aMax = theArgs[3]
+		aSegments = theArgs[4] if len(theArgs) >= 5 else 1
+		aLabelFormat = theArgs[5] if len(theArgs) >= 6 else '%.1Lf'
+		aOptions = theArgs[6] if len(theArgs) >= 7 else 0
+		aDiscreteStep = theArgs[7] if len(theArgs) >= 8 else 1
+	
+	# TODO: adjust aLabelFormat based on type of aValue
+	aParams = TrackbarParams(aMin, aMax, aDiscreteStep, aSegments, aLabelFormat, aOptions)
+	aResult = __internal.trackbar(aBlock, aX, aY, aWidth, aValue, aParams)
+
+	return aResult
 
 def window(*theArgs):
 	"""
