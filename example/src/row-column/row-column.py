@@ -71,8 +71,8 @@ def main():
 		cvui.beginRow(frame, 10, 20, 100, 50)
 		cvui.text('This is ');
 		#cvui.printf('a row');
-		#cvui.checkbox('checkbox', &checked);
-		#cvui.window(80, 80, 'window')
+		cvui.checkbox('checkbox', checked)
+		cvui.window(80, 80, 'window')
 		#cvui.rect(50, 50, 0x00ff00, 0xff0000);
 		#cvui.sparkline(values, 50, 50);
 		#cvui.counter(&value);
@@ -86,8 +86,8 @@ def main():
 		cvui.beginRow(frame, 10, 150, 100, 50, padding)
 		cvui.text('This is ')
 		#cvui.printf('another row');
-		#cvui.checkbox('checkbox', &checked2);
-		#cvui.window(80, 80, 'window')
+		cvui.checkbox('checkbox', checked2)
+		cvui.window(80, 80, 'window')
 		#cvui.button(100, 30, 'Fixed');
 		#cvui.printf('with 50px padding.');
 		cvui.endRow()

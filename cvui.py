@@ -348,7 +348,7 @@ class Internal:
 	def text(self, theBlock, theX, theY, theText, theFontScale, theColor, theUpdateLayout):
 		aSizeInfo, aBaseline = cv2.getTextSize(theText, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
 		
-		aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
+		aTextSize = Size(aSizeInfo[0], aSizeInfo[1])
 		aPos = Point(theX, theY + aTextSize.height)
 
 		self._render.text(theBlock, theText, aPos, theFontScale, theColor)
@@ -371,7 +371,7 @@ class Internal:
 			theValue[0] += theStep
 
 		# Update the layout flow
-		aSize = Rect(22 * 2 + aContentArea.width, aContentArea.height)
+		aSize = Size(22 * 2 + aContentArea.width, aContentArea.height)
 		self.updateLayoutFlow(theBlock, aSize)
 
 		return theValue[0]		
@@ -398,7 +398,7 @@ class Internal:
 			self._render.checkboxCheck(theBlock, aRect)
 
 		# Update the layout flow
-		aSize = Rect(aHitArea.width, aHitArea.height)
+		aSize = Size(aHitArea.width, aHitArea.height)
 		self.updateLayoutFlow(theBlock, aSize)
 
 		return theState[0]
@@ -440,7 +440,7 @@ class Internal:
 		# Update the layout flow according to button size
 		# if we were told to update.
 		if theUpdateLayout:
-			aSize = Rect(theWidth, theHeight)
+			aSize = Size(theWidth, theHeight)
 			self.updateLayoutFlow(theBlock, aSize)
 
 		aWasShortcutPressed = False
@@ -477,7 +477,7 @@ class Internal:
 		# Update the layout flow according to button size
 		# if we were told to update.
 		if theUpdateLayout:
-			aSize = Rect(aRect.width, aRect.height)
+			aSize = Size(aRect.width, aRect.height)
 			self.updateLayoutFlow(theBlock, aSize)
 
 		# Return true if the button was clicked
@@ -518,7 +518,7 @@ class Internal:
 		self._render.rect(theBlock, aRect, theBorderColor, theFillingColor)
 
 		# Update the layout flow
-		aSize = Rect(aRect.width, aRect.height)
+		aSize = Size(aRect.width, aRect.height)
 		self.updateLayoutFlow(theBlock, aSize)
 
 	def sparkline(self, theBlock, theValues, theX, theY, theWidth, theHeight, theColor):
@@ -532,7 +532,7 @@ class Internal:
 			self.text(theBlock, theX, theY, 'No data.' if aHowManyValues == 0 else 'Insufficient data points.', 0.4, 0xCECECE, False)
 
 		# Update the layout flow
-		aSize = Rect(theWidth, theHeight)
+		aSize = Size(theWidth, theHeight)
 		self.updateLayoutFlow(theBlock, aSize)
 
 	def hexToScalar(self, theColor):
@@ -578,7 +578,7 @@ class Internal:
 
 		if self.blockStackEmpty() == False:
 			aTop = self.topBlock()
-			aSize = Rect()
+			aSize = Size()
 
 			# If the block has rect.width < 0 or rect.heigth < 0, it means the
 			# user don't want to calculate the block's width/height. It's up to
@@ -937,9 +937,28 @@ def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = "%d"):
 	__internal.screen.where = theWhere
 	return __internal.counter(__internal.screen, theX, theY, theValue, theStep, theFormat)
 
-def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
-	__internal.screen.where = theWhere
-	return __internal.checkbox(__internal.screen, theX, theY, theLabel, theState, theColor)
+def checkbox(*theArgs):
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE)
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		aLabel = theArgs[3]
+		aState = theArgs[4]
+		aColor = theArgs[5] if len(theArgs) >= 6 else 0xCECECE
+
+		__internal.screen.where = theWhere
+		aBlock = __internal.screen
+	else:
+		# Signature: checkbox(theLabel, theState, theColor = 0xCECECE)
+		aBlock = __internal.topBlock()
+		aX = aBlock.anchor.x
+		aY = aBlock.anchor.y
+		aLabel = theArgs[0]
+		aState = theArgs[1]
+		aColor = theArgs[2] if len(theArgs) >= 3 else 0xCECECE
+	
+	return __internal.checkbox(aBlock, aX, aY, aLabel, aState, aColor)
 
 def mouse(*theArgs):
 	if len(theArgs) == 3:
