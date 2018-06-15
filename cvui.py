@@ -922,7 +922,7 @@ def printf(*theArgs):
 	aText = aFmt % aFmtArgs
 	__internal.text(aBlock, aX, aY, aText, aFontScale, aColor, True)
 
-def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = "%d"):
+def counter(*theArgs):
 	"""
 	Display a counter for integer values that the user can increase/descrease
 	by clicking the up and down arrows.
@@ -941,8 +941,31 @@ def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = "%d"):
     int
 		Integer corresponding to the current value of the counter.
 	"""
-	__internal.screen.where = theWhere
-	return __internal.counter(__internal.screen, theX, theY, theValue, theStep, theFormat)
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = "")
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		aValue = theArgs[3]
+		aStep = theArgs[4] if len(theArgs) >= 5 else 1
+		aFormat = theArgs[5] if len(theArgs) >= 6 else ''
+
+		__internal.screen.where = aWhere
+		aBlock = __internal.screen
+	else:
+		# Signature: counter(theValue, theStep = 1, theFormat = "%d")
+		aBlock = __internal.topBlock()
+		aX = aBlock.anchor.x
+		aY = aBlock.anchor.y
+		aValue = theArgs[0]
+		aStep = theArgs[1] if len(theArgs) >= 2 else 1
+		aFormat = theArgs[2] if len(theArgs) >= 3 else ''
+
+	if not aFormat:
+		aIsInt = isinstance(aValue[0], int) == True and isinstance(aStep, int)
+		aFormat = '%d' if aIsInt else '%.1f'
+
+	return __internal.counter(aBlock, aX, aY, aValue, aStep, aFormat)
 
 def checkbox(*theArgs):
 	if isinstance(theArgs[0], np.ndarray):

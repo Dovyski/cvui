@@ -39,9 +39,9 @@ def main():
 	values = []
 	checked = [False]
 	checked2 = [False]
-	value = 1.0
-	value2 = 1.0
-	value3 = 1.0
+	value = [1.0]
+	value2 = [1.0]
+	value3 = [1.0]
 	padding = 10
 	img = cv2.imread('../../data/lena-face.jpg', cv2.IMREAD_COLOR)
 	imgRed = cv2.imread('../../data/lena-face-red.jpg', cv2.IMREAD_COLOR)
@@ -69,13 +69,13 @@ def main():
 		#
 		# Let's create a row at position (10,20) with width 100 and height 50.
 		cvui.beginRow(frame, 10, 20, 100, 50)
-		#cvui.text('This is ')
+		cvui.text('This is ')
 		cvui.printf('a row')
 		cvui.checkbox('checkbox', checked)
 		cvui.window(80, 80, 'window')
 		cvui.rect(50, 50, 0x00ff00, 0xff0000);
 		cvui.sparkline(values, 50, 50);
-		#cvui.counter(&value);
+		cvui.counter(value)
 		cvui.button(100, 30, 'Fixed')
 		cvui.image(img)
 		cvui.button(img, imgGray, imgRed)
