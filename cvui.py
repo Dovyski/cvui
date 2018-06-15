@@ -875,7 +875,7 @@ def text(*theArgs):
 		aFontScale = theArgs[4] if len(theArgs) >= 5 else 0.4
 		aColor = theArgs[5] if len(theArgs) >= 6 else 0xCECECE
 
-		__internal.screen.where = theWhere
+		__internal.screen.where = aWhere
 		aBlock = __internal.screen
 	else:
 		# Signature: text(theText, theFontScale = 0.4, theColor = 0xCECECE)
@@ -947,7 +947,7 @@ def checkbox(*theArgs):
 		aState = theArgs[4]
 		aColor = theArgs[5] if len(theArgs) >= 6 else 0xCECECE
 
-		__internal.screen.where = theWhere
+		__internal.screen.where = aWhere
 		aBlock = __internal.screen
 	else:
 		# Signature: checkbox(theLabel, theState, theColor = 0xCECECE)
@@ -989,18 +989,20 @@ def mouse(*theArgs):
 		return __internal.mouseW(aWindowName)
 
 def button(*theArgs):
-	if isinstance(theArgs[0], np.ndarray):
+	# TODO: re-factor this two identical blocks
+	if isinstance(theArgs[0], np.ndarray) and isinstance(theArgs[1], np.ndarray) == False:
 		# Signature: button(Mat, ...)
 		aWhere = theArgs[0]
 		aX = theArgs[1]
 		aY = theArgs[2]
 
 		__internal.screen.where = aWhere
+		aBlock = __internal.screen
 
 		if len(theArgs) == 4:
 			# Signature: button(theWhere, theX, theY, theLabel)
 			aLabel= theArgs[3]
-			return __internal.button(__internal.screen, aX, aY, aLabel)
+			return __internal.button(aBlock, aX, aY, aLabel)
 
 		elif len(theArgs) == 6:
 			# Signature: button(theWhere, int theX, int theY, ...)
@@ -1009,19 +1011,44 @@ def button(*theArgs):
 				aWidth = theArgs[3]
 				aHeight = theArgs[4]
 				aLabel= theArgs[5]
-				return __internal.buttonWH(__internal.screen, aX, aY, aWidth, aHeight, aLabel, True)
+				return __internal.buttonWH(aBlock, aX, aY, aWidth, aHeight, aLabel, True)
 			else:
 				# Signature: button(theWhere, theX, theY, theIdle, theOver, theDown)
 				aIdle = theArgs[3]
 				aOver = theArgs[4]
 				aDown= theArgs[5]
-				return __internal.buttonI(__internal.screen, aX, aY, aIdle, aOver, aDown, True)
+				return __internal.buttonI(aBlock, aX, aY, aIdle, aOver, aDown, True)
 		else:
 			# TODO: check this case here
 			print('Problem?')
 	else:
 		# Row/column function, signature is button(...)
-		print('Not implemented yet')
+		aBlock = __internal.topBlock()
+		aX = aBlock.anchor.x
+		aY = aBlock.anchor.y
+
+		if len(theArgs) == 1:
+			# Signature: button(theLabel)
+			aLabel = theArgs[0]
+			return __internal.button(aBlock, aX, aY, aLabel)
+
+		elif len(theArgs) == 3:
+			# Signature: button(...)
+			if isinstance(theArgs[0], int):
+				# Signature: button(theWidth, theHeight, theLabel)
+				aWidth = theArgs[0]
+				aHeight = theArgs[1]
+				aLabel = theArgs[2]
+				return __internal.buttonWH(aBlock, aX, aY, aWidth, aHeight, aLabel, True)
+			else:
+				# Signature: button(theIdle, theOver, theDown)
+				aIdle = theArgs[0]
+				aOver = theArgs[1]
+				aDown= theArgs[2]
+				return __internal.buttonI(aBlock, aX, aY, aIdle, aOver, aDown, True)
+		else:
+			# TODO: check this case here
+			print('Problem?')
 
 def image(*theArgs):
 	"""
@@ -1042,7 +1069,7 @@ def image(*theArgs):
 		aY = theArgs[2]
 		aImage = theArgs[3]
 
-		__internal.screen.where = theWhere
+		__internal.screen.where = aWhere
 		__internal.image(__internal.screen, theX, theY, theImage)
 	else:
 		# Row/column function, signature is image(...)
@@ -1097,7 +1124,7 @@ def rect(*theArgs):
 		aBorderColor = theArgs[5]
 		aFillingColor = theArgs[6] if len(theArgs) >= 7 else 0xff000000
 
-		__internal.screen.where = theWhere
+		__internal.screen.where = aWhere
 		aBlock = __internal.screen
 	else:
 		# Signature: rect(theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000)

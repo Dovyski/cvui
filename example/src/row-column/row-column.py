@@ -76,9 +76,9 @@ def main():
 		cvui.rect(50, 50, 0x00ff00, 0xff0000);
 		#cvui.sparkline(values, 50, 50);
 		#cvui.counter(&value);
-		#cvui.button(100, 30, 'Fixed');
+		cvui.button(100, 30, 'Fixed');
 		cvui.image(img)
-		#cvui.button(img, imgGray, imgRed)
+		cvui.button(img, imgGray, imgRed)
 		cvui.endRow()
 
 		# Here is another row, this time with a padding of 50px among components.
@@ -88,7 +88,7 @@ def main():
 		#cvui.printf('another row');
 		cvui.checkbox('checkbox', checked2)
 		cvui.window(80, 80, 'window')
-		#cvui.button(100, 30, 'Fixed');
+		cvui.button(100, 30, 'Fixed');
 		#cvui.printf('with 50px padding.');
 		cvui.endRow()
 
@@ -98,7 +98,7 @@ def main():
 		#cvui.printf('another row with a trackbar ');
 		#cvui.trackbar(150, &value2, 0., 5.);
 		#cvui.printf(' and a button ');
-		#cvui.button(100, 30, 'button');
+		cvui.button(100, 30, 'button');
 		cvui.endRow()
 
 		# In a column, all added elements are vertically placed,
@@ -106,8 +106,8 @@ def main():
 		# a column at (50, 300) with width 100 and height 200.
 		cvui.beginColumn(frame, 50, 330, 100, 200)
 		cvui.text('Column 1 (no padding)')
-		#cvui.button('button1');
-		#cvui.button('button2');
+		cvui.button('button1');
+		cvui.button('button2');
 		cvui.text('End of column 1')
 		cvui.endColumn()
 
@@ -116,8 +116,8 @@ def main():
 		padding = 10
 		cvui.beginColumn(frame, 300, 330, 100, 200, padding)
 		cvui.text('Column 2 (padding = 10)')
-		#cvui.button('button1');
-		#cvui.button('button2');
+		cvui.button('button1');
+		cvui.button('button2');
 		#cvui.trackbar(150, &value3, 0., 5., 1, '%3.2Lf', cvui.TRACKBAR_DISCRETE, 0.25);
 		cvui.text('End of column 2')
 		cvui.endColumn()
@@ -133,13 +133,13 @@ def main():
 		cvui.text('Column 3 (use space)')
 		# Add 5 pixels of (vertical) space.
 		cvui.space(5)
-		#cvui.button('button1 5px below');
+		cvui.button('button1 5px below');
 		# Add 50 pixels of (vertical) space. 
 		cvui.space(50)
 		cvui.text('Text 50px below')
 		# Add 20 pixels of (vertical) space.
 		cvui.space(20)
-		#cvui.button('Button 20px below');
+		cvui.button('Button 20px below');
 		# Add 40 pixels of (vertical) space.
 		cvui.space(40)
 		cvui.text('End of column 2 (40px below)')
