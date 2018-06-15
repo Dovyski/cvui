@@ -430,7 +430,7 @@ class Internal:
 
 	def trackbarForceValuesAsMultiplesOfSmallStep(self, theParams, theValue):
 		if self.bitsetHas(theParams.options, TRACKBAR_DISCRETE) and theParams.step != 0.:
-			k = (theValue - theParams.min) / theParams.step
+			k = (theValue[0] - theParams.min) / theParams.step
 			k = round(k)
 			theValue[0] = theParams.min + theParams.step * k
 
