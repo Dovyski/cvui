@@ -73,7 +73,7 @@ def main():
 		#cvui.printf('a row');
 		cvui.checkbox('checkbox', checked)
 		cvui.window(80, 80, 'window')
-		#cvui.rect(50, 50, 0x00ff00, 0xff0000);
+		cvui.rect(50, 50, 0x00ff00, 0xff0000);
 		#cvui.sparkline(values, 50, 50);
 		#cvui.counter(&value);
 		#cvui.button(100, 30, 'Fixed');

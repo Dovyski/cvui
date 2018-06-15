@@ -610,11 +610,11 @@ class Internal:
 class Render:
 	_internal = None
 
-	def rectangle(self, theWhere, theShape, theColor, theThickness = 1):
+	def rectangle(self, theWhere, theShape, theColor, theThickness = 1, theLineType = CVUI_ANTIALISED):
 		aStartPoint = (theShape.x, theShape.y)
 		aEndPoint = (theShape.x + theShape.width, theShape.y + theShape.height)
 
-		cv2.rectangle(theWhere, aStartPoint, aEndPoint, theColor, theThickness)
+		cv2.rectangle(theWhere, aStartPoint, aEndPoint, theColor, theThickness, theLineType)
 
 	def text(self, theBlock, theText, thePos, theFontScale, theColor):
 		aPosition = (int(thePos.x), int(thePos.y))
@@ -1086,9 +1086,30 @@ def window(*theArgs):
 		aBlock = __internal.topBlock()
 		__internal.window(aBlock, aBlock.anchor.x, aBlock.anchor.y, aWidth, aHeight, aTitle)
 
-def rect(theWhere, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000):
-	__internal.screen.where = theWhere
-	__internal.rect(__internal.screen, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor)
+def rect(*theArgs):
+	if isinstance(theArgs[0], np.ndarray):
+		# Signature: rect(theWhere, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000)
+		aWhere = theArgs[0]
+		aX = theArgs[1]
+		aY = theArgs[2]
+		aWidth = theArgs[3]
+		aHeight = theArgs[4]
+		aBorderColor = theArgs[5]
+		aFillingColor = theArgs[6] if len(theArgs) >= 7 else 0xff000000
+
+		__internal.screen.where = theWhere
+		aBlock = __internal.screen
+	else:
+		# Signature: rect(theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000)
+		aBlock = __internal.topBlock()
+		aX = aBlock.anchor.x
+		aY = aBlock.anchor.y
+		aWidth = theArgs[0]
+		aHeight = theArgs[1]
+		aBorderColor = theArgs[2]
+		aFillingColor = theArgs[3] if len(theArgs) >= 4 else 0xff000000
+	
+	__internal.rect(aBlock, aX, aY, aWidth, aHeight, aBorderColor, aFillingColor)
 
 def sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0x00FF00):
 	"""
