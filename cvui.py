@@ -1177,6 +1177,12 @@ def endRow():
 def endColumn():
 	__internal.end(COLUMN)
 
+def space(theValue):
+	aBlock = __internal.topBlock()
+	aSize = Size(theValue, theValue)
+
+	__internal.updateLayoutFlow(aBlock, aSize)
+
 def update(theWindowName = ""):
 	"""
 	Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating

@@ -132,16 +132,16 @@ def main():
 		cvui.beginColumn(frame, 550, 330, 100, 200)
 		cvui.text('Column 3 (use space)')
 		# Add 5 pixels of (vertical) space.
-		#cvui.space(5);
+		cvui.space(5)
 		#cvui.button('button1 5px below');
 		# Add 50 pixels of (vertical) space. 
-		#cvui.space(50);
+		cvui.space(50)
 		cvui.text('Text 50px below')
 		# Add 20 pixels of (vertical) space.
-		#cvui.space(20);
+		cvui.space(20)
 		#cvui.button('Button 20px below');
 		# Add 40 pixels of (vertical) space.
-		#cvui.space(40);
+		cvui.space(40)
 		cvui.text('End of column 2 (40px below)')
 		cvui.endColumn()
 
