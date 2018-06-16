@@ -60,6 +60,9 @@ class Rect:
 	def contains(self, thePoint):
 		return thePoint.x >= self.x and thePoint.x <= (self.x + self.width) and thePoint.y >= self.y and thePoint.y <= (self.y + self.height)
 
+	def area(self):
+		return self.width * self.height
+
 # Class to represent the size of something, i.e. width and height.
 # The class is a simplified version of Rect where x and y are zero.
 class Size(Rect):
@@ -247,7 +250,7 @@ class Internal:
 		 \sa mouse(const cv::String&, int, int)
 		 \sa mouse(int)
 		"""
-		return mouseWBQ('', theButton, theQuery)
+		return self.mouseWBQ('', theButton, theQuery)
 
 	def mouseWBQ(self, theWindowName, theButton, theQuery):
 		"""
@@ -913,7 +916,7 @@ class Render:
 
 		# Render title text.
 		aPos = Point(theTitleBar.x + 5, theTitleBar.y + 12)
-		cv2.putText(theBlock.where, theTitle, (aPos.x, aPos.y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
+		cv2.putText(theBlock.where, theTitle, (int(aPos.x), int(aPos.y)), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0xCE, 0xCE, 0xCE), 1, CVUI_ANTIALISED)
 
 		# Render borders of the body
 		self.rectangle(theBlock.where, theContent, (0x4A, 0x4A, 0x4A))
@@ -996,43 +999,52 @@ def _handleMouse(theEvent, theX, theY, theFlags, theContext):
 	theContext.mouse.position.y = theY
 
 def watch(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
-    if theCreateNamedWindow:
-        cv2.namedWindow(theWindowName)
+	if theCreateNamedWindow:
+		cv2.namedWindow(theWindowName)
 
-    aContex = Context()
-    aContex.windowName = theWindowName
-    aContex.mouse.position.x = 0
-    aContex.mouse.position.y = 0
+	aContex = Context()
+	aContex.windowName = theWindowName
+	aContex.mouse.position.x = 0
+	aContex.mouse.position.y = 0
 
-    aContex.mouse.anyButton.reset()
-    aContex.mouse.buttons[RIGHT_BUTTON].reset()
-    aContex.mouse.buttons[MIDDLE_BUTTON].reset()
-    aContex.mouse.buttons[LEFT_BUTTON].reset()
+	aContex.mouse.anyButton.reset()
+	aContex.mouse.buttons[RIGHT_BUTTON].reset()
+	aContex.mouse.buttons[MIDDLE_BUTTON].reset()
+	aContex.mouse.buttons[LEFT_BUTTON].reset()
 
-    __internal.contexts[theWindowName] = aContex
-    cv2.setMouseCallback(theWindowName, _handleMouse, __internal.contexts[theWindowName])
+	__internal.contexts[theWindowName] = aContex
+	cv2.setMouseCallback(theWindowName, _handleMouse, __internal.contexts[theWindowName])
 
-def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
-    """
-    Summary line.
+def init(*theArgs):
+	if __internal.isString(theArgs[0]):
+		# Signature: init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True)
+		aWindowName = theArgs[0]
+		aDelayWaitKey = theArgs[1] if len(theArgs) >= 2 else -1
+		aCreateNamedWindow = theArgs[2] if len(theArgs) >= 3 else True
 
-    Extended description of function.
+		__internal.init(aWindowName, aDelayWaitKey)
+		watch(aWindowName, aCreateNamedWindow)
+	else:
+		# Signature: init(theWindowNames[], theHowManyWindows, theDelayWaitKey = -1, theCreateNamedWindows = True)
+		aWindowNames = theArgs[0]
+		aHowManyWindows = theArgs[1]
+		aDelayWaitKey = theArgs[2] if len(theArgs) >= 3 else -1
+		aCreateNamedWindows = theArgs[3] if len(theArgs) >= 4 else True
 
-    Parameters
-    ----------
-    arg1 : int
-        Description of arg1
-    arg2 : str
-        Description of arg2
+		__internal.init(aWindowNames[0], aDelayWaitKey)
 
-    Returns
-    -------
-    int
-        Description of return value
+		for i in range(0, aHowManyWindows):
+			watch(aWindowNames[i], aCreateNamedWindows)
 
-    """
-    __internal.init(theWindowName, theDelayWaitKey)
-    watch(theWindowName, theCreateNamedWindow)
+def context(theWindowName):
+	__internal.currentContext = theWindowName
+
+def imshow(theWindowName, theFrame):
+	update(theWindowName)
+	cv2.imshow(theWindowName, theFrame)
+
+def lastKeyPressed():
+	return __internal.lastKeyPressed
 
 def text(*theArgs):
 	if isinstance(theArgs[0], np.ndarray):
@@ -1478,7 +1490,3 @@ def update(theWindowName = ""):
 
 	if __internal.blockStackEmpty() == False:
 		__internal.error(2, 'Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().')
-
-def imshow(theWindowName, theFrame):
-	update(theWindowName)
-	cv2.imshow(theWindowName, theFrame)
