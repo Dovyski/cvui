@@ -106,18 +106,18 @@ class Block:
 # - textBeforeShortcut will be "Re"
 # - textAfterShortcut will be "tart"
 class Label:
-    __slots__ = [
-        'hasShortcut',
-        'shortcut',
-        'textBeforeShortcut',
-        'textAfterShortcut'
-    ]
+	def __init__(self):
+		self.hasShortcut = False
+		self.shortcut = ''
+		self.textBeforeShortcut = ''
+		self.textAfterShortcut = ''
 
 # Describe a mouse button
 class MouseButton:
-	justReleased = False               # if the mouse button was released, i.e. click event.
-	justPressed = False                # if the mouse button was just pressed, i.e. true for a frame when a button is down.
-	pressed = False                    # if the mouse button is pressed or not.
+	def __init__(self):
+		self.justReleased = False           # if the mouse button was released, i.e. click event.
+		self.justPressed = False            # if the mouse button was just pressed, i.e. true for a frame when a button is down.
+		self.pressed = False                # if the mouse button is pressed or not.
 
 	def reset(self):
 		self.justPressed = False
@@ -126,18 +126,20 @@ class MouseButton:
 
 # Describe the information of the mouse cursor
 class Mouse:
-    buttons = {                        # status of each button. Use cvui.{RIGHT,LEFT,MIDDLE}_BUTTON to access the buttons.
-		LEFT_BUTTON: MouseButton(),
-		MIDDLE_BUTTON: MouseButton(),
-		RIGHT_BUTTON: MouseButton()
-	}              
-    anyButton = MouseButton()          # represent the behavior of all mouse buttons combined
-    position = Point(0, 0)             # x and y coordinates of the mouse at the moment.
+	def __init__(self):
+		self.buttons = {                   # status of each button. Use cvui.{RIGHT,LEFT,MIDDLE}_BUTTON to access the buttons.
+			LEFT_BUTTON: MouseButton(),
+			MIDDLE_BUTTON: MouseButton(),
+			RIGHT_BUTTON: MouseButton()
+		}              
+		self.anyButton = MouseButton()     # represent the behavior of all mouse buttons combined
+		self.position = Point(0, 0)        # x and y coordinates of the mouse at the moment.
 
 # Describe a (window) context.
 class Context:
-	windowName = '',                   # name of the window related to this context.
-	mouse = Mouse()                    # the mouse cursor related to this context.
+	def __init__(self):
+		self.windowName = ''               # name of the window related to this context.
+		self.mouse = Mouse()               # the mouse cursor related to this context.
 
 # Describe the inner parts of the trackbar component 
 class TrackbarParams:
