@@ -1409,7 +1409,7 @@ def iarea(theX, theY, theWidth, theHeight):
 	return __internal.iarea(theX, theY, theWidth, theHeight)	
 
 def beginRow(*theArgs):
-	if isinstance(theArgs[0], np.ndarray):
+	if len(theArgs) and isinstance(theArgs[0], np.ndarray):
 		# Signature: beginRow(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0):
 		aWhere = theArgs[0]
 		aX = theArgs[1]
@@ -1429,7 +1429,7 @@ def beginRow(*theArgs):
 		__internal.begin(ROW, aBlock.where, aBlock.anchor.x, aBlock.anchor.y, aWidth, aHeight, aPadding)
 
 def beginColumn(*theArgs):
-	if isinstance(theArgs[0], np.ndarray):
+	if len(theArgs) > 0 and isinstance(theArgs[0], np.ndarray):
 		# Signature: beginColumn(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0):
 		aWhere = theArgs[0]
 		aX = theArgs[1]
@@ -1454,7 +1454,7 @@ def endRow():
 def endColumn():
 	__internal.end(COLUMN)
 
-def space(theValue):
+def space(theValue = 5):
 	aBlock = __internal.topBlock()
 	aSize = Size(theValue, theValue)
 
