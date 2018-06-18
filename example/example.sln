@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "main-app", "src\main-app\main-app.vcxproj", "{1A6DE26D-57B3-464A-8EF5-F921441D2A86}"
 EndProject
@@ -26,8 +26,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "trackbar-complex", "src\tra
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "trackbar-sparkline", "src\trackbar-sparkline\trackbar-sparkline.vcxproj", "{F5E56E5A-D2E3-4D19-BE11-720E6E566085}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "canny", "src\canny\canny.vcxproj", "{9CF8710D-ECFC-4092-905E-1A95C5FB481C}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hello-world", "src\hello-world\hello-world.vcxproj", "{0A75F05D-D172-4FB7-8928-E2F3E2FE0A61}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multiple-windows", "src\multiple-windows\multiple-windows.vcxproj", "{82C11FD5-FC1B-413F-9847-7A8DD1536B46}"
@@ -45,6 +43,12 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multiple-windows-complex-mouse", "src\multiple-windows-complex-mouse\multiple-windows-complex-mouse.vcxproj", "{ECBD6377-E016-4846-B6CC-81349836A199}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multiple-windows-complex-dynamic", "src\multiple-windows-complex-dynamic\multiple-windows-complex-dynamic.vcxproj", "{5A51E582-AF0D-4A4A-88A3-4C896EDE8C17}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui-enhanced-window-component", "src\ui-enhanced-window-component\ui-enhanced-window-component.vcxproj", "{88D56AA6-2DE7-4F88-8CD5-6142F4CC7342}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui-enhanced-canny", "src\ui-enhanced-canny\ui-enhanced-canny.vcxproj", "{9CF8710D-ECFC-4092-905E-1A95C5FB481C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "canny", "src\canny\canny.vcxproj", "{D23A6CEA-B991-4F1C-AB71-03566B71ECAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,10 +104,6 @@ Global
 		{F5E56E5A-D2E3-4D19-BE11-720E6E566085}.Debug|x64.Build.0 = Debug|x64
 		{F5E56E5A-D2E3-4D19-BE11-720E6E566085}.Release|x64.ActiveCfg = Release|x64
 		{F5E56E5A-D2E3-4D19-BE11-720E6E566085}.Release|x64.Build.0 = Release|x64
-		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Debug|x64.ActiveCfg = Debug|x64
-		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Debug|x64.Build.0 = Debug|x64
-		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Release|x64.ActiveCfg = Release|x64
-		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Release|x64.Build.0 = Release|x64
 		{0A75F05D-D172-4FB7-8928-E2F3E2FE0A61}.Debug|x64.ActiveCfg = Debug|x64
 		{0A75F05D-D172-4FB7-8928-E2F3E2FE0A61}.Debug|x64.Build.0 = Debug|x64
 		{0A75F05D-D172-4FB7-8928-E2F3E2FE0A61}.Release|x64.ActiveCfg = Release|x64
@@ -140,8 +140,23 @@ Global
 		{5A51E582-AF0D-4A4A-88A3-4C896EDE8C17}.Debug|x64.Build.0 = Debug|x64
 		{5A51E582-AF0D-4A4A-88A3-4C896EDE8C17}.Release|x64.ActiveCfg = Release|x64
 		{5A51E582-AF0D-4A4A-88A3-4C896EDE8C17}.Release|x64.Build.0 = Release|x64
+		{88D56AA6-2DE7-4F88-8CD5-6142F4CC7342}.Debug|x64.ActiveCfg = Debug|x64
+		{88D56AA6-2DE7-4F88-8CD5-6142F4CC7342}.Debug|x64.Build.0 = Debug|x64
+		{88D56AA6-2DE7-4F88-8CD5-6142F4CC7342}.Release|x64.ActiveCfg = Release|x64
+		{88D56AA6-2DE7-4F88-8CD5-6142F4CC7342}.Release|x64.Build.0 = Release|x64
+		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Debug|x64.ActiveCfg = Debug|x64
+		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Debug|x64.Build.0 = Debug|x64
+		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Release|x64.ActiveCfg = Release|x64
+		{9CF8710D-ECFC-4092-905E-1A95C5FB481C}.Release|x64.Build.0 = Release|x64
+		{D23A6CEA-B991-4F1C-AB71-03566B71ECAE}.Debug|x64.ActiveCfg = Debug|x64
+		{D23A6CEA-B991-4F1C-AB71-03566B71ECAE}.Debug|x64.Build.0 = Debug|x64
+		{D23A6CEA-B991-4F1C-AB71-03566B71ECAE}.Release|x64.ActiveCfg = Release|x64
+		{D23A6CEA-B991-4F1C-AB71-03566B71ECAE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9239402C-55D5-464E-9F9D-3926080A06DB}
 	EndGlobalSection
 EndGlobal
