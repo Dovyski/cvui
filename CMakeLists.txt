@@ -1,15 +1,16 @@
-cmake_minimum_required(VERSION 2.8.12)
-project( cvui )
+cmake_minimum_required(VERSION 3.1)
+project(cvui LANGUAGES CXX)
 
-# For cmake 2.8.12 and higher
-if (NOT MSVC)
-  add_compile_options(-std=c++11)
+# Option to control if python things should be included or not.
+option(ADD_PYTHON_EXAMPLES "Add cvui.py (Python version of cvui) and Python examples to the build." ON)
+
+if(ADD_PYTHON_EXAMPLES)
+	message(STATUS "Python examples will be added, e.g. cvui.py")
 endif()
 
-# New way for cmake 3.1 and higher
-#set(CMAKE_CXX_STANDARD 11) # C++11...
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#set(CMAKE_CXX_EXTENSIONS OFF) #...without compiler extensions like gnu++11
+set(CMAKE_CXX_STANDARD 11)           # C++11
+set(CMAKE_CXX_STANDARD_REQUIRED OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)        # without compiler extensions like gnu++11
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -39,23 +40,9 @@ add_subdirectory(example/src/ui-enhanced-canny)
 add_subdirectory(example/src/ui-enhanced-window-component)
 
 # Copy all data files
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face-gray.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face-red.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/fruits.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_BINARY_DIR}/bin/)
-
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face-gray.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face-red.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/fruits.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
-
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face-gray.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face-red.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/fruits.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
-file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face.jpg DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face-gray.jpg DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena-face-red.jpg DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/fruits.jpg DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${CMAKE_SOURCE_DIR}/example/data/sparkline.csv DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
