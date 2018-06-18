@@ -35,7 +35,8 @@ add_subdirectory(example/src/sparkline)
 add_subdirectory(example/src/trackbar)
 add_subdirectory(example/src/trackbar-complex)
 add_subdirectory(example/src/trackbar-sparkline)
-add_subdirectory(example/src/setting-menu)
+add_subdirectory(example/src/ui-enhanced-canny)
+add_subdirectory(example/src/ui-enhanced-window-component)
 
 # Copy all data files
 file(COPY ${CMAKE_SOURCE_DIR}/example/data/lena.jpg DESTINATION ${CMAKE_BINARY_DIR}/bin/)

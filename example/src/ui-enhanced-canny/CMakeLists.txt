@@ -2,7 +2,7 @@ find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 include_directories(../../..)
 
-set(ApplicationName setting-menu)
+set(ApplicationName ui-enhanced-canny)
 
 add_executable(${ApplicationName} main.cpp)
 target_link_libraries( ${ApplicationName} ${OpenCV_LIBS} )
