@@ -17,13 +17,9 @@
 # columns separately, but you can nest them as you want (take
 # a look at the 'nested-rows-columns' app).
 #
-# Author: Fernando Bevilacqua <dovyski@gmail.com>
+# Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
 # Licensed under the MIT license.
 #
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
 
 import numpy as np
 import cv2
@@ -43,9 +39,9 @@ def main():
 	value2 = [1.0]
 	value3 = [1.0]
 	padding = 10
-	img = cv2.imread('../../data/lena-face.jpg', cv2.IMREAD_COLOR)
-	imgRed = cv2.imread('../../data/lena-face-red.jpg', cv2.IMREAD_COLOR)
-	imgGray = cv2.imread('../../data/lena-face-gray.jpg', cv2.IMREAD_COLOR)
+	img = cv2.imread('lena-face.jpg', cv2.IMREAD_COLOR)
+	imgRed = cv2.imread('lena-face-red.jpg', cv2.IMREAD_COLOR)
+	imgGray = cv2.imread('lena-face-gray.jpg', cv2.IMREAD_COLOR)
 
 	# Fill the vector with a few random values
 	for i in range(0, 20):

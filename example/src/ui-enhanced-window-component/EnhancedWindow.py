@@ -8,6 +8,7 @@
 # Contributions:
 # 	Fernando Bevilacqua <dovyski@gmail.com>
 # 
+# Copyright (c) 2018 Authors and Contributors
 # Code licensed under the MIT license.
 # 
 

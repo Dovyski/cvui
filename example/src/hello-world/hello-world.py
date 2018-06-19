@@ -1,6 +1,10 @@
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
+#
+# This is an extremely simple demo application to showcase the
+# basic structure, features and use of cvui.
+#
+# Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
+# Licensed under the MIT license.
+#
 
 import numpy as np
 import cv2

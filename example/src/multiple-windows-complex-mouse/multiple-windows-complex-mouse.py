@@ -2,12 +2,9 @@
 # This demo shows how to use cvui in multiple windows, accessing information about
 # the mouse cursor on each window.
 # 
-# Code licensed under the MIT license, check LICENSE file.
+# Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
+# Licensed under the MIT license.
 #
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
 
 import numpy as np
 import cv2

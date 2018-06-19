@@ -5,10 +5,6 @@
 # Licensed under the MIT license.
 #
 
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
-
 import numpy as np
 import cv2
 import cvui

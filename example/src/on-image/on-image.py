@@ -1,11 +1,15 @@
 #
 # This is a demo application to showcase the UI components of cvui.
-# Author: Pascal Thomet
 #
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
+# Author:
+#	Pascal Thomet
+# 
+# Contributions:
+# 	Fernando Bevilacqua <dovyski@gmail.com>
+# 
+# Copyright (c) 2018 Authors and Contributors
+# Code licensed under the MIT license.
+#
 
 import numpy as np
 import cv2
@@ -14,7 +18,7 @@ import cvui
 WINDOW_NAME	= 'CVUI Test'
 
 def main():
-	lena = cv2.imread('../../data/lena.jpg', cv2.IMREAD_COLOR)
+	lena = cv2.imread('lena.jpg', cv2.IMREAD_COLOR)
 	frame = np.zeros(lena.shape, np.uint8)
 	doubleBuffer = np.zeros(lena.shape, np.uint8)
 	trackbarWidth = 130

@@ -1,11 +1,9 @@
 #
-# This demo shows how to use cvui in multiple windows relying on rows and colums.
-# Code licensed under the MIT license, check LICENSE file.
+# This demo shows how to use cvui in multiple windows relying on rows and columns.
 #
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
+# Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
+# Licensed under the MIT license.
+#
 
 import numpy as np
 import cv2
@@ -34,9 +32,9 @@ def main():
 	window2_value2 = [1.0]
 	window2_value3 = [1.0]
 
-	img = cv2.imread('../../data/lena-face.jpg', cv2.IMREAD_COLOR)
-	imgRed = cv2.imread('../../data/lena-face-red.jpg', cv2.IMREAD_COLOR)
-	imgGray = cv2.imread('../../data/lena-face-gray.jpg', cv2.IMREAD_COLOR)
+	img = cv2.imread('lena-face.jpg', cv2.IMREAD_COLOR)
+	imgRed = cv2.imread('lena-face-red.jpg', cv2.IMREAD_COLOR)
+	imgGray = cv2.imread('lena-face-gray.jpg', cv2.IMREAD_COLOR)
 
 	padding = 10
 

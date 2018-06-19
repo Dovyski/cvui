@@ -5,13 +5,9 @@
 # This demo is very similiar to 'mouse-complex', except that it handles 3 ROIs,
 # one for each mouse button.
 # 
-# Copyright (c) 2017 Fernando Bevilacqua <dovyski@gmail.com>
+# Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
 # Licensed under the MIT license.
 #
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
 
 import numpy as np
 import cv2
@@ -20,7 +16,7 @@ import cvui
 WINDOW_NAME	= 'Mouse complex buttons- ROI interaction'
 
 def main():
-	lena = cv2.imread('../../data/lena.jpg')
+	lena = cv2.imread('lena.jpg')
 	frame = np.zeros(lena.shape, np.uint8)
 	anchors = [cvui.Point() for i in range(3)]   # one anchor for each mouse button
 	rois = [cvui.Rect() for i in range(3)]       # one ROI for each mouse button

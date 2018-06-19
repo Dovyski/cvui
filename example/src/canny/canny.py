@@ -2,7 +2,8 @@
 # This demo showcases some components of cvui being used to control
 # the application of the Canny edge algorithm to a loaded image.
 #
-# Code licensed under the MIT license
+# Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
+# Licensed under the MIT license.
 #
 
 # Include the directory where cvui is so we can load it

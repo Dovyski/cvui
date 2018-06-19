@@ -10,14 +10,14 @@ E.g.
 
   # Code for window 'window1'.
   cvui.context('window1')
-      cviu.text(frame, ...)
-	  cviu.button(frame, ...)
+  cviu.text(frame, ...)
+  cviu.button(frame, ...)
   cviu.update('window1')
 
   # somewhere else, code for 'window2'
   cvui.context('window2')
-      cviu.printf(frame, ...)
-      cviu.printf(frame, ...)
+  cviu.printf(frame, ...)
+  cviu.printf(frame, ...)
   cviu.update('window2')
 
   # Show everything in a window
@@ -35,25 +35,22 @@ E.g.
 
   # Code for window 'window1'.
   cvui.context('window1')
-      cviu.text(frame, ...)
-      cviu.button(frame, ...)
+  cviu.text(frame, ...)
+  cviu.button(frame, ...)
   cviu.imshow('window1')
 
   # somewhere else, code for 'window2'
   cvui.context('window2')
-      cviu.printf(frame, ...)
-      cviu.printf(frame, ...)
+  cviu.printf(frame, ...)
+  cviu.printf(frame, ...)
   cviu.imshow('window2')
 
 In that case, you don't have to bother calling cvui.update() yourself, since
 cvui.imshow() will do it for you.
 
-Code licensed under the MIT license, check LICENSE file.
+Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
+Licensed under the MIT license.
 """
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
 
 import numpy as np
 import cv2

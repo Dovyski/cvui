@@ -1,11 +1,15 @@
 #
 # This is a demo application to showcase keyboard shortcuts. 
-# Author: Pascal Thomet
 #
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
+# Author:
+# 	Pascal Thomet
+# 
+# Contributions:
+# 	Fernando Bevilacqua <dovyski@gmail.com>
+# 
+# Copyright (c) 2018 Authors and Contributors
+# Code licensed under the MIT license.
+#
 
 import numpy as np
 import cv2

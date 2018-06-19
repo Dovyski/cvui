@@ -3,12 +3,8 @@
 # Sparklines are quite useful to display data, e.g. FPS charts.
 #
 # Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
-# Licensed under the MIT license
+# Licensed under the MIT license.
 #
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
 
 import numpy as np
 import cv2
@@ -42,7 +38,7 @@ def main():
 	cvui.init(WINDOW_NAME)
 
 	# Load some data points from a file
-	points = load('./sparkline.csv')
+	points = load('sparkline.csv')
 	
 	# Create less populated sets
 	few_points = []

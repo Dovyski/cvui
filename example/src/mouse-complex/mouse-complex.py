@@ -6,10 +6,6 @@
 # Licensed under the MIT license.
 #
 
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
-
 import numpy as np
 import cv2
 import cvui
@@ -18,7 +14,7 @@ WINDOW_NAME	= 'Mouse - ROI interaction'
 ROI_WINDOW	= 'ROI'
 
 def main():
-	lena = cv2.imread('../../data/lena.jpg')
+	lena = cv2.imread('lena.jpg')
 	frame = np.zeros(lena.shape, np.uint8)
 	anchor = cvui.Point()
 	roi = cvui.Rect(0, 0, 0, 0)

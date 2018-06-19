@@ -7,10 +7,6 @@
 # Licensed under the MIT license.
 #
 
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
-
 import numpy as np
 import cv2
 import cvui
@@ -46,7 +42,7 @@ def main():
 		if status == cvui.OUT:	  cvui.printf(frame, 240, 70, "Mouse is: OUT")
 
 		# Show the coordinates of the mouse pointer on the screen
-		# TODO: add cvui.printf(frame, 240, 50, "Mouse pointer is at (%d,%d)", cvui.mouse().x, cvui.mouse().y)
+		cvui.printf(frame, 240, 50, "Mouse pointer is at (%d,%d)", cvui.mouse().x, cvui.mouse().y)
 
 		# This function must be called *AFTER* all UI components. It does
 		# all the behind the scenes magic to handle mouse clicks, etc.

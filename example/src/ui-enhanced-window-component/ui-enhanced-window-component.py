@@ -9,12 +9,9 @@
 # Contributions:
 #	Fernando Bevilacqua <dovyski@gmail.com>
 # 
+# Copyright (c) 2018 Authors and Contributors
 # Code licensed under the MIT license.
 #
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
 
 import numpy as np
 import cv2

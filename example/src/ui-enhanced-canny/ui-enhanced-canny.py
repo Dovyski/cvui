@@ -13,6 +13,7 @@
 # 	Amaury Breheret - https://github.com/abreheret
 # 	ShengYu - https://github.com/shengyu7697
 # 
+# Copyright (c) 2018 Authors and Contributors
 # Code licensed under the MIT license.
 #
 

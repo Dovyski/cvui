@@ -4,12 +4,9 @@
 # understand automatic positioning and to check a simpler
 # use of begin*()/end*().
 # 
-# Code licensed under the MIT license, check LICENSE file.
+# Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
+# Licensed under the MIT license.
 # 
-
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
 
 import numpy as np
 import cv2
