@@ -49,6 +49,9 @@ class Point:
 		self.x = theX
 		self.y = theY
 
+	def inside(self, theRect):
+		return theRect.contains(self)
+
 # Class to represent a rectangle
 class Rect:
 	def __init__(self, theX = 0, theY = 0, theWidth = 0, theHeight = 0):
