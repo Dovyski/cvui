@@ -28,6 +28,7 @@ int main(int argc, const char *argv[])
 			// Yes, we should apply it.
 			cv::cvtColor(lena, frame, CV_BGR2GRAY);
 			cv::Canny(frame, frame, low_threshold, high_threshold, 3);
+			cv::cvtColor(frame, frame, CV_GRAY2BGR);
 		} else {
 			// No, so just copy the original image to the displaying frame.
 			lena.copyTo(frame);
