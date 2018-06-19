@@ -11,3 +11,11 @@ install(TARGETS ${ApplicationName} DESTINATION bin)
 install(FILES ../../data/lena-face.jpg DESTINATION bin)
 install(FILES ../../data/lena-face-red.jpg DESTINATION bin)
 install(FILES ../../data/lena-face-gray.jpg DESTINATION bin)
+
+if(ADD_PYTHON_EXAMPLES)
+	add_custom_command(
+        TARGET ${ApplicationName}
+		POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/*.py ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+	)
+endif()
