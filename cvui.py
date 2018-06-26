@@ -1036,7 +1036,80 @@ def _handleMouse(theEvent, theX, theY, theFlags, theContext):
 	theContext.mouse.position.x = theX
 	theContext.mouse.position.y = theY
 
-def watch(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
+def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
+	"""
+	Initializes cvui. You must provide the name of the window where
+	components will be added. It is also possible to tell cvui to handle
+	OpenCV's event queue automatically (by informing a value greater than zero
+	in the `theDelayWaitKey` parameter of the function). In that case, cvui will
+	automatically call `cv2.waitKey()` within `cvui.update()`, so you don't
+	have to worry about it. The value passed to `theDelayWaitKey` will be
+	used as the delay for `cv2.waitKey()`.
+
+	Parameters
+	----------
+	theWindowName: str
+		name of the window where the components will be added.
+	theDelayWaitKey: int
+		delay value passed to `cv2.waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv2.waitKey()` within `cvui.update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
+	theCreateNamedWindow: bool
+		if an OpenCV window named `theWindowName` should be created during the initialization. Windows are created using `cv2.namedWindow()`. If this parameter is `False`, ensure you call `cv2.namedWindow(WINDOW_NAME)` *before* initializing cvui, otherwise it will not be able to track UI interactions. 
+
+	See Also
+	----------
+	watch()
+	context()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def init(theWindowNames, theHowManyWindows, theDelayWaitKey = -1, theCreateNamedWindows = True):
+	"""
+	Initialize cvui using a list of names of windows where components will be added.
+	It is also possible to tell cvui to handle OpenCV's event queue automatically
+	(by informing a value greater than zero in the `theDelayWaitKey` parameter of the function).
+	In that case, cvui will automatically call `cv2.waitKey()` within `cvui.update()`,
+	so you don't have to worry about it. The value passed to `theDelayWaitKey` will be
+	used as the delay for `cv2.waitKey()`.
+
+	Parameters
+	----------
+	theWindowNames: str
+		array containing the name of the windows where components will be added. Those windows will be automatically if `theCreateNamedWindows` is `True`.
+	theHowManyWindows: int
+		how many window names exist in the `theWindowNames` array.
+	theDelayWaitKey: int
+		delay value passed to `cv2.waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv2.waitKey()` within `cvui.update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
+	theCreateNamedWindows: bool
+		if OpenCV windows named according to `theWindowNames` should be created during the initialization. Windows are created using `cv2.namedWindow()`. If this parameter is `False`, ensure you call `cv2.namedWindow(WINDOW_NAME)` for all windows *before* initializing cvui, otherwise it will not be able to track UI interactions.
+
+	See Also
+	----------
+	watch()
+	context()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def watch(theWindowName, theCreateNamedWindow = True):
+	"""
+	Track UI interactions of a particular window. This function must be invoked
+	for any window that will receive cvui components. cvui automatically calls `cvui.watch()`
+	for any window informed in `cvui.init()`, so generally you don't have to watch them
+	yourself. If you initialized cvui and told it *not* to create windows automatically,
+	you need to call `cvui.watch()` on those windows yourself. `cvui.watch()` can
+	automatically create a window before watching it, if it does not exist.
+
+	Parameters
+	----------
+	theWindowName: str
+		name of the window whose UI interactions will be tracked.
+	theCreateNamedWindow: bool
+		if an OpenCV window named `theWindowName` should be created before it is watched. Windows are created using `cv2.namedWindow()`. If this parameter is `False`, ensure you have called `cv2.namedWindow(WINDOW_NAME)` to create the window, otherwise cvui will not be able to track its UI interactions.
+
+	See Also
+	----------
+	init()
+	context()
+	"""
 	if theCreateNamedWindow:
 		cv2.namedWindow(theWindowName)
 
@@ -1052,6 +1125,1304 @@ def watch(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
 
 	__internal.contexts[theWindowName] = aContex
 	cv2.setMouseCallback(theWindowName, _handleMouse, __internal.contexts[theWindowName])
+
+def context(theWindowName):
+	"""
+	Inform cvui that all subsequent component calls belong to a window in particular.
+	When using cvui with multiple OpenCV windows, you must call cvui component calls
+	between `cvui.contex(NAME)` and `cvui.update(NAME)`, where `NAME` is the name of
+	the window. That way, cvui knows which window you are using (`NAME` in this case),
+	so it can track mouse events, for instance.
+	
+	E.g.
+	
+	```
+	# Code for window 'window1'.
+	cvui.context('window1')
+	cvui.text(frame, ...)
+	cvui.button(frame, ...)
+	cvui.update('window1')
+	
+	
+	# somewhere else, code for 'window2'
+	cvui.context('window2')
+	cvui.printf(frame, ...)
+	cvui.printf(frame, ...)
+	cvui.update('window2')
+	
+	# Show everything in a window
+	cv2.imshow(frame)
+	```
+	
+	Pay attention to the pair `cvui.context(NAME)` and `cvui.update(NAME)`, which
+	encloses the component calls for that window. You need such pair for each window
+	of your application.
+	
+	After calling `cvui.update()`, you can show the result in a window using `cv2.imshow()`.
+	If you want to save some typing, you can use `cvui.imshow()`, which calls `cvui.update()`
+	for you and then shows the frame in a window.
+	
+	E.g.:
+	
+	```
+	# Code for window 'window1'.
+	cvui.context('window1')
+	cvui.text(frame, ...)
+	cvui.button(frame, ...)
+	cvui.imshow('window1')
+	
+	# somewhere else, code for 'window2'
+	cvui.context('window2')
+	cvui.printf(frame, ...)
+	cvui.printf(frame, ...)
+	cvui.imshow('window2')
+	```
+	
+	In that case, you don't have to bother calling `cvui.update()` yourself, since
+	`cvui.imshow()` will do it for you.
+
+	Parameters
+	----------
+	theWindowName: str
+		name of the window that will receive components from all subsequent cvui calls.
+
+	See Also
+	----------
+	init()
+	watch()
+	"""
+	__internal.currentContext = theWindowName
+
+def imshow(theWindowName, theFrame):
+	"""
+	Display an image in the specified window and update the internal structures of cvui.
+	This function can be used as a replacement for `cv2.imshow()`. If you want to use
+	`cv2.imshow() instead of `cvui.imshow()`, you must ensure you call `cvui.update()`
+	*after* all component calls and *before* `cv2.imshow()`, so cvui can update its
+	internal structures.
+	
+	In general, it is easier to call `cvui.imshow()` alone instead of calling
+	`cvui.update()' immediately followed by `cv2.imshow()`.
+
+	Parameters
+	----------
+	theWindowName: str
+		name of the window that will be shown.
+	theFrame: np.array
+		image, i.e. `np.array`, to be shown in the window.
+
+	See Also
+	----------
+	update()
+	context()
+	watch()
+	"""
+	update(theWindowName)
+	cv2.imshow(theWindowName, theFrame)
+
+def lastKeyPressed():
+	"""
+	Return the last key that was pressed. This function will only
+	work if a value greater than zero was passed to `cvui.init()`
+	as the delay waitkey parameter.
+
+	See Also
+	----------
+	init()
+	"""
+	return __internal.lastKeyPressed
+
+def mouse(theWindowName = ''):
+	"""
+	Return the last position of the mouse.
+
+	Parameters
+	----------
+	theWindowName: str
+		name of the window whose mouse cursor will be used. If nothing is informed (default), the function will return the position of the mouse cursor for the default window (the one informed in `cvui.init()`).
+
+	Returns
+	----------
+	a point containing the position of the mouse cursor in the speficied window.
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def mouse(theQuery):
+	"""
+	Query the mouse for events, e.g. 'is any button down now?'. Available queries are:
+	
+	* `cvui.DOWN`: any mouse button was pressed. `cvui.mouse()` returns `True` for a single frame only.
+	* `cvui.UP`: any mouse button was released.  `cvui.mouse()` returns `True` for a single frame only.
+	* `cvui.CLICK`: any mouse button was clicked (went down then up, no matter the amount of frames in between). `cvui.mouse()` returns `True` for a single frame only.
+	* `cvui.IS_DOWN`: any mouse button is currently pressed. `cvui.mouse()` returns `True` for as long as the button is down/pressed.
+	
+	It is easier to think of this function as the answer to a questions. For instance, asking if any mouse button went down:
+	
+	```
+	if cvui.mouse(cvui.DOWN):
+	# Any mouse button just went down.
+	
+	```
+	
+	The window whose mouse will be queried depends on the context. If `cvui.mouse(query)` is being called after
+	`cvui.context()`, the window informed in the context will be queried. If no context is available, the default
+	window (informed in `cvui.init()`) will be used.
+
+	Parameters
+	----------
+	theQuery: int
+		an integer describing the intended mouse query. Available queries are `cvui.DOWN`, `cvui.UP`, `cvui.CLICK`, and `cvui.IS_DOWN`.
+
+	See Also
+	----------
+	mouse(str)
+	mouse(str, int)
+	mouse(str, int, int)
+	mouse(int, int)
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def mouse(theWindowName, theQuery):
+	"""
+	Query the mouse for events in a particular window. This function behave exactly like `cvui.mouse(int theQuery)`
+	with the difference that queries are targeted at a particular window.
+
+	Parameters
+	----------
+	theWindowName: str
+		name of the window that will be queried.
+	theQuery: int
+		an integer describing the intended mouse query. Available queries are `cvui.DOWN`, `cvui.UP`, `cvui.CLICK`, and `cvui.IS_DOWN`.
+
+	See Also
+	----------
+	mouse(str)
+	mouse(str, int, int)
+	mouse(int, int)
+	mouse(int)
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def mouse(theButton, theQuery):
+	"""
+	Query the mouse for events in a particular button. This function behave exactly like `cvui.mouse(int theQuery)`,
+	with the difference that queries are targeted at a particular mouse button instead.
+
+	Parameters
+	----------
+	theButton: int
+		an integer describing the mouse button to be queried. Possible values are `cvui.LEFT_BUTTON`, `cvui.MIDDLE_BUTTON` and `cvui.LEFT_BUTTON`.
+	theQuery: int
+		an integer describing the intended mouse query. Available queries are `cvui.DOWN`, `cvui.UP`, `cvui.CLICK`, and `cvui.IS_DOWN`.
+
+	See Also
+	----------
+	mouse(str)
+	mouse(str, int, int)
+	mouse(int)
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def mouse(theWindowName, theButton, theQuery):
+	"""
+	Query the mouse for events in a particular button in a particular window. This function behave exactly
+	like `cvui.mouse(int theButton, int theQuery)`, with the difference that queries are targeted at
+	a particular mouse button in a particular window instead.
+
+	Parameters
+	----------
+	theWindowName: str
+		name of the window that will be queried.
+	theButton: int
+		an integer describing the mouse button to be queried. Possible values are `cvui.LEFT_BUTTON`, `cvui.MIDDLE_BUTTON` and `cvui.LEFT_BUTTON`.
+	theQuery: int
+		an integer describing the intended mouse query. Available queries are `cvui.DOWN`, `cvui.UP`, `cvui.CLICK`, and `cvui.IS_DOWN`.
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def button(theWhere, theX, theY, theLabel):
+	"""
+	Display a button. The size of the button will be automatically adjusted to
+	properly house the label content.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theLabel: str
+		text displayed inside the button.
+
+	Returns
+	----------
+	`true` everytime the user clicks the button.
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def button(theWhere, theX, theY, theWidth, theHeight, theLabel):
+	"""
+	Display a button. The button size will be defined by the width and height parameters,
+	no matter the content of the label.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theWidth: int
+		width of the button.
+	theHeight: int
+		height of the button.
+	theLabel: str
+		text displayed inside the button.
+
+	Returns
+	----------
+	`true` everytime the user clicks the button.
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def button(theWhere, theX, theY, theIdle, theOver, theDown):
+	"""
+	Display a button whose graphics are images (np.array). The button accepts three images to describe its states,
+	which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
+	The button size will be defined by the width and height of the images.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theIdle: np.array
+		an image that will be rendered when the button is not interacting with the mouse cursor.
+	theOver: np.array
+		an image that will be rendered when the mouse cursor is over the button.
+	theDown: np.array
+		an image that will be rendered when the mouse cursor clicked the button (or is clicking).
+
+	Returns
+	----------
+	`true` everytime the user clicks the button.
+
+	See Also
+	----------
+	button()
+	image()
+	iarea()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def image(theWhere, theX, theY, theImage):
+	"""
+	Display an image (np.array).
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the provded image should be rendered.
+	theX: int
+		position X where the image should be placed.
+	theY: int
+		position Y where the image should be placed.
+	theImage: np.array
+		image to be rendered in the specified destination.
+
+	See Also
+	----------
+	button()
+	iarea()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
+	"""
+	Display a checkbox. You can use the state parameter to monitor if the
+	checkbox is checked or not.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theLabel: str
+		text displayed besides the clickable checkbox square.
+	theState: [bool]
+		describes the current state of the checkbox: `True` means the checkbox is checked.
+	theColor: uint
+		color of the label in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+
+	Returns
+	----------
+	a boolean value that indicates the current state of the checkbox, `true` if it is checked.
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def text(theWhere, theX, theY, theText, theFontScale = 0.4, theColor = 0xCECECE):
+	"""
+	Display a piece of text.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theText: str
+		the text content.
+	theFontScale: float
+		size of the text.
+	theColor: uint
+		color of the text in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+
+	See Also
+	----------
+	printf()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def printf(theWhere, theX, theY, theFontScale, theColor, theFmt):
+	"""
+	Display a piece of text that can be formated using `stdio's printf()` style. For instance
+	if you want to display text mixed with numbers, you can use:
+	
+	```
+	printf(frame, 10, 15, 0.4, 0xff0000, 'Text: %d and %f', 7, 3.1415)
+	```
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theFontScale: float
+		size of the text.
+	theColor: uint
+		color of the text in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+	theFmt: str
+		formating string as it would be supplied for `stdio's printf()`, e.g. `'Text: %d and %f', 7, 3.1415`.
+
+	See Also
+	----------
+	text()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def printf(theWhere, theX, theY, theFmt):
+	"""
+	Display a piece of text that can be formated using `stdio's printf()` style. For instance
+	if you want to display text mixed with numbers, you can use:
+	
+	```
+	printf(frame, 10, 15, 0.4, 0xff0000, 'Text: %d and %f', 7, 3.1415)
+	```
+	
+	The size and color of the text will be based on cvui's default values.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theFmt: str
+		formating string as it would be supplied for `stdio's printf()`, e.g. `'Text: %d and %f', 7, 3.1415`.
+
+	See Also
+	----------
+	text()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = '%d'):
+	"""
+	Display a counter for integer values that the user can increase/descrease
+	by clicking the up and down arrows.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theValue: [number]
+		the current value of the counter.
+	theStep: number
+		the amount that should be increased/decreased when the user interacts with the counter buttons
+	theFormat: str
+		how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `'%d'` means the value will be displayed as an integer, `'%0d'` integer with one leading zero, etc.
+
+	Returns
+	----------
+	number that corresponds to the current value of the counter.
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def trackbar(theWhere, theX, theY, theWidth, theValue, theMin, theMax, theSegments = 1, theLabelFormat = '%.1Lf', theOptions = 0, theDiscreteStep = 1):
+	"""
+	Display a trackbar for numeric values that the user can increase/decrease
+	by clicking and/or dragging the marker right or left. This component uses templates
+	so it is imperative that you make it very explicit the type of `theValue`, `theMin`, `theMax` and `theStep`,
+	otherwise you might end up with weird compilation errors.
+	
+	Example:
+	
+	```
+	# using float
+	trackbar(where, x, y, width, &floatValue, 0.0, 50.0)
+	
+	# using float
+	trackbar(where, x, y, width, &floatValue, 0.0f, 50.0f)
+	
+	# using char
+	trackbar(where, x, y, width, &charValue, (char)1, (char)10)
+	```
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theWidth: int
+		the width of the trackbar.
+	theValue: T*
+		the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, float, long float, int, char, uchar.
+	theMin: T
+		minimum value allowed for the trackbar.
+	theMax: T
+		maximum value allowed for the trackbar.
+	theSegments: int
+		number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
+	theLabelFormat: str
+		formating string that will be used to render the labels, e.g. `%.2Lf` (Lf *not lf). No matter the type of the `theValue` param, internally trackbar stores it as a `long float`, so the formating string will *always* receive a `long float` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string such as `%.0Lf` to format your labels.
+	theOptions: uint
+		options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of theDiscreteStep param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
+	theDiscreteStep: T
+		amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
+
+	Returns
+	----------
+	`true` when the value of the trackbar changed.
+
+	See Also
+	----------
+	counter()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def window(theWhere, theX, theY, theWidth, theHeight, theTitle):
+	"""
+	Display a window (a block with a title and a body).
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theWidth: int
+		width of the window.
+	theHeight: int
+		height of the window.
+	theTitle: str
+		text displayed as the title of the window.
+
+	See Also
+	----------
+	rect()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def rect(theWhere, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000):
+	"""
+	Display a filled rectangle.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theWidth: int
+		width of the rectangle.
+	theHeight: int
+		height of the rectangle.
+	theBorderColor: uint
+		color of rectangle's border in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+	theFillingColor: uint
+		color of rectangle's filling in the format `0xAARRGGBB`, e.g. `0x00ff0000` for red, `0xff000000` for transparent filling.
+
+	See Also
+	----------
+	image()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0x00FF00):
+	"""
+	Display the values of a vector as a sparkline.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the component should be rendered.
+	theValues: float[]
+		a vector containing the values to be used in the sparkline.
+	theX: int
+		position X where the component should be placed.
+	theY: int
+		position Y where the component should be placed.
+	theWidth: int
+		width of the sparkline.
+	theHeight: int
+		height of the sparkline.
+	theColor: uint
+		color of sparkline in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+
+	See Also
+	----------
+	trackbar()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def iarea(theX, theY, theWidth, theHeight):
+	"""
+	Create an interaction area that reports activity with the mouse cursor.
+	The tracked interactions are returned by the function and they are:
+	
+	`OUT` when the cursor is not over the iarea.
+	`OVER` when the cursor is over the iarea.
+	`DOWN` when the cursor is pressed over the iarea, but not released yet.
+	`CLICK` when the cursor clicked (pressed and released) within the iarea.
+	
+	This function creates no visual output on the screen. It is intended to
+	be used as an auxiliary tool to create interactions.
+
+	Parameters
+	----------
+	theX: int
+		position X where the interactive area should be placed.
+	theY: int
+		position Y where the interactive area should be placed.
+	theWidth: int
+		width of the interactive area.
+	theHeight: int
+		height of the interactive area.
+
+	Returns
+	----------
+	an integer value representing the current state of interaction with the mouse cursor. It can be `OUT` (cursor is not over the area), `OVER` (cursor is over the area), `DOWN` (cursor is pressed over the area, but not released yet) and `CLICK` (cursor clicked, i.e. pressed and released, within the area).
+
+	See Also
+	----------
+	button()
+	image()
+	"""
+	return __internal.iarea(theX, theY, theWidth, theHeight)
+
+def beginRow(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0):
+	"""
+	Start a new row.
+	
+	One of the most annoying tasks when building UI is to calculate
+	where each component should be placed on the screen. cvui has
+	a set of methods that abstract the process of positioning
+	components, so you don't have to think about assigning a
+	X and Y coordinate. Instead you just add components and cvui
+	will place them as you go.
+	
+	You use `beginRow()` to start a group of elements. After `beginRow()`
+	has been called, all subsequent component calls don't have to specify
+	the frame where the component should be rendered nor its position.
+	The position of the component will be automatically calculated by cvui
+	based on the components within the group. All components are placed
+	side by side, from left to right.
+	
+	E.g.
+	
+	```
+	beginRow(frame, x, y, width, height)
+	text('test')
+	button('btn')
+	endRow()
+	```
+	
+	Rows and columns can be nested, so you can create columns/rows within
+	columns/rows as much as you want. It's important to notice that any
+	component within `beginRow()` and `endRow()` *do not* specify the position
+	where the component is rendered, which is also True for `beginRow()`.
+	As a consequence, **be sure you are calling `beginRow(width, height)`
+	when the call is nested instead of `beginRow(x, y, width, height)`**,
+	otherwise cvui will throw an error.
+	
+	E.g.
+	
+	```
+	beginRow(frame, x, y, width, height)
+	text('test')
+	button('btn')
+	
+	beginColumn()      # no frame nor x,y parameters here!
+	text('column1')
+	text('column2')
+	endColumn()
+	endRow()
+	```
+	
+	Don't forget to call `endRow()` to finish the row, otherwise cvui will throw an error.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the components within this block should be rendered.
+	theX: int
+		position X where the row should be placed.
+	theY: int
+		position Y where the row should be placed.
+	theWidth: int
+		width of the row. If a negative value is specified, the width of the row will be automatically calculated based on the content of the block.
+	theHeight: int
+		height of the row. If a negative value is specified, the height of the row will be automatically calculated based on the content of the block.
+	thePadding: int
+		space, in pixels, among the components of the block.
+
+	See Also
+	----------
+	beginColumn()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def endRow():
+	"""
+	Ends a row. You must call this function only if you have previously called
+	its counter part, the `beginRow()` function.
+
+	See Also
+	----------
+	beginRow()
+	beginColumn()
+	endColumn()
+	"""
+	__internal.end(ROW)
+
+def beginColumn(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0):
+	"""
+	Start a new column.
+	
+	One of the most annoying tasks when building UI is to calculate
+	where each component should be placed on the screen. cvui has
+	a set of methods that abstract the process of positioning
+	components, so you don't have to think about assigning a
+	X and Y coordinate. Instead you just add components and cvui
+	will place them as you go.
+	
+	You use `beginColumn()` to start a group of elements. After `beginColumn()`
+	has been called, all subsequent component calls don't have to specify
+	the frame where the component should be rendered nor its position.
+	The position of the component will be automatically calculated by cvui
+	based on the components within the group. All components are placed
+	below each other, from the top of the screen towards the bottom.
+	
+	E.g.
+	
+	```
+	beginColumn(frame, x, y, width, height)
+	text('test')
+	button('btn')
+	endColumn()
+	```
+	
+	Rows and columns can be nested, so you can create columns/rows within
+	columns/rows as much as you want. It's important to notice that any
+	component within `beginColumn()` and `endColumn()` *do not* specify the position
+	where the component is rendered, which is also True for `beginColumn()`.
+	As a consequence, **be sure you are calling `beginColumn(width, height)`
+	when the call is nested instead of `beginColumn(x, y, width, height)`**,
+	otherwise cvui will throw an error.
+	
+	E.g.
+	
+	```
+	beginColumn(frame, x, y, width, height)
+	text('test')
+	button('btn')
+	
+	beginRow()      # no frame nor x,y parameters here!
+	text('column1')
+	text('column2')
+	endRow()
+	endColumn()
+	```
+	
+	Don't forget to call `endColumn()` to finish the column, otherwise cvui will throw an error.
+
+	Parameters
+	----------
+	theWhere: np.array
+		image/frame where the components within this block should be rendered.
+	theX: int
+		position X where the row should be placed.
+	theY: int
+		position Y where the row should be placed.
+	theWidth: int
+		width of the column. If a negative value is specified, the width of the column will be automatically calculated based on the content of the block.
+	theHeight: int
+		height of the column. If a negative value is specified, the height of the column will be automatically calculated based on the content of the block.
+	thePadding: int
+		space, in pixels, among the components of the block.
+
+	See Also
+	----------
+	beginRow()
+	endColumn()
+	endRow()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def endColumn():
+	"""
+	End a column. You must call this function only if you have previously called
+	its counter part, i.e. `beginColumn()`.
+
+	See Also
+	----------
+	beginColumn()
+	beginRow()
+	endRow()
+	"""
+	__internal.end(COLUMN)
+
+def beginRow(theWidth = -1, theHeight = -1, thePadding = 0):
+	"""
+	Start a row. This function behaves in the same way as `beginRow(frame, x, y, width, height)`,
+	however it is suposed to be used within `begin*()/end*()` blocks since they require components
+	not to inform frame nor x,y coordinates.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theWidth: int
+		width of the row. If a negative value is specified, the width of the row will be automatically calculated based on the content of the block.
+	theHeight: int
+		height of the row. If a negative value is specified, the height of the row will be automatically calculated based on the content of the block.
+	thePadding: int
+		space, in pixels, among the components of the block.
+
+	See Also
+	----------
+	beginColumn()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def beginColumn(theWidth = -1, theHeight = -1, thePadding = 0):
+	"""
+	Start a column. This function behaves in the same way as `beginColumn(frame, x, y, width, height)`,
+	however it is suposed to be used within `begin*()/end*()` blocks since they require components
+	not to inform frame nor x,y coordinates.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theWidth: int
+		width of the column. If a negative value is specified, the width of the column will be automatically calculated based on the content of the block.
+	theHeight: int
+		height of the column. If a negative value is specified, the height of the column will be automatically calculated based on the content of the block.
+	thePadding: int
+		space, in pixels, among the components of the block.
+
+	See Also
+	----------
+	beginColumn()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def space(theValue = 5):
+	"""
+	Add an arbitrary amount of space between components within a `begin*()` and `end*()` block.
+	The function is aware of context, so if it is used within a `beginColumn()` and
+	`endColumn()` block, the space will be vertical. If it is used within a `beginRow()`
+	and `endRow()` block, space will be horizontal.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theValue: int
+		the amount of space to be added.
+
+	See Also
+	----------
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	aBlock = __internal.topBlock()
+	aSize = Size(theValue, theValue)
+
+	__internal.updateLayoutFlow(aBlock, aSize)
+
+def text(theText, theFontScale = 0.4, theColor = 0xCECECE):
+	"""
+	Display a piece of text within a `begin*()` and `end*()` block.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theText: str
+		text content.
+	theFontScale: float
+		size of the text.
+	theColor: uint
+		color of the text in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+
+	See Also
+	----------
+	printf()
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def button(theWidth, theHeight, theLabel):
+	"""
+	Display a button within a `begin*()` and `end*()` block.
+	The button size will be defined by the width and height parameters,
+	no matter the content of the label.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theWidth: int
+		width of the button.
+	theHeight: int
+		height of the button.
+	theLabel: str
+		text displayed inside the button. You can set shortcuts by pre-pending them with '&'
+
+	Returns
+	----------
+	`true` everytime the user clicks the button.
+
+	See Also
+	----------
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def button(theLabel):
+	"""
+	Display a button within a `begin*()` and `end*()` block. The size of the button will be
+	automatically adjusted to properly house the label content.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theLabel: str
+		text displayed inside the button. You can set shortcuts by pre-pending them with '&'
+
+	Returns
+	----------
+	`true` everytime the user clicks the button.
+
+	See Also
+	----------
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def button(theIdle, theOver, theDown):
+	"""
+	Display a button whose graphics are images (np.array).
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+	
+	The button accepts three images to describe its states,
+	which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
+	The button size will be defined by the width and height of the images.
+
+	Parameters
+	----------
+	theIdle: np.array
+		image that will be rendered when the button is not interacting with the mouse cursor.
+	theOver: np.array
+		image that will be rendered when the mouse cursor is over the button.
+	theDown: np.array
+		image that will be rendered when the mouse cursor clicked the button (or is clicking).
+
+	Returns
+	----------
+	`true` everytime the user clicks the button.
+
+	See Also
+	----------
+	button()
+	image()
+	iarea()
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def image(theImage):
+	"""
+	Display an image (np.array) within a `begin*()` and `end*()` block
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theImage: np.array
+		image to be rendered in the specified destination.
+
+	See Also
+	----------
+	button()
+	iarea()
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def checkbox(theLabel, theState, theColor = 0xCECECE):
+	"""
+	Display a checkbox within a `begin*()` and `end*()` block. You can use the state parameter
+	to monitor if the checkbox is checked or not.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theLabel: str
+		text displayed besides the clickable checkbox square.
+	theState: [bool]
+		describes the current state of the checkbox: `True` means the checkbox is checked.
+	theColor: uint
+		color of the label in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+
+	Returns
+	----------
+	a boolean value that indicates the current state of the checkbox, `true` if it is checked.
+
+	See Also
+	----------
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def printf(theFontScale, theColor, theFmt):
+	"""
+	Display a piece of text within a `begin*()` and `end*()` block.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+	
+	The text can be formated using `stdio's printf()` style. For instance if you want to display text mixed
+	with numbers, you can use:
+	
+	```
+	printf(0.4, 0xff0000, 'Text: %d and %f', 7, 3.1415)
+	```
+
+	Parameters
+	----------
+	theFontScale: float
+		size of the text.
+	theColor: uint
+		color of the text in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+	theFmt: str
+		formating string as it would be supplied for `stdio's printf()`, e.g. `'Text: %d and %f', 7, 3.1415`.
+
+	See Also
+	----------
+	text()
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def printf(theFmt):
+	"""
+	Display a piece of text that can be formated using `stdio's printf()` style.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+	
+	For instance if you want to display text mixed with numbers, you can use:
+	
+	```
+	printf(frame, 10, 15, 0.4, 0xff0000, 'Text: %d and %f', 7, 3.1415)
+	```
+	
+	The size and color of the text will be based on cvui's default values.
+
+	Parameters
+	----------
+	theFmt: str
+		formating string as it would be supplied for `stdio's printf()`, e.g. `'Text: %d and %f', 7, 3.1415`.
+
+	See Also
+	----------
+	text()
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def counter(theValue, theStep = 1, theFormat = '%d'):
+	"""
+	Display a counter for integer values that the user can increase/descrease
+	by clicking the up and down arrows.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theValue: [number]
+		the current value of the counter.
+	theStep: number
+		the amount that should be increased/decreased when the user interacts with the counter buttons.
+	theFormat: str
+		how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `'%d'` means the value will be displayed as an integer, `'%0d'` integer with one leading zero, etc.
+
+	Returns
+	----------
+	number that corresponds to the current value of the counter.
+
+	See Also
+	----------
+	printf()
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def trackbar(theWidth, theValue, theMin, theMax, theSegments = 1, theLabelFormat = '%.1Lf', theOptions = 0, theDiscreteStep = 1):
+	"""
+	Display a trackbar for numeric values that the user can increase/decrease
+	by clicking and/or dragging the marker right or left.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+	
+	This component uses templates so it is imperative that you make it very explicit
+	the type of `theValue`, `theMin`, `theMax` and `theStep`, otherwise you might end up with
+	weird compilation errors.
+	
+	Example:
+	
+	```
+	# using float
+	trackbar(width, &floatValue, 0.0, 50.0)
+	
+	# using float
+	trackbar(width, &floatValue, 0.0f, 50.0f)
+	
+	# using char
+	trackbar(width, &charValue, (char)1, (char)10)
+	```
+
+	Parameters
+	----------
+	theWidth: int
+		the width of the trackbar.
+	theValue: [number]
+		the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, float, long float, int, char, uchar.
+	theMin: number
+		minimum value allowed for the trackbar.
+	theMax: number
+		maximum value allowed for the trackbar.
+	theSegments: int
+		number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
+	theLabelFormat: str
+		formating string that will be used to render the labels, e.g. `%.2Lf`. No matter the type of the `theValue` param, internally trackbar stores it as a `long float`, so the formating string will *always* receive a `long float` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string as `%.0Lf` to format your labels.
+	theOptions: uint
+		options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of informed step param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
+	theDiscreteStep: number
+		the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
+
+	Returns
+	----------
+	`true` when the value of the trackbar changed.
+
+	See Also
+	----------
+	counter()
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def window(theWidth, theHeight, theTitle):
+	"""
+	Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theWidth: int
+		width of the window.
+	theHeight: int
+		height of the window.
+	theTitle: str
+		text displayed as the title of the window.
+
+	See Also
+	----------
+	rect()
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def rect(theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000):
+	"""
+	Display a rectangle within a `begin*()` and `end*()` block.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theWidth: int
+		width of the rectangle.
+	theHeight: int
+		height of the rectangle.
+	theBorderColor: uint
+		color of rectangle's border in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+	theFillingColor: uint
+		color of rectangle's filling in the format `0xAARRGGBB`, e.g. `0x00ff0000` for red, `0xff000000` for transparent filling.
+
+	See Also
+	----------
+	window()
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def sparkline(theValues, theWidth, theHeight, theColor = 0x00FF00):
+	"""
+	Display the values of a vector as a sparkline within a `begin*()` and `end*()` block.
+	
+	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+	Parameters
+	----------
+	theValues: float[]
+		vector with the values that will be rendered as a sparkline.
+	theWidth: int
+		width of the sparkline.
+	theHeight: int
+		height of the sparkline.
+	theColor: uint
+		color of sparkline in the format `0xRRGGBB`, e.g. `0xff0000` for red.
+
+	See Also
+	----------
+	beginColumn()
+	beginRow()
+	endRow()
+	endColumn()
+	"""
+	print('This is wrapper function to help code autocompletion.')
+
+def update(theWindowName = ''):
+	"""
+	Update the library internal things. You need to call this function **AFTER** you are done adding/manipulating
+	UI elements in order for them to react to mouse interactions.
+
+	Parameters
+	----------
+	theWindowName: str
+		name of the window whose components are being updated. If no window name is provided, cvui uses the default window.
+
+	See Also
+	----------
+	init()
+	watch()
+	context()
+	"""
+	aContext = __internal.getContext(theWindowName)
+
+	aContext.mouse.anyButton.justReleased = False
+	aContext.mouse.anyButton.justPressed  = False
+
+	for i in range(LEFT_BUTTON, RIGHT_BUTTON + 1):
+		aContext.mouse.buttons[i].justReleased = False
+		aContext.mouse.buttons[i].justPressed  = False
+	
+	__internal.screen.reset()
+
+	# If we were told to keep track of the keyboard shortcuts, we
+	# proceed to handle opencv event queue.
+	if __internal.delayWaitKey > 0:
+		__internal.lastKeyPressed = cv2.waitKey(__internal.delayWaitKey)
+
+	if __internal.blockStackEmpty() == False:
+		__internal.error(2, 'Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().')
 
 def init(*theArgs):
 	if __internal.isString(theArgs[0]):
@@ -1073,16 +2444,6 @@ def init(*theArgs):
 
 		for i in range(0, aHowManyWindows):
 			watch(aWindowNames[i], aCreateNamedWindows)
-
-def context(theWindowName):
-	__internal.currentContext = theWindowName
-
-def imshow(theWindowName, theFrame):
-	update(theWindowName)
-	cv2.imshow(theWindowName, theFrame)
-
-def lastKeyPressed():
-	return __internal.lastKeyPressed
 
 def text(*theArgs):
 	if isinstance(theArgs[0], np.ndarray):
@@ -1142,24 +2503,6 @@ def printf(*theArgs):
 	__internal.text(aBlock, aX, aY, aText, aFontScale, aColor, True)
 
 def counter(*theArgs):
-	"""
-	Display a counter for integer values that the user can increase/descrease
-	by clicking the up and down arrows.
-
-	Parameters
-    ----------
-	\param theWhere the image/frame where the component should be rendered.
-	\param theX position X where the component should be placed.
-	\param theY position Y where the component should be placed.
-	\param theValue the current value of the counter.
-	\param theStep the amount that should be increased/decreased when the user interacts with the counter buttons
-	\param theFormat how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `"%d"` means the value will be displayed as an integer, `"%0d"` integer with one leading zero, etc.
-	
-	Returns
-    -------
-    int
-		Integer corresponding to the current value of the counter.
-	"""
 	if isinstance(theArgs[0], np.ndarray):
 		# Signature: counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = "")
 		aWhere = theArgs[0]
@@ -1278,17 +2621,6 @@ def button(*theArgs):
 		print('Problem?')
 
 def image(*theArgs):
-	"""
-	Display an image (cv::Mat). 
-
-	\param theWhere the image/frame where the provded image should be rendered.
-	\param theX position X where the image should be placed.
-	\param theY position Y where the image should be placed.
-	\param theImage an image to be rendered in the specified destination.
-
-	\sa button()
-	\sa iarea()
-	"""
 	if isinstance(theArgs[0], np.ndarray) and len(theArgs) > 1:
 		# Signature: image(Mat, ...)
 		aWhere = theArgs[0]
@@ -1344,20 +2676,6 @@ def trackbar(*theArgs):
 	return aResult
 
 def window(*theArgs):
-	"""
-	Display a window (a block with a title and a body).
-
-	Parameters
-    ----------
-	\param theWhere the image/frame where the component should be rendered.
-	\param theX position X where the component should be placed.
-	\param theY position Y where the component should be placed.
-	\param theWidth width of the window.
-	\param theHeight height of the window.
-	\param theTitle text displayed as the title of the window.
-
-	\sa rect()
-	"""
 	if isinstance(theArgs[0], np.ndarray):
 		# Signature: window(theWhere, theX, theY, theWidth, theHeight, theTitle)
 		aWhere = theArgs[0]
@@ -1404,19 +2722,6 @@ def rect(*theArgs):
 	__internal.rect(aBlock, aX, aY, aWidth, aHeight, aBorderColor, aFillingColor)
 
 def sparkline(*theArgs):
-	"""
-	Display the values of a vector as a sparkline.
-
-	\param theWhere the image/frame where the component should be rendered.
-	\param theValues a vector containing the values to be used in the sparkline.
-	\param theX position X where the component should be placed.
-	\param theY position Y where the component should be placed.
-	\param theWidth width of the sparkline.
-	\param theHeight height of the sparkline.
-	\param theColor color of sparkline in the format `0xRRGGBB`, e.g. `0xff0000` for red.
-
-	\sa trackbar()
-	"""
 	if isinstance(theArgs[0], np.ndarray):
 		# Signature: sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0x00FF00)
 		aWhere = theArgs[0]
@@ -1440,9 +2745,6 @@ def sparkline(*theArgs):
 		aColor = theArgs[3] if len(theArgs) >= 4 else 0x00FF00
 
 	__internal.sparkline(aBlock, aValues, aX, aY, aWidth, aHeight, aColor)
-
-def iarea(theX, theY, theWidth, theHeight):
-	return __internal.iarea(theX, theY, theWidth, theHeight)	
 
 def beginRow(*theArgs):
 	if len(theArgs) and isinstance(theArgs[0], np.ndarray):
@@ -1483,48 +2785,3 @@ def beginColumn(*theArgs):
 		
 		aBlock = __internal.topBlock()
 		__internal.begin(COLUMN, aBlock.where, aBlock.anchor.x, aBlock.anchor.y, aWidth, aHeight, aPadding)
-
-def endRow():
-	__internal.end(ROW)
-	
-def endColumn():
-	__internal.end(COLUMN)
-
-def space(theValue = 5):
-	aBlock = __internal.topBlock()
-	aSize = Size(theValue, theValue)
-
-	__internal.updateLayoutFlow(aBlock, aSize)
-
-def update(theWindowName = ""):
-	"""
-	Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating
-	UI elements in order for them to react to mouse interactions.
-
-	Parameters
-    ----------
-	theWindowName : str
-		Name of the window whose components are being updated. If no window name is provided, cvui uses the default window.
-
-	\sa init()
-	\sa watch()
-	\sa context()
-	"""
-	aContext = __internal.getContext(theWindowName)
-
-	aContext.mouse.anyButton.justReleased = False
-	aContext.mouse.anyButton.justPressed  = False
-
-	for i in range(LEFT_BUTTON, RIGHT_BUTTON + 1):
-		aContext.mouse.buttons[i].justReleased = False
-		aContext.mouse.buttons[i].justPressed  = False
-	
-	__internal.screen.reset()
-
-	# If we were told to keep track of the keyboard shortcuts, we
-	# proceed to handle opencv event queue.
-	if __internal.delayWaitKey > 0:
-		__internal.lastKeyPressed = cv2.waitKey(__internal.delayWaitKey)
-
-	if __internal.blockStackEmpty() == False:
-		__internal.error(2, 'Calling update() before finishing all begin*()/end*() calls. Did you forget to call a begin*() or an end*()? Check if every begin*() has an appropriate end*() call before you call update().')

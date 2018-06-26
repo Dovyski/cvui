@@ -238,7 +238,7 @@ cv::Point mouse(const cv::String& theWindowName = "");
  `cvui::context()`, the window informed in the context will be queried. If no context is available, the default
  window (informed in `cvui::init()`) will be used.
 
- \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+ \param theQuery integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
 
  \sa mouse(const cv::String&)
  \sa mouse(const cv::String&, int)
@@ -252,7 +252,7 @@ bool mouse(int theQuery);
  with the difference that queries are targeted at a particular window.
 
  \param theWindowName name of the window that will be queried.
- \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+ \param theQuery integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
 
  \sa mouse(const cv::String&)
  \sa mouse(const cv::String&, int, int)
@@ -265,8 +265,8 @@ bool mouse(const cv::String& theWindowName, int theQuery);
  Query the mouse for events in a particular button. This function behave exactly like `cvui::mouse(int theQuery)`,
  with the difference that queries are targeted at a particular mouse button instead.
 
- \param theButton an integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
- \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+ \param theButton integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
+ \param theQuery integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
 
  \sa mouse(const cv::String&)
  \sa mouse(const cv::String&, int, int)
@@ -280,8 +280,8 @@ bool mouse(int theButton, int theQuery);
  a particular mouse button in a particular window instead.
 
  \param theWindowName name of the window that will be queried.
- \param theButton an integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
- \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+ \param theButton integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
+ \param theQuery integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
 */
 bool mouse(const cv::String& theWindowName, int theButton, int theQuery);
 
@@ -419,7 +419,7 @@ void printf(cv::Mat& theWhere, int theX, int theY, const char *theFmt, ...);
  \param theValue the current value of the counter.
  \param theStep the amount that should be increased/decreased when the user interacts with the counter buttons
  \param theFormat how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `"%d"` means the value will be displayed as an integer, `"%0d"` integer with one leading zero, etc.
- \return an integer that corresponds to the current value of the counter.
+ \return integer that corresponds to the current value of the counter.
 */
 int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 1, const char *theFormat = "%d");
 
@@ -534,7 +534,7 @@ void sparkline(cv::Mat& theWhere, std::vector<double>& theValues, int theX, int 
  \param theY position Y where the interactive area should be placed.
  \param theWidth width of the interactive area.
  \param theHeight height of the interactive area.
- \return an integer value representing the current state of interaction with the mouse cursor. It can be `OUT` (cursor is not over the area), `OVER` (cursor is over the area), `DOWN` (cursor is pressed over the area, but not released yet) and `CLICK` (cursor clicked, i.e. pressed and released, within the area).
+ \return integer value representing the current state of interaction with the mouse cursor. It can be `OUT` (cursor is not over the area), `OVER` (cursor is over the area), `DOWN` (cursor is pressed over the area, but not released yet) and `CLICK` (cursor clicked, i.e. pressed and released, within the area).
 
  \sa button()
  \sa image()
@@ -904,7 +904,7 @@ void printf(const char *theFmt, ...);
  \param theValue the current value of the counter.
  \param theStep the amount that should be increased/decreased when the user interacts with the counter buttons.
  \param theFormat how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `"%d"` means the value will be displayed as an integer, `"%0d"` integer with one leading zero, etc.
- \return an integer that corresponds to the current value of the counter.
+ \return integer that corresponds to the current value of the counter.
 
 \sa printf()
 \sa beginColumn()
@@ -1028,7 +1028,7 @@ void rect(int theWidth, int theHeight, unsigned int theBorderColor, unsigned int
 void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsigned int theColor = 0x00FF00);
 
 /**
- Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating
+ Update the library internal things. You need to call this function **AFTER** you are done adding/manipulating
  UI elements in order for them to react to mouse interactions.
 
  \param theWindowName name of the window whose components are being updated. If no window name is provided, cvui uses the default window.
