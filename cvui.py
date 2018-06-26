@@ -475,18 +475,18 @@ class Internal:
 
 	def trackbarForceValuesAsMultiplesOfSmallStep(self, theParams, theValue):
 		if self.bitsetHas(theParams.options, TRACKBAR_DISCRETE) and theParams.step != 0.:
-			k = (theValue[0] - theParams.min) / theParams.step
+			k = float(theValue[0] - theParams.min) / theParams.step
 			k = round(k)
 			theValue[0] = theParams.min + theParams.step * k
 
 	def trackbarXPixelToValue(self, theParams, theBounding, thePixelX):
-		aRatio = (thePixelX - (theBounding.x + self.trackbarMarginX)) / (theBounding.width - 2 * self.trackbarMarginX)
+		aRatio = float(thePixelX - (theBounding.x + self.trackbarMarginX)) / (theBounding.width - 2 * self.trackbarMarginX)
 		aRatio = self.clamp01(aRatio)
 		aValue = theParams.min + aRatio * (theParams.max - theParams.min)
 		return aValue
 
 	def trackbarValueToXPixel(self, theParams, theBounding, theValue):
-		aRatio = (theValue - theParams.min) / (theParams.max - theParams.min)
+		aRatio = float(theValue - theParams.min) / (theParams.max - theParams.min)
 		aRatio = self.clamp01(aRatio)
 		aPixelsX = theBounding.x + self.trackbarMarginX + aRatio * (theBounding.width - 2 * self.trackbarMarginX)
 		return int(aPixelsX)
@@ -878,7 +878,7 @@ class Render:
 
 	def trackbarSegments(self, theBlock, theState, theShape, theValue, theParams, theWorkingArea):
 		aSegments = 1 if theParams.segments < 1 else theParams.segments
-		aSegmentLength = (theParams.max - theParams.min) / aSegments
+		aSegmentLength = float(theParams.max - theParams.min) / aSegments
 
 		aHasMinMaxLabels = self._internal.bitsetHas(theParams.options, TRACKBAR_HIDE_MIN_MAX_LABELS) == False
 
@@ -993,7 +993,7 @@ class Render:
 		aSize = len(theValues)
 		i = 0
 		aScale = theMax - theMin
-		aGap = theRect.width / aSize
+		aGap = float(theRect.width) / aSize
 		aPosX = theRect.x
 
 		while i <= aSize - 2:
