@@ -13,9 +13,9 @@ WINDOW_NAME	= 'Image button'
 
 def main():
 	frame = np.zeros((300, 600, 3), np.uint8)
-	out = cv2.imread('../../data/lena-face.jpg', cv2.IMREAD_COLOR)
-	down = cv2.imread('../../data/lena-face-red.jpg', cv2.IMREAD_COLOR)
-	over = cv2.imread('../../data/lena-face-gray.jpg', cv2.IMREAD_COLOR)
+	out = cv2.imread('lena-face.jpg', cv2.IMREAD_COLOR)
+	down = cv2.imread('lena-face-red.jpg', cv2.IMREAD_COLOR)
+	over = cv2.imread('lena-face-gray.jpg', cv2.IMREAD_COLOR)
 
 	# Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui.init(WINDOW_NAME)

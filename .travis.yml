@@ -61,15 +61,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      env: COMPILER=g++-4.9 OPENCV=2.3.0
-
-    - compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9
       env: COMPILER=g++-4.9 OPENCV=3.0.0
 
     - compiler: gcc
@@ -80,15 +71,6 @@ matrix:
           packages:
             - g++-4.9
       env: COMPILER=g++-4.9 OPENCV=3.1.0
-
-    - compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9
-      env: COMPILER=g++-4.9 OPENCV=3.2.0
 
     - compiler: gcc
       addons:
@@ -135,10 +117,10 @@ install:
 script:
   - mkdir build.release
   - cd build.release
-  - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=$COMPILER
+  - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=$COMPILER -DADD_PYTHON_EXAMPLES=ON
   - make -j4
   - cd ..
   - mkdir build.debug
   - cd build.debug
-  - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=$COMPILER
+  - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=$COMPILER -DADD_PYTHON_EXAMPLES=ON
   - make -j4

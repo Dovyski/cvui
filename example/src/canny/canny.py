@@ -6,10 +6,6 @@
 # Licensed under the MIT license.
 #
 
-# Include the directory where cvui is so we can load it
-import sys
-sys.path.append('../../../')
-
 import numpy as np
 import cv2
 import cvui
@@ -17,7 +13,7 @@ import cvui
 WINDOW_NAME	= 'CVUI Canny Edge'
 
 def main():
-	lena = cv2.imread('../../data/lena.jpg', cv2.IMREAD_COLOR)
+	lena = cv2.imread('lena.jpg', cv2.IMREAD_COLOR)
 	frame = np.zeros(lena.shape, np.uint8)
 	low_threshold = [50]
 	high_threshold = [150]
