@@ -7,7 +7,9 @@ title: usage
 
 Below are a few steps you need to perform to work with cvui.
 
-## 1. Include `cvui.h`
+## C++
+
+### 1. Include `cvui.h`
 
 Download the [latest release](https://github.com/Dovyski/cvui/releases/latest) and place `cvui.h` along with the files of your project. Include `cvui.h` in one of your C++ files as follows:
 
@@ -40,7 +42,7 @@ Download the [latest release](https://github.com/Dovyski/cvui/releases/latest) a
 
 <div class="notice--info"><strong>Tip:</strong> check the <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-files">multiple-files</a> example to learn more about the use of cvui in projects with multiple files that include <code>cvui.h</code>.</div>
 
-## 2. Initialize cvui
+### 2. Initialize cvui
 
 Before using cvui, you need to call `cvui::init()` to initialize it. The easiest way is to initialize cvui and tell it to create any OpenCV window that will be used. Below is an example where cvui is initialized and a window is created:
 
@@ -49,15 +51,14 @@ Before using cvui, you need to call `cvui::init()` to initialize it. The easiest
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW1_NAME "Window 1"
+#define WINDOW_NAME "CVUI Test"
 
 int main() {
   // Tell cvui to init and create a window
-  cvui::init(WINDOW1_NAME);
+  cvui::init(WINDOW_NAME);
 
   while(true) {
     // your app logic here
-
     if (cv::waitKey(20) == 27) {
       break;
     }
@@ -69,7 +70,7 @@ int main() {
 
 <div class="notice--info"><strong>Tip:</strong> if you need to use cvui with multiple windows, or you want more control over the process of creating windows, check the <a href="{{ site.url }}/advanced-multiple-windows">Multiple OpenCV windows</a> page and the <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows">multiple-windows</a> and <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows-complex">multiple-windows-complex</a> examples.</div>
 
-## 3. Render cvui components
+### 3. Render cvui components
 
 All cvui components are rendered to a `cv::Mat`. Below is an example showing how to render a `"Hello world"` message on a `cv::Mat` named `frame`:
 
@@ -78,10 +79,10 @@ All cvui components are rendered to a `cv::Mat`. Below is an example showing how
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW1_NAME "Window 1"
+#define WINDOW_NAME "CVUI Test"
 
 int main() {
-  cvui::init(WINDOW1_NAME);
+  cvui::init(WINDOW_NAME);
 
   // Create a frame
   cv::Mat frame = cv::Mat(cv::Size(400, 200), CV_8UC3);
@@ -102,7 +103,7 @@ int main() {
 }
 ```
 
-## 3. Show (window) content
+### 3. Show (window) content
 
 After rendering your components, show the final result using `cvui::imshow()`, which is cvui's improved version of OpenCV's `cv::imshow()`:
 
@@ -111,10 +112,10 @@ After rendering your components, show the final result using `cvui::imshow()`, w
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW1_NAME "Window 1"
+#define WINDOW_NAME "CVUI Test"
 
 int main() {
-  cvui::init(WINDOW1_NAME);
+  cvui::init(WINDOW_NAME);
   cv::Mat frame = cv::Mat(cv::Size(400, 200), CV_8UC3);
 
   while(true) {
@@ -144,7 +145,7 @@ If you want to use `cv::imshow()`, you must call `cvui::update()` before `cv::im
 #define WINDOW_NAME "CVUI Test"
 
 int main() {
-  cvui::init(WINDOW1_NAME);
+  cvui::init(WINDOW_NAME);
   cv::Mat frame = cv::Mat(cv::Size(400, 200), CV_8UC3);
 
   while(true) {
@@ -166,7 +167,7 @@ int main() {
 }
 ```
 
-## (Optional) 4. Disable cvui compilation messages
+### (Optional) 4. Disable cvui compilation messages
 
 The compilation process of cvui will produce a few console messages to help developers debug possible problems, e.g. inclusion of `cvui.h` using `#define CVUI_IMPLEMENTATION`. The two possible messages are:
 
@@ -181,6 +182,134 @@ You can disable such compilation messages by defining `CVUI_DISABLE_COMPILATION_
 #define CVUI_DISABLE_COMPILATION_NOTICES
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
+```
+
+## Python
+
+### 1. Add `cvui.py` and import `cvui`
+
+Download the [latest release](https://github.com/Dovyski/cvui/releases/latest) and place `cvui.py` along with the files of your project. Import cvui in any of your Python files as follows:
+
+```python
+import cvui
+```
+
+## 2. Initialize cvui
+
+Before using cvui, you need to call `cvui.init()` to initialize it. The easiest way is to initialize cvui and tell it to create any OpenCV window that will be used. Below is an example where cvui is initialized and a window is created:
+
+```python
+import numpy as np
+import cv2
+import cvui
+
+WINDOW_NAME = 'CVUI Test'
+
+def main():
+  # Tell cvui to init and create a window
+  cvui.init(WINDOW_NAME)
+
+  while True:
+    # your app logic here
+    if cv2.waitKey(20) == 27:
+      break
+
+if __name__ == '__main__':
+  main()
+```
+
+<div class="notice--info"><strong>Tip:</strong> if you need to use cvui with multiple windows, or you want more control over the process of creating windows, check the <a href="{{ site.url }}/advanced-multiple-windows">Multiple OpenCV windows</a> page and the <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows">multiple-windows</a> and <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows-complex">multiple-windows-complex</a> examples.</div>
+
+## 3. Render cvui components
+
+All cvui components are rendered to a `np.array`, i.e. `cv::Mat`. Below is an example showing how to render a `'Hello world'` message on a `np.array` named `frame`:
+
+```python
+import numpy as np
+import cv2
+import cvui
+
+WINDOW_NAME = 'CVUI Test'
+
+def main():
+  cvui.init(WINDOW_NAME)
+
+  # Create a frame
+  frame = np.zeros((200, 400, 3), np.uint8)
+
+  while True:
+    # clear the frame
+    frame[:] = (49, 52, 49)
+
+    # render a message in the frame at position (10, 15)
+    cvui.text(frame, 10, 15, 'Hello world!')
+
+    if cv2.waitKey(20) == 27:
+      break
+
+if __name__ == '__main__':
+    main()
+```
+
+## 3. Show (window) content
+
+After rendering your components, show the final result using `cvui.imshow()`, which is cvui's improved version of OpenCV's `cv2.imshow()`:
+
+```python
+import numpy as np
+import cv2
+import cvui
+
+WINDOW_NAME = 'CVUI Test'
+
+def main():
+  cvui.init(WINDOW_NAME)
+  frame = np.zeros((200, 400, 3), np.uint8)
+
+  while True:
+    frame[:] = (49, 52, 49)
+    cvui.text(frame, 10, 15, 'Hello world!')
+
+    # Show window content
+    cvui.imshow(WINDOW1_NAME, frame)
+
+    if cv2.waitKey(20) == 27:
+      break
+
+if __name__ == '__main__':
+    main()
+```
+
+When you use `cvui.imshow()` instead of `cv2.imshow()`, cvui will not only show the content, but update its internal structures to ensure all UI interactions work.
+
+If you want to use `cv2.imshow()`, you must call `cvui.update()` before `cv2.imshow()` and after you are finished invoking cvui components, so cvui can perform its internal processing to handle mouse interactions. E.g.
+
+```python
+import numpy as np
+import cv2
+import cvui
+
+WINDOW_NAME = 'CVUI Test'
+
+def main():
+  cvui.init(WINDOW_NAME)
+  frame = np.zeros((200, 400, 3), np.uint8)
+
+  while True:
+    frame[:] = (49, 52, 49)
+    cvui.text(frame, 10, 15, 'Hello world!')
+
+    # Update cvui internal stuff
+    cvui.update()
+
+    # Show window content
+    cv2.imshow(WINDOW1_NAME, frame)
+
+    if cv2.waitKey(20) == 27:
+      break
+
+if __name__ == '__main__':
+    main()
 ```
 
 ## Learn more

@@ -19,4 +19,5 @@ It is not the case with cvui, which uses *only* OpenCV drawing primitives to do 
 - Friendly and C-like API (no classes/objects, etc);
 - Easily render components without worrying about their position (using rows/columns);
 - Simple (yet powerful) mouse API;
-- Modest number of UI components (11 in total).
+- Modest number of UI components (11 in total);
+- Available in C++ and Python (pure implementation, no bindings).

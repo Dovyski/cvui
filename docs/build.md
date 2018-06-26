@@ -5,7 +5,7 @@ title: build
 
 # Build
 
-cvui **does not require any build procedure**. Just add the `cvui.h` file along with the rest of your source code and continue to compile your project the way you have being doing so far.
+cvui **does not require any build procedure**. Just add the `cvui.h` (or `cvui.py`) file along with the rest of your source code and continue to compile/run your project the way you have being doing so far.
 
 cvui has no dependency other than OpenCV `3.x` (or `2.x`) itself. Check the [usage page]({{ site.url }}/usage) to learn how to use cvui.
 
@@ -27,7 +27,7 @@ mkdir build.release && cd build.release
 Generate project files:
 
 ```
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DADD_PYTHON_EXAMPLES=ON
 ```
 
 Build everything:
@@ -51,11 +51,19 @@ mkdir build.debug && cd build.debug
 Generate project files:
 
 ```
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=g++
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=g++ -DADD_PYTHON_EXAMPLES=ON
 ```
 
 Build everything:
 
 ```
 make -j4
+```
+
+## cvui.py and Python examples
+
+By default, cmake will add `cvui.py` (Python port of cvui) and the Python examples to the build folder. If you don't want Python files, use `-DADD_PYTHON_EXAMPLES=OFF` in the cmake commands, e.g:
+
+```
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DADD_PYTHON_EXAMPLES=OFF
 ```
