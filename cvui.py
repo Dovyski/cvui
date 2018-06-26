@@ -1,6 +1,6 @@
 """
 A (very) simple UI lib built on top of OpenCV drawing primitives.
-Version: 2.5.0
+Version: 2.7.0-BETA
 
 Use of cvui revolves around calling cvui.init() to initialize the lib, 
 rendering cvui components to a np.array (that you handle yourself) and
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     main()
 
 # Lib version
-VERSION = '2.5.0'
+VERSION = '2.7.0-BETA'
 
 # Constants regarding component interactions
 ROW = 0
