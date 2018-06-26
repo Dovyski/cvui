@@ -1,5 +1,41 @@
-# This is a documentation block with several lines
-# so I can test how it works.
+"""
+A (very) simple UI lib built on top of OpenCV drawing primitives.
+Version: 2.5.0
+
+Use of cvui revolves around calling cvui.init() to initialize the lib, 
+rendering cvui components to a np.array (that you handle yourself) and
+finally showing that np.array on the screen using cvui.imshow(), which
+is cvui's version of cv2.imshow(). Alternatively you can use cv2.imshow()
+to show things, but in such case you must call cvui.update() yourself
+before calling cv.imshow().
+ 
+E.g.:
+
+	import numpy as np
+	import cv2
+	import cvui
+
+	WINDOW_NAME = 'CVUI Hello World!'
+
+	def main():
+		frame = np.zeros((200, 500, 3), np.uint8)
+		cvui.init(WINDOW_NAME)
+
+		while (True):
+			# Fill the frame with a nice color
+			frame[:] = (49, 52, 49)
+
+			cvui.text(frame, x, y, 'Hello world!')
+			cvui.imshow(WINDOW_NAME, frame)
+
+			if cv2.waitKey(20) == 27:
+				break
+
+Read the full documentation at https://dovyski.github.io/cvui/
+ 
+Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
+Licensed under the MIT license.
+"""
 
 import cv2
 import numpy as np
@@ -43,7 +79,7 @@ _IS_PY2 = sys.version_info.major == 2
 CVUI_ANTIALISED = cv2.LINE_AA
 CVUI_FILLED = -1
 
-# Class to represent 2D points
+# Represent a 2D point.
 class Point:
 	def __init__(self, theX = 0, theY = 0):
 		self.x = theX
@@ -52,7 +88,7 @@ class Point:
 	def inside(self, theRect):
 		return theRect.contains(self)
 
-# Class to represent a rectangle
+# Represent a rectangle.
 class Rect:
 	def __init__(self, theX = 0, theY = 0, theWidth = 0, theHeight = 0):
 		self.x = theX
@@ -66,8 +102,8 @@ class Rect:
 	def area(self):
 		return self.width * self.height
 
-# Class to represent the size of something, i.e. width and height.
-# The class is a simplified version of Rect where x and y are zero.
+# Represent the size of something, i.e. width and height.
+# It is essentially a simplified version of Rect where x and y are zero.
 class Size(Rect):
 	def __init__(self, theWidth = 0, theHeight = 0):
 		self.x = 0
@@ -75,7 +111,7 @@ class Size(Rect):
 		self.width = theWidth
 		self.height = theHeight
 
-# Describes the block structure used by the lib to handle `begin*()` and `end*()` calls.
+# Describe a block structure used by cvui to handle `begin*()` and `end*()` calls.
 class Block:
 	def __init__(self):
 		self.where = None              # where the block should be rendered to.
@@ -102,7 +138,7 @@ class Block:
 
 		self.padding = 0
 
-# Describes a component label, including info about a shortcut.
+# Describe a component label, including info about a shortcut.
 # If a label contains "Re&start", then:
 # - hasShortcut will be true
 # - shortcut will be 's'
@@ -144,7 +180,7 @@ class Context:
 		self.windowName = ''               # name of the window related to this context.
 		self.mouse = Mouse()               # the mouse cursor related to this context.
 
-# Describe the inner parts of the trackbar component 
+# Describe the inner parts of the trackbar component.
 class TrackbarParams:
 	def __init__(self, theMin = 0., theMax = 25., theStep = 1., theSegments = 0, theLabelFormat = '%.0Lf', theOptions = 0):
 		self.min = theMin
@@ -155,7 +191,7 @@ class TrackbarParams:
 		self.labelFormat = theLabelFormat
 
 # This class contains all stuff that cvui uses internally to render
-# and control interaction with components
+# and control interaction with components.
 class Internal:
 	_render = None
 

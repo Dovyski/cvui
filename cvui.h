@@ -1,8 +1,56 @@
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
-
  Version: 2.5.0
 
+ Usage:
+
+ One (and only one) of your C++ files must define CVUI_IMPLEMENTATION
+ before the inclusion of cvui.h to ensure its implementaiton is compiled.
+
+ E.g:
+
+   #define CVUI_IMPLEMENTATION
+   #include "cvui.h"
+
+   int main() {
+   }
+
+ All other files can include cvui.h without defining CVUI_IMPLEMENTATION.
+ 
+ Use of cvui revolves around calling cvui::init() to initialize the lib, 
+ rendering cvui components to a cv::Mat (that you handle yourself) and
+ finally showing that cv::Mat on the screen using cvui::imshow(), which
+ is cvui's version of cv::imshow(). Alternatively you can use cv::imshow()
+ to show things, but in such case you must call cvui::update() yourself
+ before calling cv::imshow().
+ 
+ E.g.:
+
+   #include <opencv2/opencv.hpp>
+   #define CVUI_IMPLEMENTATION
+   #include "cvui.h"
+
+   #define WINDOW1_NAME "Window 1"
+
+   int main() {
+     cvui::init(WINDOW1_NAME);
+     cv::Mat frame = cv::Mat(cv::Size(400, 200), CV_8UC3);
+
+     while(true) {
+       frame = cv::Scalar(49, 52, 49);
+       cvui::text(frame, x, y, "Hello world!");
+
+	   cvui::imshow(WINDOW1_NAME, frame);
+
+       if (cv::waitKey(20) == 27) {
+         break;
+       }
+    }
+    return 0;
+  }
+
+ Read the full documentation at https://dovyski.github.io/cvui/
+ 
  Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
  Licensed under the MIT license.
 */
@@ -25,7 +73,7 @@ namespace cvui
  Initializes cvui. You must provide the name of the window where
  components will be added. It is also possible to tell cvui to handle
  OpenCV's event queue automatically (by informing a value greater than zero
- in the `theDelayWaitKey` parameter of function). In that case, cvui will
+ in the `theDelayWaitKey` parameter of the function). In that case, cvui will
  automatically call `cv::waitKey()` within `cvui::update()`, so you don't
  have to worry about it. The value passed to `theDelayWaitKey` will be
  used as the delay for `cv::waitKey()`.
@@ -42,7 +90,7 @@ void init(const cv::String& theWindowName, int theDelayWaitKey = -1, bool theCre
 /**
  Initialize cvui using a list of names of windows where components will be added.
  It is also possible to tell cvui to handle OpenCV's event queue automatically
- (by informing a value greater than zero in the `theDelayWaitKey` parameter of function).
+ (by informing a value greater than zero in the `theDelayWaitKey` parameter of the function).
  In that case, cvui will automatically call `cv::waitKey()` within `cvui::update()`,
  so you don't have to worry about it. The value passed to `theDelayWaitKey` will be
  used as the delay for `cv::waitKey()`.
@@ -241,7 +289,7 @@ bool mouse(const cv::String& theWindowName, int theButton, int theQuery);
  Display a button. The size of the button will be automatically adjusted to
  properly house the label content.
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theLabel text displayed inside the button.
@@ -253,7 +301,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel);
  Display a button. The button size will be defined by the width and height parameters,
  no matter the content of the label.
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theWidth width of the button.
@@ -268,7 +316,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
  which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
  The button size will be defined by the width and height of the images. 
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theIdle an image that will be rendered when the button is not interacting with the mouse cursor.
@@ -285,10 +333,10 @@ bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& th
 /**
  Display an image (cv::Mat). 
 
- \param theWhere the image/frame where the provded image should be rendered.
+ \param theWhere image/frame where the provded image should be rendered.
  \param theX position X where the image should be placed.
  \param theY position Y where the image should be placed.
- \param theImage an image to be rendered in the specified destination.
+ \param theImage image to be rendered in the specified destination.
 
  \sa button()
  \sa iarea()
@@ -299,7 +347,7 @@ void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage);
  Display a checkbox. You can use the state parameter to monitor if the
  checkbox is checked or not.
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theLabel text displayed besides the clickable checkbox square.
@@ -312,7 +360,7 @@ bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel,
 /**
  Display a piece of text.
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theText the text content.
@@ -331,7 +379,7 @@ void text(cv::Mat& theWhere, int theX, int theY, const cv::String& theText, doub
  printf(frame, 10, 15, 0.4, 0xff0000, "Text: %d and %f", 7, 3.1415);
  ```
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theFontScale size of the text.
@@ -352,7 +400,7 @@ void printf(cv::Mat& theWhere, int theX, int theY, double theFontScale, unsigned
 
  The size and color of the text will be based on cvui's default values.
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theFmt formating string as it would be supplied for `stdio's printf()`, e.g. `"Text: %d and %f", 7, 3.1415`.
@@ -365,7 +413,7 @@ void printf(cv::Mat& theWhere, int theX, int theY, const char *theFmt, ...);
  Display a counter for integer values that the user can increase/descrease
  by clicking the up and down arrows.
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theValue the current value of the counter.
@@ -379,7 +427,7 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 
  Display a counter for float values that the user can increase/descrease
  by clicking the up and down arrows.
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theValue the current value of the counter.
@@ -408,17 +456,17 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
  trackbar(where, x, y, width, &charValue, (char)1, (char)10);
  ```
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theWidth the width of the trackbar.
  \param theValue the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, double, long double, int, char, uchar.
- \param theMin the minimum value allowed for the trackbar.
- \param theMax the maximum value allowed for the trackbar.
+ \param theMin minimum value allowed for the trackbar.
+ \param theMax maximum value allowed for the trackbar.
  \param theSegments number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
  \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2Lf` (Lf *not lf). No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string such as `%.0Lf` to format your labels.
  \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of theDiscreteStep param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
- \param theDiscreteStep the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
+ \param theDiscreteStep amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
  \return `true` when the value of the trackbar changed.
 
  \sa counter()
@@ -429,7 +477,7 @@ bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, 
 /**
  Display a window (a block with a title and a body).
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theWidth width of the window.
@@ -443,7 +491,7 @@ void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 /**
  Display a filled rectangle.
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theWidth width of the rectangle.
@@ -458,7 +506,7 @@ void rect(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, un
 /**
  Display the values of a vector as a sparkline.
 
- \param theWhere the image/frame where the component should be rendered.
+ \param theWhere image/frame where the component should be rendered.
  \param theValues a vector containing the values to be used in the sparkline.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
@@ -543,7 +591,7 @@ int iarea(int theX, int theY, int theWidth, int theHeight);
 
  Don't forget to call `endRow()` to finish the row, otherwise cvui will throw an error.
 
- \param theWhere the image/frame where the components within this block should be rendered.
+ \param theWhere image/frame where the components within this block should be rendered.
  \param theX position X where the row should be placed.
  \param theY position Y where the row should be placed.
  \param theWidth width of the row. If a negative value is specified, the width of the row will be automatically calculated based on the content of the block.
@@ -616,7 +664,7 @@ endColumn();
 
 Don't forget to call `endColumn()` to finish the column, otherwise cvui will throw an error.
 
-\param theWhere the image/frame where the components within this block should be rendered.
+\param theWhere image/frame where the components within this block should be rendered.
 \param theX position X where the row should be placed.
 \param theY position Y where the row should be placed.
 \param theWidth width of the column. If a negative value is specified, the width of the column will be automatically calculated based on the content of the block.
@@ -630,8 +678,8 @@ Don't forget to call `endColumn()` to finish the column, otherwise cvui will thr
 void beginColumn(cv::Mat &theWhere, int theX, int theY, int theWidth = -1, int theHeight = -1, int thePadding = 0);
 
 /**
- Ends a column. You must call this function only if you have previously called
- its counter part, the `beginColumn()` function.
+ End a column. You must call this function only if you have previously called
+ its counter part, i.e. `beginColumn()`.
 
  \sa beginColumn()
  \sa beginRow()
@@ -640,9 +688,15 @@ void beginColumn(cv::Mat &theWhere, int theX, int theY, int theWidth = -1, int t
 void endColumn();
 
 /**
-Starts a row. This function behaves in the same way as `beginRow(frame, x, y, width, height)`,
+Start a row. This function behaves in the same way as `beginRow(frame, x, y, width, height)`,
 however it is suposed to be used within `begin*()/end*()` blocks since they require components
 not to inform frame nor x,y coordinates.
+
+IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+\param theWidth width of the row. If a negative value is specified, the width of the row will be automatically calculated based on the content of the block.
+\param theHeight height of the row. If a negative value is specified, the height of the row will be automatically calculated based on the content of the block.
+\param thePadding space, in pixels, among the components of the block.
 
 \sa beginColumn()
 \sa endRow()
@@ -651,9 +705,15 @@ not to inform frame nor x,y coordinates.
 void beginRow(int theWidth = -1, int theHeight = -1, int thePadding = 0);
 
 /**
-Starts a column. This function behaves in the same way as `beginColumn(frame, x, y, width, height)`,
+Start a column. This function behaves in the same way as `beginColumn(frame, x, y, width, height)`,
 however it is suposed to be used within `begin*()/end*()` blocks since they require components
 not to inform frame nor x,y coordinates.
+
+IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
+
+\param theWidth width of the column. If a negative value is specified, the width of the column will be automatically calculated based on the content of the block.
+\param theHeight height of the column. If a negative value is specified, the height of the column will be automatically calculated based on the content of the block.
+\param thePadding space, in pixels, among the components of the block.
 
 \sa beginColumn()
 \sa endRow()
@@ -662,7 +722,7 @@ not to inform frame nor x,y coordinates.
 void beginColumn(int theWidth = -1, int theHeight = -1, int thePadding = 0);
 
 /**
- Adds an arbitrary amount of space between components within a `begin*()` and `end*()` block.
+ Add an arbitrary amount of space between components within a `begin*()` and `end*()` block.
  The function is aware of context, so if it is used within a `beginColumn()` and
  `endColumn()` block, the space will be vertical. If it is used within a `beginRow()`
  and `endRow()` block, space will be horizontal.
@@ -680,9 +740,10 @@ void space(int theValue = 5);
 
 /**
  Display a piece of text within a `begin*()` and `end*()` block.
+ 
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
- \param theText the text content.
+ \param theText text content.
  \param theFontScale size of the text.
  \param theColor color of the text in the format `0xRRGGBB`, e.g. `0xff0000` for red.
 
@@ -694,7 +755,6 @@ void space(int theValue = 5);
 */
 void text(const cv::String& theText, double theFontScale = 0.4, unsigned int theColor = 0xCECECE);
 
-// 
 /**
  Display a button within a `begin*()` and `end*()` block.
  The button size will be defined by the width and height parameters,
@@ -739,9 +799,9 @@ bool button(const cv::String& theLabel);
  which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
  The button size will be defined by the width and height of the images.
 
- \param theIdle an image that will be rendered when the button is not interacting with the mouse cursor.
- \param theOver an image that will be rendered when the mouse cursor is over the button.
- \param theDown an image that will be rendered when the mouse cursor clicked the button (or is clicking).
+ \param theIdle image that will be rendered when the button is not interacting with the mouse cursor.
+ \param theOver image that will be rendered when the mouse cursor is over the button.
+ \param theDown image that will be rendered when the mouse cursor clicked the button (or is clicking).
  \return `true` everytime the user clicks the button.
 
  \sa button()
@@ -759,7 +819,7 @@ bool button(cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown);
 
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
- \param theImage an image to be rendered in the specified destination.
+ \param theImage image to be rendered in the specified destination.
 
  \sa button()
  \sa iarea()
@@ -898,8 +958,8 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
 
  \param theWidth the width of the trackbar.
  \param theValue the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, double, long double, int, char, uchar.
- \param theMin the minimum value allowed for the trackbar.
- \param theMax the maximum value allowed for the trackbar.
+ \param theMin minimum value allowed for the trackbar.
+ \param theMax maximum value allowed for the trackbar.
  \param theSegments number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
  \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2Lf`. No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string as `%.0Lf` to format your labels.
  \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of informed step param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
