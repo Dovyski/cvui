@@ -193,8 +193,6 @@ class TrackbarParams:
 # This class contains all stuff that cvui uses internally to render
 # and control interaction with components.
 class Internal:
-	_render = None
-
 	def __init__(self):
 		self.defaultContext = ''
 		self.currentContext = ''
@@ -206,6 +204,9 @@ class Internal:
 		self.stack = [Block() for i in range(100)] # TODO: make it dynamic
 		self.stackCount = -1
 		self.trackbarMarginX = 14
+		
+		self._render = Render()
+		self._render._internal = self
 
 	def isMouseButton(self, theButton, theQuery):
 		aRet = False
@@ -1009,12 +1010,8 @@ class Render:
 			
 			i += 1
 
-# Access points to internal namespaces.
-# TODO: re-factor this and make it less ugly.
+# Access points to internal global namespaces.
 __internal = Internal()
-__render = Render()
-__internal._render = __render
-__render._internal = __internal
 
 def _handleMouse(theEvent, theX, theY, theFlags, theContext):
 	aButtons    = [LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON]
