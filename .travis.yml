@@ -117,10 +117,10 @@ install:
 script:
   - mkdir build.release
   - cd build.release
-  - cmake .. -D CMAKE_BUILD_TYPE=Release -D CMAKE_CXX_COMPILER=$COMPILER -D ADD_PYTHON_EXAMPLES=ON
+  - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=$COMPILER -DADD_PYTHON_EXAMPLES=ON
   - make -j4
   - cd ..
   - mkdir build.debug
   - cd build.debug
-  - cmake .. -D CMAKE_BUILD_TYPE=Debug -D CMAKE_CXX_COMPILER=$COMPILER -D ADD_PYTHON_EXAMPLES=ON
+  - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=$COMPILER -DADD_PYTHON_EXAMPLES=ON
   - make -j4
