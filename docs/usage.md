@@ -7,7 +7,7 @@ title: usage
 
 Below are a few steps you need to perform to work with cvui.
 
-## C++
+## Using cvui in C++
 
 ### 1. Include `cvui.h`
 
@@ -184,7 +184,7 @@ You can disable such compilation messages by defining `CVUI_DISABLE_COMPILATION_
 #include "cvui.h"
 ```
 
-## Python
+## Using cvui in Python
 
 ### 1. Add `cvui.py` and import `cvui`
 
@@ -205,24 +205,20 @@ import cvui
 
 WINDOW_NAME = 'CVUI Test'
 
-def main():
-  # Tell cvui to init and create a window
-  cvui.init(WINDOW_NAME)
+# Tell cvui to init and create a window
+cvui.init(WINDOW_NAME)
 
-  while True:
+while True:
     # your app logic here
     if cv2.waitKey(20) == 27:
-      break
-
-if __name__ == '__main__':
-  main()
+        break
 ```
 
 <div class="notice--info"><strong>Tip:</strong> if you need to use cvui with multiple windows, or you want more control over the process of creating windows, check the <a href="{{ site.url }}/advanced-multiple-windows">Multiple OpenCV windows</a> page and the <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows">multiple-windows</a> and <a href="https://github.com/Dovyski/cvui/tree/master/example/src/multiple-windows-complex">multiple-windows-complex</a> examples.</div>
 
-## 3. Render cvui components
+## 3. Rendering and using cvui components
 
-All cvui components are rendered to a `np.array`, i.e. `cv::Mat`. Below is an example showing how to render a `'Hello world'` message on a `np.array` named `frame`:
+All cvui components are rendered to a `np.array`, i.e. equivalent of C++ `cv::Mat`. Below is an example showing how to render a `'Hello world'` message on a `np.array` named `frame`:
 
 ```python
 import numpy as np
@@ -231,13 +227,12 @@ import cvui
 
 WINDOW_NAME = 'CVUI Test'
 
-def main():
-  cvui.init(WINDOW_NAME)
+cvui.init(WINDOW_NAME)
 
-  # Create a frame
-  frame = np.zeros((200, 400, 3), np.uint8)
+# Create a frame
+frame = np.zeros((200, 400, 3), np.uint8)
 
-  while True:
+while True:
     # clear the frame
     frame[:] = (49, 52, 49)
 
@@ -245,10 +240,46 @@ def main():
     cvui.text(frame, 10, 15, 'Hello world!')
 
     if cv2.waitKey(20) == 27:
-      break
+        break
+```
 
-if __name__ == '__main__':
-    main()
+Some cvui components use an external variable that they need to modify to control their internal state, e.g. `checkbox()` uses an external boolean to store if it is checked or not.
+
+<div class="notice--info"><strong>Tip:</strong> cvui components that change external variables are: <a href="{{ site.url }}/components/counter/">counter</a>, <a href="{{ site.url }}/components/trackbar/">trackbar</a> and <a href="{{ site.url }}/components/checkbox/">checkbox</a>.</div>
+
+Since there are no pointers to built-in types in Python, cvui components that need to change an external variable must receive such variable as an array/list with a single element.
+
+Below is an example of a checkbox whose state is stored in the variable `checkboxState`:
+
+```python
+import numpy as np
+import cv2
+import cvui
+
+WINDOW_NAME = 'CVUI Test'
+cvui.init(WINDOW_NAME)
+frame = np.zeros((200, 400, 3), np.uint8)
+
+# use an array/list because this variable will be changed by cvui
+checkboxState = [False]
+
+while True:
+    frame[:] = (49, 52, 49)
+
+    # Render the checkbox. Notice that checkboxState is used AS IS,
+    # e.g. simply "checkboxState" instead of "checkboxState[0]".
+    # Only internally that cvui will use checkboxState[0].
+    cvui.checkbox(frame, 10, 15, 'My checkbox', checkboxState)
+
+    # Check the state of the checkbox. Here you need to remember to
+    # use the first position of the array/list because that's the
+    # one being used by all cvui components that perform changes
+    # to external variables.
+    if checkboxState[0] == True:
+        print('Checkbox is checked')
+
+    if cv2.waitKey(20) == 27:
+        break
 ```
 
 ## 3. Show (window) content
@@ -262,11 +293,10 @@ import cvui
 
 WINDOW_NAME = 'CVUI Test'
 
-def main():
-  cvui.init(WINDOW_NAME)
-  frame = np.zeros((200, 400, 3), np.uint8)
+cvui.init(WINDOW_NAME)
+frame = np.zeros((200, 400, 3), np.uint8)
 
-  while True:
+while True:
     frame[:] = (49, 52, 49)
     cvui.text(frame, 10, 15, 'Hello world!')
 
@@ -274,10 +304,7 @@ def main():
     cvui.imshow(WINDOW1_NAME, frame)
 
     if cv2.waitKey(20) == 27:
-      break
-
-if __name__ == '__main__':
-    main()
+        break
 ```
 
 When you use `cvui.imshow()` instead of `cv2.imshow()`, cvui will not only show the content, but update its internal structures to ensure all UI interactions work.
@@ -291,11 +318,10 @@ import cvui
 
 WINDOW_NAME = 'CVUI Test'
 
-def main():
-  cvui.init(WINDOW_NAME)
-  frame = np.zeros((200, 400, 3), np.uint8)
+cvui.init(WINDOW_NAME)
+frame = np.zeros((200, 400, 3), np.uint8)
 
-  while True:
+while True:
     frame[:] = (49, 52, 49)
     cvui.text(frame, 10, 15, 'Hello world!')
 
@@ -306,10 +332,7 @@ def main():
     cv2.imshow(WINDOW1_NAME, frame)
 
     if cv2.waitKey(20) == 27:
-      break
-
-if __name__ == '__main__':
-    main()
+        break
 ```
 
 ## Learn more

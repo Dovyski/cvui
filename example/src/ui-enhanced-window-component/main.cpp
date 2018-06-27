@@ -1,6 +1,6 @@
 /*
 This application showcases how the window component of cvui can be
-enhanced, i.e. make it movable anb minimizable.
+enhanced, i.e. make it movable and minimizable.
 
 Authors:
 	ShengYu - https://github.com/shengyu7697
