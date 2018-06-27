@@ -2,7 +2,7 @@ cvui
 =====
 A (very) simple UI lib built on top of OpenCV drawing primitives. Other UI libs, such as [imgui](https://github.com/ocornut/imgui), require a graphical backend (e.g. OpenGL) to work, so if you want to use imgui in a OpenCV app, you must make it OpenGL enabled, for instance. It is not the case with cvui, which uses *only* OpenCV drawing primitives to do all the rendering (no OpenGL or Qt required).
 
-![image](https://raw.githubusercontent.com/Dovyski/depository/master/cvui.png?20160819)
+![image](https://raw.githubusercontent.com/Dovyski/depository/master/cvui.png?20180627)
 
 Features
 --------
@@ -70,29 +70,25 @@ import cvui
 
 WINDOW_NAME = 'CVUI Hello World!'
 
-def main():
-	# Create a frame where components will be rendered to.
-	frame = np.zeros((200, 500, 3), np.uint8)
+# Create a frame where components will be rendered to.
+frame = np.zeros((200, 500, 3), np.uint8)
 
-	# Init cvui and tell it to create a OpenCV window, i.e. cv2.namedWindow(WINDOW_NAME).
-	cvui.init(WINDOW_NAME)
+# Init cvui and tell it to create a OpenCV window, i.e. cv2.namedWindow(WINDOW_NAME).
+cvui.init(WINDOW_NAME)
 
-	while True:
-		# Fill the frame with a nice color
-		frame[:] = (49, 52, 49)
+while True:
+	# Fill the frame with a nice color
+	frame[:] = (49, 52, 49)
 
-		# Render UI components to the frame
-		cvui.text(frame, 110, 80, 'Hello, world!')
-		cvui.text(frame, 110, 120, 'cvui is awesome!')
+	# Render UI components to the frame
+	cvui.text(frame, 110, 80, 'Hello, world!')
+	cvui.text(frame, 110, 120, 'cvui is awesome!')
 
-		# Update cvui stuff and show everything on the screen
-		cvui.imshow(WINDOW_NAME, frame)
+	# Update cvui stuff and show everything on the screen
+	cvui.imshow(WINDOW_NAME, frame)
 
-		if cv2.waitKey(20) == 27:
-			break
-
-if __name__ == '__main__':
-    main()
+	if cv2.waitKey(20) == 27:
+		break
 ```
 
 License
