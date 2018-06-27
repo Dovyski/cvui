@@ -1459,7 +1459,7 @@ def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
 	theLabel: str
 		text displayed besides the clickable checkbox square.
 	theState: [bool]
-		describes the current state of the checkbox: `True` means the checkbox is checked.
+		array or list of booleans whose first position, i.e. theState[0], will be used to store the current state of the checkbox: `True` means the checkbox is checked.
 	theColor: uint
 		color of the label in the format `0xRRGGBB`, e.g. `0xff0000` for red.
 
@@ -1496,7 +1496,7 @@ def text(theWhere, theX, theY, theText, theFontScale = 0.4, theColor = 0xCECECE)
 
 def printf(theWhere, theX, theY, theFontScale, theColor, theFmt):
 	"""
-	Display a piece of text that can be formated using `stdio's printf()` style. For instance
+	Display a piece of text that can be formated using `C stdio's printf()` style. For instance
 	if you want to display text mixed with numbers, you can use:
 	
 	```
@@ -1526,7 +1526,7 @@ def printf(theWhere, theX, theY, theFontScale, theColor, theFmt):
 
 def printf(theWhere, theX, theY, theFmt):
 	"""
-	Display a piece of text that can be formated using `stdio's printf()` style. For instance
+	Display a piece of text that can be formated using `C stdio's printf()` style. For instance
 	if you want to display text mixed with numbers, you can use:
 	
 	```
@@ -1566,9 +1566,9 @@ def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = '%d'):
 	theY: int
 		position Y where the component should be placed.
 	theValue: [number]
-		the current value of the counter.
+		array or list of numbers whose first position, i.e. theValue[0], will be used to store the current value of the counter.
 	theStep: number
-		the amount that should be increased/decreased when the user interacts with the counter buttons
+		amount that should be increased/decreased when the user interacts with the counter buttons
 	theFormat: str
 		how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `'%d'` means the value will be displayed as an integer, `'%0d'` integer with one leading zero, etc.
 
@@ -1581,9 +1581,9 @@ def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = '%d'):
 def trackbar(theWhere, theX, theY, theWidth, theValue, theMin, theMax, theSegments = 1, theLabelFormat = '%.1Lf', theOptions = 0, theDiscreteStep = 1):
 	"""
 	Display a trackbar for numeric values that the user can increase/decrease
-	by clicking and/or dragging the marker right or left. This component uses templates
-	so it is imperative that you make it very explicit the type of `theValue`, `theMin`, `theMax` and `theStep`,
-	otherwise you might end up with weird compilation errors.
+	by clicking and/or dragging the marker right or left. This component can use
+	different types of data as its value, so it is imperative provide the right
+	label format, e.g. '%d' for ints, otherwise you might end up with weird errors.
 	
 	Example:
 	
@@ -1607,20 +1607,20 @@ def trackbar(theWhere, theX, theY, theWidth, theValue, theMin, theMax, theSegmen
 	theY: int
 		position Y where the component should be placed.
 	theWidth: int
-		the width of the trackbar.
-	theValue: T*
-		the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, float, long float, int, char, uchar.
-	theMin: T
+		width of the trackbar.
+	theValue: [number]
+		array or list of numbers whose first position, i.e. theValue[0], will be used to store the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. int, float, long double, etc.
+	theMin: number
 		minimum value allowed for the trackbar.
-	theMax: T
+	theMax: number
 		maximum value allowed for the trackbar.
 	theSegments: int
 		number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
 	theLabelFormat: str
-		formating string that will be used to render the labels, e.g. `%.2Lf` (Lf *not lf). No matter the type of the `theValue` param, internally trackbar stores it as a `long float`, so the formating string will *always* receive a `long float` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string such as `%.0Lf` to format your labels.
+		formating string that will be used to render the labels. If you are using a trackbar with integers values, for instance, you can use `%d` to render labels.
 	theOptions: uint
-		options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of theDiscreteStep param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
-	theDiscreteStep: T
+		options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `cvui.TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of theDiscreteStep param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
+	theDiscreteStep: number
 		amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
 
 	Returns
@@ -1693,8 +1693,8 @@ def sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0
 	----------
 	theWhere: np.array
 		image/frame where the component should be rendered.
-	theValues: float[]
-		a vector containing the values to be used in the sparkline.
+	theValues: number[]
+		array or list containing the numeric values to be used in the sparkline.
 	theX: int
 		position X where the component should be placed.
 	theY: int
@@ -1738,7 +1738,7 @@ def iarea(theX, theY, theWidth, theHeight):
 
 	Returns
 	----------
-	an integer value representing the current state of interaction with the mouse cursor. It can be `OUT` (cursor is not over the area), `OVER` (cursor is over the area), `DOWN` (cursor is pressed over the area, but not released yet) and `CLICK` (cursor clicked, i.e. pressed and released, within the area).
+	integer value representing the current state of interaction with the mouse cursor. It can be `OUT` (cursor is not over the area), `OVER` (cursor is over the area), `DOWN` (cursor is pressed over the area, but not released yet) and `CLICK` (cursor clicked, i.e. pressed and released, within the area).
 
 	See Also
 	----------
@@ -1823,7 +1823,7 @@ def beginRow(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0
 
 def endRow():
 	"""
-	Ends a row. You must call this function only if you have previously called
+	End a row. You must call this function only if you have previously called
 	its counter part, the `beginRow()` function.
 
 	See Also
@@ -2146,7 +2146,7 @@ def checkbox(theLabel, theState, theColor = 0xCECECE):
 	theLabel: str
 		text displayed besides the clickable checkbox square.
 	theState: [bool]
-		describes the current state of the checkbox: `True` means the checkbox is checked.
+		array or list of booleans whose first position, i.e. theState[0], will be used to store the current state of the checkbox: `True` means the checkbox is checked.
 	theColor: uint
 		color of the label in the format `0xRRGGBB`, e.g. `0xff0000` for red.
 
@@ -2169,7 +2169,7 @@ def printf(theFontScale, theColor, theFmt):
 	
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 	
-	The text can be formated using `stdio's printf()` style. For instance if you want to display text mixed
+	The text can be formated using `C stdio's printf()` style. For instance if you want to display text mixed
 	with numbers, you can use:
 	
 	```
@@ -2183,7 +2183,7 @@ def printf(theFontScale, theColor, theFmt):
 	theColor: uint
 		color of the text in the format `0xRRGGBB`, e.g. `0xff0000` for red.
 	theFmt: str
-		formating string as it would be supplied for `stdio's printf()`, e.g. `'Text: %d and %f', 7, 3.1415`.
+		formating string as it would be supplied for `C stdio's printf()`, e.g. `'Text: %d and %f', 7, 3.1415`.
 
 	See Also
 	----------
@@ -2197,7 +2197,7 @@ def printf(theFontScale, theColor, theFmt):
 
 def printf(theFmt):
 	"""
-	Display a piece of text that can be formated using `stdio's printf()` style.
+	Display a piece of text that can be formated using `C stdio's printf()` style.
 	
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 	
@@ -2234,11 +2234,11 @@ def counter(theValue, theStep = 1, theFormat = '%d'):
 	Parameters
 	----------
 	theValue: [number]
-		the current value of the counter.
+		array or list of numbers whose first position, i.e. theValue[0], will be used to store the current value of the counter.
 	theStep: number
-		the amount that should be increased/decreased when the user interacts with the counter buttons.
+		amount that should be increased/decreased when the user interacts with the counter buttons.
 	theFormat: str
-		how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `'%d'` means the value will be displayed as an integer, `'%0d'` integer with one leading zero, etc.
+		how the value of the counter should be presented, as it was printed by `C stdio's printf()`. E.g. `'%d'` means the value will be displayed as an integer, `'%0d'` integer with one leading zero, etc.
 
 	Returns
 	----------
@@ -2283,7 +2283,7 @@ def trackbar(theWidth, theValue, theMin, theMax, theSegments = 1, theLabelFormat
 	theWidth: int
 		the width of the trackbar.
 	theValue: [number]
-		the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, float, long float, int, char, uchar.
+		array or list of numbers whose first position, i.e. theValue[0], will be used to store the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. int, float, long double, etc.
 	theMin: number
 		minimum value allowed for the trackbar.
 	theMax: number
@@ -2295,7 +2295,7 @@ def trackbar(theWidth, theValue, theMin, theMax, theSegments = 1, theLabelFormat
 	theOptions: uint
 		options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of informed step param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
 	theDiscreteStep: number
-		the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
+		amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
 
 	Returns
 	----------
@@ -2371,8 +2371,8 @@ def sparkline(theValues, theWidth, theHeight, theColor = 0x00FF00):
 
 	Parameters
 	----------
-	theValues: float[]
-		vector with the values that will be rendered as a sparkline.
+	theValues: number[]
+		array or list of numeric values that will be rendered as a sparkline.
 	theWidth: int
 		width of the sparkline.
 	theHeight: int
