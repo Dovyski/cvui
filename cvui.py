@@ -1,14 +1,14 @@
 """
 A (very) simple UI lib built on top of OpenCV drawing primitives.
-Version: 2.7.0-BETA
+Version: 2.7b1
 
-Use of cvui revolves around calling cvui.init() to initialize the lib, 
-rendering cvui components to a np.array (that you handle yourself) and
-finally showing that np.array on the screen using cvui.imshow(), which
+Use of cvui revolves around calling cvui.init() to initialize the lib,
+rendering cvui components to a np.ndarray (that you handle yourself) and
+finally showing that np.ndarray on the screen using cvui.imshow(), which
 is cvui's version of cv2.imshow(). Alternatively you can use cv2.imshow()
 to show things, but in such case you must call cvui.update() yourself
 before calling cv.imshow().
- 
+
 E.g.:
 
 	import numpy as np
@@ -17,22 +17,21 @@ E.g.:
 
 	WINDOW_NAME = 'CVUI Hello World!'
 
-	def main():
-		frame = np.zeros((200, 500, 3), np.uint8)
-		cvui.init(WINDOW_NAME)
+	frame = np.zeros((200, 500, 3), np.uint8)
+	cvui.init(WINDOW_NAME)
 
-		while (True):
-			# Fill the frame with a nice color
-			frame[:] = (49, 52, 49)
+	while (True):
+		# Fill the frame with a nice color
+		frame[:] = (49, 52, 49)
 
-			cvui.text(frame, x, y, 'Hello world!')
-			cvui.imshow(WINDOW_NAME, frame)
+		cvui.text(frame, x, y, 'Hello world!')
+		cvui.imshow(WINDOW_NAME, frame)
 
-			if cv2.waitKey(20) == 27:
-				break
+		if cv2.waitKey(20) == 27:
+			break
 
 Read the full documentation at https://dovyski.github.io/cvui/
- 
+
 Copyright (c) 2018 Fernando Bevilacqua <dovyski@gmail.com>
 Licensed under the MIT license.
 """
@@ -49,7 +48,7 @@ if __name__ == '__main__':
     main()
 
 # Lib version
-VERSION = '2.7.0-BETA'
+VERSION = '2.7b1'
 
 # Constants regarding component interactions
 ROW = 0
@@ -95,7 +94,7 @@ class Rect:
 		self.y = theY
 		self.width = theWidth
 		self.height = theHeight
-	
+
 	def contains(self, thePoint):
 		return thePoint.x >= self.x and thePoint.x <= (self.x + self.width) and thePoint.y >= self.y and thePoint.y <= (self.y + self.height)
 
@@ -120,7 +119,7 @@ class Block:
 		self.anchor = Point()          # the point where the next component of the block should be rendered.
 		self.padding = 0               # padding among components within this block.
 		self.type = ROW       		   # type of the block, e.g. ROW or COLUMN.
-		
+
 		self.reset()
 
 	def reset(self):
@@ -170,7 +169,7 @@ class Mouse:
 			LEFT_BUTTON: MouseButton(),
 			MIDDLE_BUTTON: MouseButton(),
 			RIGHT_BUTTON: MouseButton()
-		}              
+		}
 		self.anyButton = MouseButton()     # represent the behavior of all mouse buttons combined
 		self.position = Point(0, 0)        # x and y coordinates of the mouse at the moment.
 
@@ -204,7 +203,7 @@ class Internal:
 		self.stack = [Block() for i in range(100)] # TODO: make it dynamic
 		self.stackCount = -1
 		self.trackbarMarginX = 14
-		
+
 		self._render = Render()
 		self._render._internal = self
 
@@ -232,7 +231,7 @@ class Internal:
 	def mouseQ(self, theQuery):
 		"""
 		Query the mouse for events, e.g. "is any button down now?". Available queries are:
- 
+
 		* `cvui::DOWN`: any mouse button was pressed. `cvui::mouse()` returns `true` for a single frame only.
 		* `cvui::UP`: any mouse button was released.  `cvui::mouse()` returns `true` for a single frame only.
 		* `cvui::CLICK`: any mouse button was clicked (went down then up, no matter the amount of frames in between). `cvui::mouse()` returns `true` for a single frame only.
@@ -408,11 +407,11 @@ class Internal:
 		aLabel.textBeforeShortcut = aBefore
 		aLabel.textAfterShortcut = aAfter
 
-		return aLabel		
+		return aLabel
 
 	def text(self, theBlock, theX, theY, theText, theFontScale, theColor, theUpdateLayout):
 		aSizeInfo, aBaseline = cv2.getTextSize(theText, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
-		
+
 		aTextSize = Size(aSizeInfo[0], aSizeInfo[1])
 		aPos = Point(theX, theY + aTextSize.height)
 
@@ -439,8 +438,8 @@ class Internal:
 		aSize = Size(22 * 2 + aContentArea.width, aContentArea.height)
 		self.updateLayoutFlow(theBlock, aSize)
 
-		return theValue[0]		
-	
+		return theValue[0]
+
 	def checkbox(self, theBlock, theX, theY, theLabel, theState, theColor):
 		aMouse = self.getContext().mouse
 		aRect = Rect(theX, theY, 15, 15)
@@ -617,7 +616,7 @@ class Internal:
 	def rect(self, theBlock, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor):
 		aAnchor = Point(theX, theY);
 		aRect = Rect(theX, theY, theWidth, theHeight);
-		
+
 		aRect.x = aAnchor.x + aRect.width if aRect.width < 0 else aAnchor.x
 		aRect.y = aAnchor.y + aRect.height if aRect.height < 0 else aAnchor.y
 		aRect.width = abs(aRect.width)
@@ -755,7 +754,7 @@ class Render:
 		theShape.width -= 2
 		theShape.height -= 2
 		self.rectangle(theBlock.where, theShape, (0x42, 0x42, 0x42) if theState == OUT else ((0x52, 0x52, 0x52) if theState == OVER else (0x32, 0x32, 0x32)), CVUI_FILLED)
-		
+
 	def image(self, theBlock, theRect, theImage):
 		theBlock.where[theRect.y: theRect.y + theRect.height, theRect.x: theRect.x + theRect.width] = theImage
 
@@ -766,7 +765,7 @@ class Render:
 		if theText != '':
 			aPosition = (int(thePosition.x), int(thePosition.y))
 			cv2.putText(theBlock.where, theText, aPosition, cv2.FONT_HERSHEY_SIMPLEX, aFontScale, theColor, 1, CVUI_ANTIALISED)
-			
+
 			aSizeInfo, aBaseline = cv2.getTextSize(theText, cv2.FONT_HERSHEY_SIMPLEX, aFontScale, 1)
 			aTextSize = Rect(0, 0, aSizeInfo[0], aSizeInfo[1])
 
@@ -929,11 +928,11 @@ class Render:
 		theShape.width -= 2
 		theShape.height -= 2
 		self.rectangle(theBlock.where, theShape, (0x29, 0x29, 0x29), CVUI_FILLED)
-		
+
 	def checkboxLabel(self, theBlock, theRect, theLabel, theTextSize, theColor):
 		aPos = Point(theRect.x + theRect.width + 6, theRect.y + theTextSize.height + theRect.height / 2 - theTextSize.height / 2 - 1)
 		self.text(theBlock, theLabel, aPos, 0.4, theColor)
-		
+
 	def checkboxCheck(self, theBlock, theShape):
 		theShape.x += 1
 		theShape.y += 1
@@ -948,7 +947,7 @@ class Render:
 
 		# Render borders in the title bar
 		self.rectangle(theBlock.where, theTitleBar, (0x4A, 0x4A, 0x4A));
-		
+
 		# Render the inside of the title bar
 		theTitleBar.x += 1
 		theTitleBar.y += 1
@@ -1007,7 +1006,7 @@ class Render:
 
 			cv2.line(theBlock.where, (int(aPoint1.x), int(aPoint1.y)), (int(aPoint2.x), int(aPoint2.y)), self._internal.hexToScalar(theColor))
 			aPosX += aGap
-			
+
 			i += 1
 
 # Access points to internal global namespaces.
@@ -1053,7 +1052,7 @@ def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
 	theDelayWaitKey: int
 		delay value passed to `cv2.waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv2.waitKey()` within `cvui.update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
 	theCreateNamedWindow: bool
-		if an OpenCV window named `theWindowName` should be created during the initialization. Windows are created using `cv2.namedWindow()`. If this parameter is `False`, ensure you call `cv2.namedWindow(WINDOW_NAME)` *before* initializing cvui, otherwise it will not be able to track UI interactions. 
+		if an OpenCV window named `theWindowName` should be created during the initialization. Windows are created using `cv2.namedWindow()`. If this parameter is `False`, ensure you call `cv2.namedWindow(WINDOW_NAME)` *before* initializing cvui, otherwise it will not be able to track UI interactions.
 
 	See Also
 	----------
@@ -1133,51 +1132,51 @@ def context(theWindowName):
 	between `cvui.contex(NAME)` and `cvui.update(NAME)`, where `NAME` is the name of
 	the window. That way, cvui knows which window you are using (`NAME` in this case),
 	so it can track mouse events, for instance.
-	
+
 	E.g.
-	
+
 	```
 	# Code for window 'window1'.
 	cvui.context('window1')
 	cvui.text(frame, ...)
 	cvui.button(frame, ...)
 	cvui.update('window1')
-	
-	
+
+
 	# somewhere else, code for 'window2'
 	cvui.context('window2')
 	cvui.printf(frame, ...)
 	cvui.printf(frame, ...)
 	cvui.update('window2')
-	
+
 	# Show everything in a window
 	cv2.imshow(frame)
 	```
-	
+
 	Pay attention to the pair `cvui.context(NAME)` and `cvui.update(NAME)`, which
 	encloses the component calls for that window. You need such pair for each window
 	of your application.
-	
+
 	After calling `cvui.update()`, you can show the result in a window using `cv2.imshow()`.
 	If you want to save some typing, you can use `cvui.imshow()`, which calls `cvui.update()`
 	for you and then shows the frame in a window.
-	
+
 	E.g.:
-	
+
 	```
 	# Code for window 'window1'.
 	cvui.context('window1')
 	cvui.text(frame, ...)
 	cvui.button(frame, ...)
 	cvui.imshow('window1')
-	
+
 	# somewhere else, code for 'window2'
 	cvui.context('window2')
 	cvui.printf(frame, ...)
 	cvui.printf(frame, ...)
 	cvui.imshow('window2')
 	```
-	
+
 	In that case, you don't have to bother calling `cvui.update()` yourself, since
 	`cvui.imshow()` will do it for you.
 
@@ -1200,7 +1199,7 @@ def imshow(theWindowName, theFrame):
 	`cv2.imshow() instead of `cvui.imshow()`, you must ensure you call `cvui.update()`
 	*after* all component calls and *before* `cv2.imshow()`, so cvui can update its
 	internal structures.
-	
+
 	In general, it is easier to call `cvui.imshow()` alone instead of calling
 	`cvui.update()' immediately followed by `cv2.imshow()`.
 
@@ -1208,8 +1207,8 @@ def imshow(theWindowName, theFrame):
 	----------
 	theWindowName: str
 		name of the window that will be shown.
-	theFrame: np.array
-		image, i.e. `np.array`, to be shown in the window.
+	theFrame: np.ndarray
+		image, i.e. `np.ndarray`, to be shown in the window.
 
 	See Also
 	----------
@@ -1250,20 +1249,20 @@ def mouse(theWindowName = ''):
 def mouse(theQuery):
 	"""
 	Query the mouse for events, e.g. 'is any button down now?'. Available queries are:
-	
+
 	* `cvui.DOWN`: any mouse button was pressed. `cvui.mouse()` returns `True` for a single frame only.
 	* `cvui.UP`: any mouse button was released.  `cvui.mouse()` returns `True` for a single frame only.
 	* `cvui.CLICK`: any mouse button was clicked (went down then up, no matter the amount of frames in between). `cvui.mouse()` returns `True` for a single frame only.
 	* `cvui.IS_DOWN`: any mouse button is currently pressed. `cvui.mouse()` returns `True` for as long as the button is down/pressed.
-	
+
 	It is easier to think of this function as the answer to a questions. For instance, asking if any mouse button went down:
-	
+
 	```
 	if cvui.mouse(cvui.DOWN):
 	# Any mouse button just went down.
-	
+
 	```
-	
+
 	The window whose mouse will be queried depends on the context. If `cvui.mouse(query)` is being called after
 	`cvui.context()`, the window informed in the context will be queried. If no context is available, the default
 	window (informed in `cvui.init()`) will be used.
@@ -1347,7 +1346,7 @@ def button(theWhere, theX, theY, theLabel):
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1369,7 +1368,7 @@ def button(theWhere, theX, theY, theWidth, theHeight, theLabel):
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1390,23 +1389,23 @@ def button(theWhere, theX, theY, theWidth, theHeight, theLabel):
 
 def button(theWhere, theX, theY, theIdle, theOver, theDown):
 	"""
-	Display a button whose graphics are images (np.array). The button accepts three images to describe its states,
+	Display a button whose graphics are images (np.ndarray). The button accepts three images to describe its states,
 	which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
 	The button size will be defined by the width and height of the images.
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
 	theY: int
 		position Y where the component should be placed.
-	theIdle: np.array
+	theIdle: np.ndarray
 		an image that will be rendered when the button is not interacting with the mouse cursor.
-	theOver: np.array
+	theOver: np.ndarray
 		an image that will be rendered when the mouse cursor is over the button.
-	theDown: np.array
+	theDown: np.ndarray
 		an image that will be rendered when the mouse cursor clicked the button (or is clicking).
 
 	Returns
@@ -1423,17 +1422,17 @@ def button(theWhere, theX, theY, theIdle, theOver, theDown):
 
 def image(theWhere, theX, theY, theImage):
 	"""
-	Display an image (np.array).
+	Display an image (np.ndarray).
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the provded image should be rendered.
 	theX: int
 		position X where the image should be placed.
 	theY: int
 		position Y where the image should be placed.
-	theImage: np.array
+	theImage: np.ndarray
 		image to be rendered in the specified destination.
 
 	See Also
@@ -1450,7 +1449,7 @@ def checkbox(theWhere, theX, theY, theLabel, theState, theColor = 0xCECECE):
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1475,7 +1474,7 @@ def text(theWhere, theX, theY, theText, theFontScale = 0.4, theColor = 0xCECECE)
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1498,14 +1497,14 @@ def printf(theWhere, theX, theY, theFontScale, theColor, theFmt):
 	"""
 	Display a piece of text that can be formated using `C stdio's printf()` style. For instance
 	if you want to display text mixed with numbers, you can use:
-	
+
 	```
 	printf(frame, 10, 15, 0.4, 0xff0000, 'Text: %d and %f', 7, 3.1415)
 	```
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1528,16 +1527,16 @@ def printf(theWhere, theX, theY, theFmt):
 	"""
 	Display a piece of text that can be formated using `C stdio's printf()` style. For instance
 	if you want to display text mixed with numbers, you can use:
-	
+
 	```
 	printf(frame, 10, 15, 0.4, 0xff0000, 'Text: %d and %f', 7, 3.1415)
 	```
-	
+
 	The size and color of the text will be based on cvui's default values.
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1559,7 +1558,7 @@ def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = '%d'):
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1584,23 +1583,23 @@ def trackbar(theWhere, theX, theY, theWidth, theValue, theMin, theMax, theSegmen
 	by clicking and/or dragging the marker right or left. This component can use
 	different types of data as its value, so it is imperative provide the right
 	label format, e.g. '%d' for ints, otherwise you might end up with weird errors.
-	
+
 	Example:
-	
+
 	```
 	# using float
 	trackbar(where, x, y, width, &floatValue, 0.0, 50.0)
-	
+
 	# using float
 	trackbar(where, x, y, width, &floatValue, 0.0f, 50.0f)
-	
+
 	# using char
 	trackbar(where, x, y, width, &charValue, (char)1, (char)10)
 	```
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1639,7 +1638,7 @@ def window(theWhere, theX, theY, theWidth, theHeight, theTitle):
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1664,7 +1663,7 @@ def rect(theWhere, theX, theY, theWidth, theHeight, theBorderColor, theFillingCo
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theX: int
 		position X where the component should be placed.
@@ -1691,7 +1690,7 @@ def sparkline(theWhere, theValues, theX, theY, theWidth, theHeight, theColor = 0
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the component should be rendered.
 	theValues: number[]
 		array or list containing the numeric values to be used in the sparkline.
@@ -1716,12 +1715,12 @@ def iarea(theX, theY, theWidth, theHeight):
 	"""
 	Create an interaction area that reports activity with the mouse cursor.
 	The tracked interactions are returned by the function and they are:
-	
+
 	`OUT` when the cursor is not over the iarea.
 	`OVER` when the cursor is over the iarea.
 	`DOWN` when the cursor is pressed over the iarea, but not released yet.
 	`CLICK` when the cursor clicked (pressed and released) within the iarea.
-	
+
 	This function creates no visual output on the screen. It is intended to
 	be used as an auxiliary tool to create interactions.
 
@@ -1750,30 +1749,30 @@ def iarea(theX, theY, theWidth, theHeight):
 def beginRow(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0):
 	"""
 	Start a new row.
-	
+
 	One of the most annoying tasks when building UI is to calculate
 	where each component should be placed on the screen. cvui has
 	a set of methods that abstract the process of positioning
 	components, so you don't have to think about assigning a
 	X and Y coordinate. Instead you just add components and cvui
 	will place them as you go.
-	
+
 	You use `beginRow()` to start a group of elements. After `beginRow()`
 	has been called, all subsequent component calls don't have to specify
 	the frame where the component should be rendered nor its position.
 	The position of the component will be automatically calculated by cvui
 	based on the components within the group. All components are placed
 	side by side, from left to right.
-	
+
 	E.g.
-	
+
 	```
 	beginRow(frame, x, y, width, height)
 	text('test')
 	button('btn')
 	endRow()
 	```
-	
+
 	Rows and columns can be nested, so you can create columns/rows within
 	columns/rows as much as you want. It's important to notice that any
 	component within `beginRow()` and `endRow()` *do not* specify the position
@@ -1781,26 +1780,26 @@ def beginRow(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0
 	As a consequence, **be sure you are calling `beginRow(width, height)`
 	when the call is nested instead of `beginRow(x, y, width, height)`**,
 	otherwise cvui will throw an error.
-	
+
 	E.g.
-	
+
 	```
 	beginRow(frame, x, y, width, height)
 	text('test')
 	button('btn')
-	
+
 	beginColumn()      # no frame nor x,y parameters here!
 	text('column1')
 	text('column2')
 	endColumn()
 	endRow()
 	```
-	
+
 	Don't forget to call `endRow()` to finish the row, otherwise cvui will throw an error.
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the components within this block should be rendered.
 	theX: int
 		position X where the row should be placed.
@@ -1837,30 +1836,30 @@ def endRow():
 def beginColumn(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding = 0):
 	"""
 	Start a new column.
-	
+
 	One of the most annoying tasks when building UI is to calculate
 	where each component should be placed on the screen. cvui has
 	a set of methods that abstract the process of positioning
 	components, so you don't have to think about assigning a
 	X and Y coordinate. Instead you just add components and cvui
 	will place them as you go.
-	
+
 	You use `beginColumn()` to start a group of elements. After `beginColumn()`
 	has been called, all subsequent component calls don't have to specify
 	the frame where the component should be rendered nor its position.
 	The position of the component will be automatically calculated by cvui
 	based on the components within the group. All components are placed
 	below each other, from the top of the screen towards the bottom.
-	
+
 	E.g.
-	
+
 	```
 	beginColumn(frame, x, y, width, height)
 	text('test')
 	button('btn')
 	endColumn()
 	```
-	
+
 	Rows and columns can be nested, so you can create columns/rows within
 	columns/rows as much as you want. It's important to notice that any
 	component within `beginColumn()` and `endColumn()` *do not* specify the position
@@ -1868,26 +1867,26 @@ def beginColumn(theWhere, theX, theY, theWidth = -1, theHeight = -1, thePadding 
 	As a consequence, **be sure you are calling `beginColumn(width, height)`
 	when the call is nested instead of `beginColumn(x, y, width, height)`**,
 	otherwise cvui will throw an error.
-	
+
 	E.g.
-	
+
 	```
 	beginColumn(frame, x, y, width, height)
 	text('test')
 	button('btn')
-	
+
 	beginRow()      # no frame nor x,y parameters here!
 	text('column1')
 	text('column2')
 	endRow()
 	endColumn()
 	```
-	
+
 	Don't forget to call `endColumn()` to finish the column, otherwise cvui will throw an error.
 
 	Parameters
 	----------
-	theWhere: np.array
+	theWhere: np.ndarray
 		image/frame where the components within this block should be rendered.
 	theX: int
 		position X where the row should be placed.
@@ -1926,7 +1925,7 @@ def beginRow(theWidth = -1, theHeight = -1, thePadding = 0):
 	Start a row. This function behaves in the same way as `beginRow(frame, x, y, width, height)`,
 	however it is suposed to be used within `begin*()/end*()` blocks since they require components
 	not to inform frame nor x,y coordinates.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -1951,7 +1950,7 @@ def beginColumn(theWidth = -1, theHeight = -1, thePadding = 0):
 	Start a column. This function behaves in the same way as `beginColumn(frame, x, y, width, height)`,
 	however it is suposed to be used within `begin*()/end*()` blocks since they require components
 	not to inform frame nor x,y coordinates.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -1977,7 +1976,7 @@ def space(theValue = 5):
 	The function is aware of context, so if it is used within a `beginColumn()` and
 	`endColumn()` block, the space will be vertical. If it is used within a `beginRow()`
 	and `endRow()` block, space will be horizontal.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -2000,7 +1999,7 @@ def space(theValue = 5):
 def text(theText, theFontScale = 0.4, theColor = 0xCECECE):
 	"""
 	Display a piece of text within a `begin*()` and `end*()` block.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -2027,7 +2026,7 @@ def button(theWidth, theHeight, theLabel):
 	Display a button within a `begin*()` and `end*()` block.
 	The button size will be defined by the width and height parameters,
 	no matter the content of the label.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -2056,7 +2055,7 @@ def button(theLabel):
 	"""
 	Display a button within a `begin*()` and `end*()` block. The size of the button will be
 	automatically adjusted to properly house the label content.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -2079,21 +2078,21 @@ def button(theLabel):
 
 def button(theIdle, theOver, theDown):
 	"""
-	Display a button whose graphics are images (np.array).
-	
+	Display a button whose graphics are images (np.ndarray).
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
-	
+
 	The button accepts three images to describe its states,
 	which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
 	The button size will be defined by the width and height of the images.
 
 	Parameters
 	----------
-	theIdle: np.array
+	theIdle: np.ndarray
 		image that will be rendered when the button is not interacting with the mouse cursor.
-	theOver: np.array
+	theOver: np.ndarray
 		image that will be rendered when the mouse cursor is over the button.
-	theDown: np.array
+	theDown: np.ndarray
 		image that will be rendered when the mouse cursor clicked the button (or is clicking).
 
 	Returns
@@ -2114,13 +2113,13 @@ def button(theIdle, theOver, theDown):
 
 def image(theImage):
 	"""
-	Display an image (np.array) within a `begin*()` and `end*()` block
-	
+	Display an image (np.ndarray) within a `begin*()` and `end*()` block
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
 	----------
-	theImage: np.array
+	theImage: np.ndarray
 		image to be rendered in the specified destination.
 
 	See Also
@@ -2138,7 +2137,7 @@ def checkbox(theLabel, theState, theColor = 0xCECECE):
 	"""
 	Display a checkbox within a `begin*()` and `end*()` block. You can use the state parameter
 	to monitor if the checkbox is checked or not.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -2166,12 +2165,12 @@ def checkbox(theLabel, theState, theColor = 0xCECECE):
 def printf(theFontScale, theColor, theFmt):
 	"""
 	Display a piece of text within a `begin*()` and `end*()` block.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
-	
+
 	The text can be formated using `C stdio's printf()` style. For instance if you want to display text mixed
 	with numbers, you can use:
-	
+
 	```
 	printf(0.4, 0xff0000, 'Text: %d and %f', 7, 3.1415)
 	```
@@ -2198,15 +2197,15 @@ def printf(theFontScale, theColor, theFmt):
 def printf(theFmt):
 	"""
 	Display a piece of text that can be formated using `C stdio's printf()` style.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
-	
+
 	For instance if you want to display text mixed with numbers, you can use:
-	
+
 	```
 	printf(frame, 10, 15, 0.4, 0xff0000, 'Text: %d and %f', 7, 3.1415)
 	```
-	
+
 	The size and color of the text will be based on cvui's default values.
 
 	Parameters
@@ -2228,7 +2227,7 @@ def counter(theValue, theStep = 1, theFormat = '%d'):
 	"""
 	Display a counter for integer values that the user can increase/descrease
 	by clicking the up and down arrows.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -2258,22 +2257,22 @@ def trackbar(theWidth, theValue, theMin, theMax, theSegments = 1, theLabelFormat
 	"""
 	Display a trackbar for numeric values that the user can increase/decrease
 	by clicking and/or dragging the marker right or left.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
-	
+
 	This component uses templates so it is imperative that you make it very explicit
 	the type of `theValue`, `theMin`, `theMax` and `theStep`, otherwise you might end up with
 	weird compilation errors.
-	
+
 	Example:
-	
+
 	```
 	# using float
 	trackbar(width, &floatValue, 0.0, 50.0)
-	
+
 	# using float
 	trackbar(width, &floatValue, 0.0f, 50.0f)
-	
+
 	# using char
 	trackbar(width, &charValue, (char)1, (char)10)
 	```
@@ -2314,7 +2313,7 @@ def trackbar(theWidth, theValue, theMin, theMax, theSegments = 1, theLabelFormat
 def window(theWidth, theHeight, theTitle):
 	"""
 	Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -2339,7 +2338,7 @@ def window(theWidth, theHeight, theTitle):
 def rect(theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000):
 	"""
 	Display a rectangle within a `begin*()` and `end*()` block.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -2366,7 +2365,7 @@ def rect(theWidth, theHeight, theBorderColor, theFillingColor = 0xff000000):
 def sparkline(theValues, theWidth, theHeight, theColor = 0x00FF00):
 	"""
 	Display the values of a vector as a sparkline within a `begin*()` and `end*()` block.
-	
+
 	IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
 	Parameters
@@ -2413,7 +2412,7 @@ def update(theWindowName = ''):
 	for i in range(LEFT_BUTTON, RIGHT_BUTTON + 1):
 		aContext.mouse.buttons[i].justReleased = False
 		aContext.mouse.buttons[i].justPressed  = False
-	
+
 	__internal.screen.reset()
 
 	# If we were told to keep track of the keyboard shortcuts, we
@@ -2465,7 +2464,7 @@ def text(*theArgs):
 		aText = theArgs[0]
 		aFontScale = theArgs[1] if len(theArgs) >= 2 else 0.4
 		aColor = theArgs[2] if len(theArgs) >= 3 else 0xCECECE
-	
+
 	__internal.text(aBlock, aX, aY, aText, aFontScale, aColor, True)
 
 def printf(*theArgs):
@@ -2549,7 +2548,7 @@ def checkbox(*theArgs):
 		aLabel = theArgs[0]
 		aState = theArgs[1]
 		aColor = theArgs[2] if len(theArgs) >= 3 else 0xCECECE
-	
+
 	return __internal.checkbox(aBlock, aX, aY, aLabel, aState, aColor)
 
 def mouse(*theArgs):
@@ -2634,7 +2633,7 @@ def image(*theArgs):
 		# Row/column function, signature is image(...)
 		aImage = theArgs[0]
 		aBlock = __internal.topBlock()
-		
+
 		__internal.image(aBlock, aBlock.anchor.x, aBlock.anchor.y, aImage)
 
 def trackbar(*theArgs):
@@ -2668,7 +2667,7 @@ def trackbar(*theArgs):
 		aLabelFormat = theArgs[5] if len(theArgs) >= 6 else '%.1Lf'
 		aOptions = theArgs[6] if len(theArgs) >= 7 else 0
 		aDiscreteStep = theArgs[7] if len(theArgs) >= 8 else 1
-	
+
 	# TODO: adjust aLabelFormat based on type of aValue
 	aParams = TrackbarParams(aMin, aMax, aDiscreteStep, aSegments, aLabelFormat, aOptions)
 	aResult = __internal.trackbar(aBlock, aX, aY, aWidth, aValue, aParams)
@@ -2718,7 +2717,7 @@ def rect(*theArgs):
 		aHeight = theArgs[1]
 		aBorderColor = theArgs[2]
 		aFillingColor = theArgs[3] if len(theArgs) >= 4 else 0xff000000
-	
+
 	__internal.rect(aBlock, aX, aY, aWidth, aHeight, aBorderColor, aFillingColor)
 
 def sparkline(*theArgs):
@@ -2762,7 +2761,7 @@ def beginRow(*theArgs):
 		aWidth = theArgs[0] if len(theArgs) >= 1 else -1
 		aHeight = theArgs[1] if len(theArgs) >= 2 else -1
 		aPadding = theArgs[2] if len(theArgs) >= 3 else 0
-		
+
 		aBlock = __internal.topBlock()
 		__internal.begin(ROW, aBlock.where, aBlock.anchor.x, aBlock.anchor.y, aWidth, aHeight, aPadding)
 
@@ -2782,6 +2781,6 @@ def beginColumn(*theArgs):
 		aWidth = theArgs[0] if len(theArgs) >= 1 else -1
 		aHeight = theArgs[1] if len(theArgs) >= 2 else -1
 		aPadding = theArgs[2] if len(theArgs) >= 3 else 0
-		
+
 		aBlock = __internal.topBlock()
 		__internal.begin(COLUMN, aBlock.where, aBlock.anchor.x, aBlock.anchor.y, aWidth, aHeight, aPadding)
