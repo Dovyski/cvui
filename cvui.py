@@ -2628,7 +2628,7 @@ def image(*theArgs):
 		aImage = theArgs[3]
 
 		__internal.screen.where = aWhere
-		__internal.image(__internal.screen, theX, theY, theImage)
+		__internal.image(__internal.screen, aX, aY, aImage)
 	else:
 		# Row/column function, signature is image(...)
 		aImage = theArgs[0]
