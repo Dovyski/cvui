@@ -32,10 +32,15 @@
 *.opensdf
 *.suo
 example/build/*
+example/.vs/*
 .idea
+*.pyc
+.vs/*
+.vscode/*
 
 #Build paths
 build
+build.release
 install
 bin
 
