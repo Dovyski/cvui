@@ -12,7 +12,7 @@ All notable changes to this project are documented in this file. The format is b
 - [Documentation](https://dovyski.github.io/cvui/) tweaks (help from [ShengYu](https://github.com/shengyu7697) and [Akash Kumar Singh](https://github.com/ksakash)).
 - Cmake version `3.1` or higher is now required to build the examples.
 - Cmake files were improved.
-- `rect()` color filling now supports alpha values, e.g. `0x7700ff00` (blue with 50% transparency) ([#39](https://github.com/Dovyski/cvui/pull/39), help from [Justin Muncaster](https://github.com/jmuncaster)).
+- `rect()` color filling now supports alpha values, e.g. `0x7700ff00` (green with 50% transparency) ([#39](https://github.com/Dovyski/cvui/pull/39), help from [Justin Muncaster](https://github.com/jmuncaster)).
 
 ### Fixed
 - `rect()` issue related to opacity ([#42](https://github.com/Dovyski/cvui/pull/42), help from [Justin Muncaster](https://github.com/jmuncaster)).
