@@ -1,6 +1,6 @@
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
- Version: 2.7.0-BETA
+ Version: 2.7.0
 
  Usage:
 
@@ -1105,7 +1105,7 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #endif
 
 // Lib version
-static const char *VERSION = "2.7.0-BETA";
+static const char *VERSION = "2.7.0";
 
 const int ROW = 0;
 const int COLUMN = 1;

@@ -1,6 +1,6 @@
 """
 A (very) simple UI lib built on top of OpenCV drawing primitives.
-Version: 2.7b1
+Version: 2.7
 
 Use of cvui revolves around calling cvui.init() to initialize the lib,
 rendering cvui components to a np.ndarray (that you handle yourself) and
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     main()
 
 # Lib version
-VERSION = '2.7b1'
+VERSION = '2.7'
 
 # Constants regarding component interactions
 ROW = 0

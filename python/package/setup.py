@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cvui",
-    version="2.7beta1",
+    version="2.7",
     author="Fernando Bevilacqua",
     author_email="dovyski@gmail.com",
     license="MIT",
@@ -15,7 +15,7 @@ setuptools.setup(
     url="https://github.com/dovyski/cvui",
     packages=setuptools.find_packages(),
     classifiers=(
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
