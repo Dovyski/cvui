@@ -19,7 +19,7 @@ A (very) simple UI lib built on top of OpenCV drawing primitives. Other UI libs,
 
 Use of cvui revolves around calling `cvui.init()` to initialize the lib, rendering cvui components to a `np.ndarray` (that you handle yourself) and finally showing that `np.ndarray` on the screen using `cvui.imshow()`, which is cvui's version of `cv2.imshow()`. Alternatively you can use `cv2.imshow()` to show things, but in such case you must call `cvui.update()` yourself before calling `cv.imshow()`.
 
-Below is a an example:
+Below is an example:
 
 ```python
 import numpy as np
