@@ -1,3 +1,10 @@
+# Clean everything up
+rm -rf ./package/cvui/cvui.py
+rm -rf ./package/build
+rm -rf ./package/cvui.egg-info
+rm -rf ./package/dist
+
+# Copy the lastest cvui.py
 cp ../cvui.py ./package/cvui/
 cd package
 
