@@ -1,4 +1,5 @@
 cd package
 
-# Upload the thing
-twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+# Upload the thing. Use "--repository-url https://test.pypi.org/legacy/"
+# for testing, when needed.
+twine upload dist/*
