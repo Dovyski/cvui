@@ -66,3 +66,6 @@ cmake_install.cmake
 /python/package/cvui/cvui.py
 /python/package/cvui.egg-info
 /python/package/dist
+/example/example.VC.VC.opendb
+/example/example.VC.db
+/example/precompiled-libs/x64/opencv
