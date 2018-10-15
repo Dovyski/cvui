@@ -463,18 +463,18 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
  \param theValue the current value of the trackbar. It will be modified when the user interacts with the trackbar. Any numeric type can be used, e.g. float, double, long double, int, char, uchar.
  \param theMin minimum value allowed for the trackbar.
  \param theMax maximum value allowed for the trackbar.
- \param theHandleWidth Handle trackbar width.
- \param theHandleHeight Handle trackbar height.
  \param theSegments number of segments the trackbar will have (default is 1). Segments can be seen as groups of numbers in the scale of the trackbar. For example, 1 segment means a single groups of values (no extra labels along the scale), 2 segments mean the trackbar values will be divided in two groups and a label will be placed at the middle of the scale.
  \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2Lf` (Lf *not lf). No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string such as `%.0Lf` to format your labels.
  \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of theDiscreteStep param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
  \param theDiscreteStep amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
+ \param theHandleWidth Handle trackbar width.
+ \param theHandleHeight Handle trackbar height.
  \return `true` when the value of the trackbar changed.
 
  \sa counter()
 */
 template <typename T>
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, int theHandleWidth  =3, int theHandleHeight = 4, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = 1);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = 1, int theHandleWidth = 3, int theHandleHeight = 4);
 
 /**
  Display a window (a block with a title and a body).
@@ -966,6 +966,8 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
  \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2Lf`. No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string as `%.0Lf` to format your labels.
  \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of informed step param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
  \param theDiscreteStep the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
+ \param theHandleWidth Handle trackbar width.
+ \param theHandleHeight Handle trackbar height.
  \return `true` when the value of the trackbar changed.
 
  \sa counter()
@@ -975,7 +977,7 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
  \sa endColumn()
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, int theHandleWidth=3, int theHandleHeight = 4, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = 1);
+bool trackbar(int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = 1, int theHandleWidth = 3, int theHandleHeight = 4);
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
@@ -1257,17 +1259,17 @@ namespace internal
 	bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, const TrackbarParams& theParams);
 
 	template<typename num_type>
-	TrackbarParams makeTrackbarParams(num_type theMin, num_type theMax, num_type theStep, int theSegments, int theHandleWidth, int theHandleHeight, const char *theLabelFormat, unsigned int theOptions) {
+	TrackbarParams makeTrackbarParams(num_type theMin, num_type theMax, num_type theStep, int theSegments,  const char *theLabelFormat, unsigned int theOptions, int theHandleWidth, int theHandleHeight ) {
 		TrackbarParams aParams;
 
 		aParams.min = (long double)theMin;
 		aParams.max = (long double)theMax;
-		aParams.step = (long double)theStep;
-		aParams.handleWidth = theHandleWidth;
-		aParams.handleHeight = theHandleHeight;		
+		aParams.step = (long double)theStep;		
 		aParams.options = theOptions;
 		aParams.segments = theSegments;
 		aParams.labelFormat = theLabelFormat;
+		aParams.handleWidth = theHandleWidth;
+		aParams.handleHeight = theHandleHeight;
 	
 		return aParams;
 	}
@@ -1320,14 +1322,14 @@ namespace render {
 }
 
 template <typename num_type>
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, int theHandleWidth, int theHandleHeight, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep) {
-	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments, theHandleWidth, theHandleHeight, theLabelFormat, theOptions);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep, int theHandleWidth, int theHandleHeight ) {
+	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments, theLabelFormat, theOptions, theHandleWidth, theHandleHeight);
 	return trackbar<num_type>(theWhere, theX, theY, theWidth, theValue, aParams);
 }
 
 template <typename num_type>
-bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, int theHandleWidth, int theHandleHeight, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep) {
-	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments, theHandleWidth, theHandleHeight, theLabelFormat, theOptions);
+bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep, int theHandleWidth, int theHandleHeight) {
+	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments,  theLabelFormat, theOptions, theHandleWidth, theHandleHeight);
 	return trackbar<num_type>(theWidth, theValue, aParams);
 }
 
