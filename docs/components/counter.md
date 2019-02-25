@@ -13,6 +13,8 @@ int counter (
     int theX,
     int theY,
     int *theValue,
+	int theMin,
+	int theMax,
     int theStep = 1,
     const char *theFormat = "%d"
 )
@@ -24,6 +26,8 @@ double counter (
     int theX,
     int theY,
     double *theValue,
+	double theMin,
+	double theMax,
     double theStep = 0.5,
     const char *theFormat = "%.2f"
 )
@@ -37,7 +41,7 @@ Below is an example showing a counter. The result on the screen is shown in Figu
 
 ```cpp
 int count = 2;
-cvui::counter(frame, 90, 50, &count);
+cvui::counter(frame, 90, 50, &count, 0, 10);
 ```
 
 ![Counter]({{ site.url }}/img/counter.png)

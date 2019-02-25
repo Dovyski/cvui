@@ -63,13 +63,13 @@ int main(int argc, const char *argv[])
 		// The counter component can be used to alter int variables. Use
 		// the 4th parameter of the function to point it to the variable
 		// to be changed.
-		cvui::counter(frame, 200, 120, &count);
+		cvui::counter(frame, 200, 120, &count,0,100,10);
 
 		// Counter can be used with doubles too. You can also specify
 		// the counter's step (how much it should change
 		// its value after each button press), as well as the format
 		// used to print the value.
-		cvui::counter(frame, 320, 120, &countFloat, 0.1, "%.1f");
+		cvui::counter(frame, 320, 120, &countFloat, 0.0, 10.0, 0.1, "%.1f");
 
 		// The trackbar component can be used to create scales.
 		// It works with all numerical types (including chars).

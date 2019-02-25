@@ -63,7 +63,7 @@ int main(int argc, const char *argv[])
 			cvui::window(80, 80, "window");
 			cvui::rect(50, 50, 0x00ff00, 0xff0000);
 			cvui::sparkline(window1_values, 50, 50);
-			cvui::counter(&window1_value);
+			cvui::counter(&window1_value,0.0,10.0);
 			cvui::button(100, 30, "Fixed");
 			cvui::image(img);
 			cvui::button(img, imgGray, imgRed);
@@ -132,7 +132,7 @@ int main(int argc, const char *argv[])
 			cvui::window(80, 80, "window");
 			cvui::rect(50, 50, 0x00ff00, 0xff0000);
 			cvui::sparkline(window2_values, 50, 50);
-			cvui::counter(&window2_value);
+			cvui::counter(&window2_value,0.0,100.0);
 			cvui::button(100, 30, "Fixed");
 			cvui::image(img);
 			cvui::button(img, imgGray, imgRed);
