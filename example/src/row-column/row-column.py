@@ -71,7 +71,7 @@ def main():
 		cvui.window(80, 80, 'window')
 		cvui.rect(50, 50, 0x00ff00, 0xff0000);
 		cvui.sparkline(values, 50, 50);
-		cvui.counter(value)
+		cvui.counter(value,0,10)
 		cvui.button(100, 30, 'Fixed')
 		cvui.image(img)
 		cvui.button(img, imgGray, imgRed)

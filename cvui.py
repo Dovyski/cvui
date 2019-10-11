@@ -422,16 +422,18 @@ class Internal:
 			aTextSize.height += 1
 			self.updateLayoutFlow(theBlock, aTextSize)
 
-	def counter(self, theBlock, theX, theY, theValue, theStep, theFormat):
+	def counter(self, theBlock, theX, theY, theValue, theMin, theMax, theStep, theFormat):
 		aContentArea = Rect(theX + 22, theY, 48, 22)
 
 		if self.buttonWH(theBlock, theX, theY, 22, 22, '-', False):
+                    if((theValue[0] - theStep) >= theMin):
 			theValue[0] -= theStep
 
 		aText = theFormat % theValue[0]
 		self._render.counter(theBlock, aContentArea, aText)
 
 		if self.buttonWH(theBlock, aContentArea.x + aContentArea.width, theY, 22, 22, "+", False):
+                    if((theValue[0] + theStep) <= theMax):
 			theValue[0] += theStep
 
 		# Update the layout flow
@@ -727,7 +729,7 @@ class Render:
 		aPosition = (int(thePos.x), int(thePos.y))
 		cv2.putText(theBlock.where, theText, aPosition, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, self._internal.hexToScalar(theColor), 1, cv2.LINE_AA)
 
-	def counter(self, theBlock, theShape, theValue):
+	def counter(self, theBlock, theShape, theValue, theMin, theMax):
 		self.rectangle(theBlock.where, theShape, (0x29, 0x29, 0x29), CVUI_FILLED) # fill
 		self.rectangle(theBlock.where, theShape, (0x45, 0x45, 0x45))              # border
 
@@ -1551,7 +1553,7 @@ def printf(theWhere, theX, theY, theFmt):
 	"""
 	print('This is wrapper function to help code autocompletion.')
 
-def counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = '%d'):
+def counter(theWhere, theX, theY, theValue, theMin = 0, theMax = 100, theStep = 1, theFormat = '%d'):
 	"""
 	Display a counter for integer values that the user can increase/descrease
 	by clicking the up and down arrows.
@@ -2223,7 +2225,7 @@ def printf(theFmt):
 	"""
 	print('This is wrapper function to help code autocompletion.')
 
-def counter(theValue, theStep = 1, theFormat = '%d'):
+def counter(theValue, theMin = 0, theMax = 100, theStep = 1, theFormat = '%d'):
 	"""
 	Display a counter for integer values that the user can increase/descrease
 	by clicking the up and down arrows.
@@ -2503,30 +2505,34 @@ def printf(*theArgs):
 
 def counter(*theArgs):
 	if isinstance(theArgs[0], np.ndarray):
-		# Signature: counter(theWhere, theX, theY, theValue, theStep = 1, theFormat = "")
+		# Signature: counter(theWhere, theX, theY, theValue, theMin = 0, theMax = 100, theStep = 1, theFormat = "")
 		aWhere = theArgs[0]
 		aX = theArgs[1]
 		aY = theArgs[2]
 		aValue = theArgs[3]
-		aStep = theArgs[4] if len(theArgs) >= 5 else 1
-		aFormat = theArgs[5] if len(theArgs) >= 6 else ''
+                aMin = the[4] if len(theArgs) >= 5 else 0
+                aMax = the[5] if len(theArgs) >= 6 else 100
+		aStep = theArgs[6] if len(theArgs) >= 7 else 1
+		aFormat = theArgs[7] if len(theArgs) >= 8 else ''
 
 		__internal.screen.where = aWhere
 		aBlock = __internal.screen
 	else:
-		# Signature: counter(theValue, theStep = 1, theFormat = "%d")
+		# Signature: counter(theValue, theMin, theMax, theStep = 1, theFormat = "%d")
 		aBlock = __internal.topBlock()
 		aX = aBlock.anchor.x
 		aY = aBlock.anchor.y
 		aValue = theArgs[0]
-		aStep = theArgs[1] if len(theArgs) >= 2 else 1
-		aFormat = theArgs[2] if len(theArgs) >= 3 else ''
+                aMin = theArgs[1] if len(theArgs) >= 2 else 0
+                aMax = theArgs[2] if len(theArgs) > 3 else 100
+		aStep = theArgs[3] if len(theArgs) >= 4 else 1
+		aFormat = theArgs[4] if len(theArgs) >= 5 else ''
 
 	if not aFormat:
 		aIsInt = isinstance(aValue[0], int) == True and isinstance(aStep, int)
 		aFormat = '%d' if aIsInt else '%.1f'
 
-	return __internal.counter(aBlock, aX, aY, aValue, aStep, aFormat)
+	return __internal.counter(aBlock, aX, aY, aValue, aMin, aMax, aStep, aFormat)
 
 def checkbox(*theArgs):
 	if isinstance(theArgs[0], np.ndarray):
