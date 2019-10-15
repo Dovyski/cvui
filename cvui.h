@@ -467,12 +467,14 @@ double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double t
  \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2Lf` (Lf *not lf). No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string such as `%.0Lf` to format your labels.
  \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of theDiscreteStep param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
  \param theDiscreteStep amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
+ \param theHandleWidth Handle trackbar width.
+ \param theHandleHeight Handle trackbar height.
  \return `true` when the value of the trackbar changed.
 
  \sa counter()
 */
 template <typename T>
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = 1);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = 1, int theHandleWidth = 3, int theHandleHeight = 4);
 
 /**
  Display a window (a block with a title and a body).
@@ -964,6 +966,8 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
  \param theLabelFormat formating string that will be used to render the labels, e.g. `%.2Lf`. No matter the type of the `theValue` param, internally trackbar stores it as a `long double`, so the formating string will *always* receive a `long double` value to format. If you are using a trackbar with integers values, for instance, you can supress decimals using a formating string as `%.0Lf` to format your labels.
  \param theOptions options to customize the behavior/appearance of the trackbar, expressed as a bitset. Available options are defined as `TRACKBAR_` constants and they can be combined using the bitwise `|` operand. Available options are: `TRACKBAR_HIDE_SEGMENT_LABELS` (do not render segment labels, but do render min/max labels), `TRACKBAR_HIDE_STEP_SCALE` (do not render the small lines indicating values in the scale), `TRACKBAR_DISCRETE` (changes of the trackbar value are multiples of informed step param), `TRACKBAR_HIDE_MIN_MAX_LABELS` (do not render min/max labels), `TRACKBAR_HIDE_VALUE_LABEL` (do not render the current value of the trackbar below the moving marker), `TRACKBAR_HIDE_LABELS` (do not render labels at all).
  \param theDiscreteStep the amount that the trackbar marker will increase/decrease when the marker is dragged right/left (if option TRACKBAR_DISCRETE is ON)
+ \param theHandleWidth Handle trackbar width.
+ \param theHandleHeight Handle trackbar height.
  \return `true` when the value of the trackbar changed.
 
  \sa counter()
@@ -973,7 +977,7 @@ double counter(double *theValue, double theStep = 0.5, const char *theFormat = "
  \sa endColumn()
 */
 template <typename T> // T can be any float type (float, double, long double)
-bool trackbar(int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = 1);
+bool trackbar(int theWidth, T *theValue, T theMin, T theMax, int theSegments = 1, const char *theLabelFormat = "%.1Lf", unsigned int theOptions = 0, T theDiscreteStep = 1, int theHandleWidth = 3, int theHandleHeight = 4);
 
 /**
  Display a window (a block with a title and a body) within a `begin*()` and `end*()` block.
@@ -1188,15 +1192,19 @@ namespace internal
 		long double min;
 		long double max;
 		long double step;
-		int segments;
-		unsigned int options;
+		int segments;		
+		int handleWidth;
+		int handleHeight;
+		unsigned int options;		
 		std::string labelFormat;
 
 		inline TrackbarParams()
 			: min(0.)
 			, max(25.)
-			, step(1.)
+			, step(1.)			
 			, segments(0)
+			, handleWidth(3)
+			, handleHeight(4)
 			, options(0)
 			, labelFormat("%.0Lf")
 		{}
@@ -1251,15 +1259,17 @@ namespace internal
 	bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, T *theValue, const TrackbarParams& theParams);
 
 	template<typename num_type>
-	TrackbarParams makeTrackbarParams(num_type theMin, num_type theMax, num_type theStep, int theSegments, const char *theLabelFormat, unsigned int theOptions) {
+	TrackbarParams makeTrackbarParams(num_type theMin, num_type theMax, num_type theStep, int theSegments,  const char *theLabelFormat, unsigned int theOptions, int theHandleWidth, int theHandleHeight ) {
 		TrackbarParams aParams;
 
 		aParams.min = (long double)theMin;
 		aParams.max = (long double)theMax;
-		aParams.step = (long double)theStep;
+		aParams.step = (long double)theStep;		
 		aParams.options = theOptions;
 		aParams.segments = theSegments;
 		aParams.labelFormat = theLabelFormat;
+		aParams.handleWidth = theHandleWidth;
+		aParams.handleHeight = theHandleHeight;
 	
 		return aParams;
 	}
@@ -1312,14 +1322,14 @@ namespace render {
 }
 
 template <typename num_type>
-bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep) {
-	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments, theLabelFormat, theOptions);
+bool trackbar(cv::Mat& theWhere, int theX, int theY, int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep, int theHandleWidth, int theHandleHeight ) {
+	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments, theLabelFormat, theOptions, theHandleWidth, theHandleHeight);
 	return trackbar<num_type>(theWhere, theX, theY, theWidth, theValue, aParams);
 }
 
 template <typename num_type>
-bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep) {
-	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments, theLabelFormat, theOptions);
+bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax, int theSegments, const char *theLabelFormat, unsigned int theOptions, num_type theDiscreteStep, int theHandleWidth, int theHandleHeight) {
+	internal::TrackbarParams aParams = internal::makeTrackbarParams(theMin, theMax, theDiscreteStep, theSegments,  theLabelFormat, theOptions, theHandleWidth, theHandleHeight);
 	return trackbar<num_type>(theWidth, theValue, aParams);
 }
 
@@ -1954,10 +1964,10 @@ namespace render
 
 		// Draw the rectangle representing the handle
 		int aPixelX = internal::trackbarValueToXPixel(theParams, theShape, theValue);
-		int aIndicatorWidth = 3;
-		int aIndicatorHeight = 4;
-		cv::Point aPoint1(aPixelX - aIndicatorWidth, aBarTopLeft.y - aIndicatorHeight);
-		cv::Point aPoint2(aPixelX + aIndicatorWidth, aBarTopLeft.y + aBarHeight + aIndicatorHeight);
+		//int aIndicatorWidth = 3;
+		//int aIndicatorHeight = 4;
+		cv::Point aPoint1(aPixelX - theParams.handleWidth, aBarTopLeft.y - theParams.handleHeight);
+		cv::Point aPoint2(aPixelX + theParams.handleWidth, aBarTopLeft.y + aBarHeight + theParams.handleHeight);
 		cv::Rect aRect(aPoint1, aPoint2);
 
 		int aFillColor = theState == OVER ? 0x525252 : 0x424242;

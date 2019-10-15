@@ -56,15 +56,15 @@ int main(int argc, const char *argv[])
 		// Below is a uchar trackbar. Observe the uchar cast for the min, the max and 
 		// the step parameters.
 		cvui::text(frame, x, 340, "uchar, custom label %.0Lf");
-		cvui::trackbar(frame, x, 370, width, &ucharValue, (uchar)0, (uchar)255, 0, "%.0Lf");
+		cvui::trackbar(frame, x, 370, width, &ucharValue, (uchar)0, (uchar)255, 0, "%.0Lf" );
 
 		// You can change the behavior of any tracker by using the options parameter.
 		// Options are defined as a bitfield, so you can combine them.
 		// E.g.
 		//	TRACKBAR_DISCRETE							// value changes are discrete
 		//  TRACKBAR_DISCRETE | TRACKBAR_HIDE_LABELS	// discrete changes and no labels
-		cvui::text(frame, x, 450, "double, step 0.1, option TRACKBAR_DISCRETE");
-		cvui::trackbar(frame, x, 480, width, &doubleValue3, (double)10., (double)10.5, 1, "%.1Lf", cvui::TRACKBAR_DISCRETE, (double)0.1);
+		cvui::text(frame, x, 450, "double, step 0.1, option TRACKBAR_DISCRETE and custom handle width and height");
+		cvui::trackbar(frame, x, 480, width, &doubleValue3, (double)10., (double)10.5, 1, "%.1Lf", cvui::TRACKBAR_DISCRETE, (double)0.1, 6, 7);
 
 		// More customizations using options.
 		unsigned int options = cvui::TRACKBAR_DISCRETE | cvui::TRACKBAR_HIDE_SEGMENT_LABELS;
