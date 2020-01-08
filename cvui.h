@@ -70,6 +70,7 @@
 namespace cvui
 {
 extern double DEFAULT_FONT_SCALE;
+extern unsigned int DEFAULT_BUTTON_COLOR;
 /**
  Initializes cvui. You must provide the name of the window where
  components will be added. It is also possible to tell cvui to handle
@@ -295,9 +296,10 @@ bool mouse(const cv::String& theWindowName, int theButton, int theQuery);
  \param theY position Y where the component should be placed.
  \param theLabel text displayed inside the button.
  \param theFontScale size of the text.
+ \param theInsideColor the color used to fill the button (other button colors, like its border, are derived from it)
  \return `true` everytime the user clicks the button.
 */
-bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, double theFontScale = DEFAULT_FONT_SCALE);
+bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, double theFontScale = DEFAULT_FONT_SCALE, unsigned int theInsideColor = DEFAULT_BUTTON_COLOR);
 
 /**
  Display a button. The button size will be defined by the width and height parameters,
@@ -310,9 +312,10 @@ bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, d
  \param theHeight height of the button.
  \param theLabel text displayed inside the button.
  \param theFontScale size of the text.
+ \param theInsideColor the color used to fill the button (other button colors, like its border, are derived from it)
  \return `true` everytime the user clicks the button.
 */
-bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, double theFontScale = DEFAULT_FONT_SCALE);
+bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, double theFontScale = DEFAULT_FONT_SCALE, unsigned int theInsideColor = DEFAULT_BUTTON_COLOR);
 
 /**
  Display a button whose graphics are images (cv::Mat). The button accepts three images to describe its states,
@@ -423,9 +426,10 @@ void printf(cv::Mat& theWhere, int theX, int theY, const char *theFmt, ...);
  \param theStep the amount that should be increased/decreased when the user interacts with the counter buttons
  \param theFormat how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `"%d"` means the value will be displayed as an integer, `"%0d"` integer with one leading zero, etc.
  \param theFontScale size of the text.
- \return integer that corresponds to the current value of the counter.
+ \param theInsideColor the inside color of the two buttons used for the counter
+ \return integer that corresponds to the current value of the counter, in the format `0xRRGGBB`, e.g. `0xff0000` for red.
 */
-int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 1, const char *theFormat = "%d", double theFontScale = DEFAULT_FONT_SCALE);
+int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 1, const char *theFormat = "%d", double theFontScale = DEFAULT_FONT_SCALE, unsigned int theInsideColor = DEFAULT_BUTTON_COLOR);
 
 /**
  Display a counter for float values that the user can increase/descrease
@@ -438,9 +442,10 @@ int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep = 
  \param theStep the amount that should be increased/decreased when the user interacts with the counter buttons
  \param theFormat how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `"%f"` means the value will be displayed as a regular float, `"%.2f"` float with two digits after the point, etc.
  \param theFontScale size of the text.
- \return a float that corresponds to the current value of the counter.
+ \param theInsideColor the inside color of the two buttons used for the counter
+ \return a float that corresponds to the current value of the counter, in the format `0xRRGGBB`, e.g. `0xff0000` for red.
 */
-double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep = 0.5, const char *theFormat = "%.2f", double theFontScale = DEFAULT_FONT_SCALE);
+double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep = 0.5, const char *theFormat = "%.2f", double theFontScale = DEFAULT_FONT_SCALE, unsigned int = DEFAULT_BUTTON_COLOR);
 
 /**
  Display a trackbar for numeric values that the user can increase/decrease
@@ -773,6 +778,7 @@ void text(const cv::String& theText, double theFontScale = DEFAULT_FONT_SCALE, u
  \param theHeight height of the button.
  \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
  \param theFontScale size of the text.
+ \param theInsideColor the color used to fill the button (other button colors, like its border, are derived from it) 
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()
@@ -780,7 +786,7 @@ void text(const cv::String& theText, double theFontScale = DEFAULT_FONT_SCALE, u
  \sa endRow()
  \sa endColumn()
 */
-bool button(int theWidth, int theHeight, const cv::String& theLabel, double theFontScale = DEFAULT_FONT_SCALE);
+bool button(int theWidth, int theHeight, const cv::String& theLabel, double theFontScale = DEFAULT_FONT_SCALE, unsigned int theInsideColor = DEFAULT_BUTTON_COLOR);
 
 /**
  Display a button within a `begin*()` and `end*()` block. The size of the button will be
@@ -789,6 +795,8 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel, double theF
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
  \param theLabel text displayed inside the button. You can set shortcuts by pre-pending them with "&"
+ \param theFontScale size of the text.
+ \param theInsideColor the color used to fill the button (other button colors, like its border, are derived from it)
  \return `true` everytime the user clicks the button.
 
  \sa beginColumn()
@@ -796,7 +804,7 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel, double theF
  \sa endRow()
  \sa endColumn()
 */
-bool button(const cv::String& theLabel, double theFontScale = DEFAULT_FONT_SCALE);
+bool button(const cv::String& theLabel, double theFontScale = DEFAULT_FONT_SCALE, unsigned int theInsideColor = DEFAULT_BUTTON_COLOR);
 
 /**
  Display a button whose graphics are images (cv::Mat).
@@ -913,7 +921,8 @@ void printf(const char *theFmt, ...);
  \param theValue the current value of the counter.
  \param theStep the amount that should be increased/decreased when the user interacts with the counter buttons.
  \param theFormat how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `"%d"` means the value will be displayed as an integer, `"%0d"` integer with one leading zero, etc.
- \param theFontScale size of the text.
+ \param theFontScale size of the text
+ \param theInsideColor the inside color of the two buttons used for the counter
  \return integer that corresponds to the current value of the counter.
 
 \sa printf()
@@ -922,7 +931,7 @@ void printf(const char *theFmt, ...);
 \sa endRow()
 \sa endColumn()
 */
-int counter(int *theValue, int theStep = 1, const char *theFormat = "%d", double theFontScale = DEFAULT_FONT_SCALE);
+int counter(int *theValue, int theStep = 1, const char *theFormat = "%d", double theFontScale = DEFAULT_FONT_SCALE, unsigned int theInsideColor = DEFAULT_BUTTON_COLOR);
 
 /**
  Display a counter for float values that the user can increase/descrease
@@ -934,6 +943,7 @@ int counter(int *theValue, int theStep = 1, const char *theFormat = "%d", double
  \param theStep the amount that should be increased/decreased when the user interacts with the counter buttons.
  \param theFormat how the value of the counter should be presented, as it was printed by `stdio's printf()`. E.g. `"%d"` means the value will be displayed as an integer, `"%0d"` integer with one leading zero, etc.
  \param theFontScale size of the text.
+ \param theInsideColor the inside color of the two buttons used for the counter
  \return an float that corresponds to the current value of the counter.
 
  \sa printf()
@@ -942,7 +952,7 @@ int counter(int *theValue, int theStep = 1, const char *theFormat = "%d", double
  \sa endRow()
  \sa endColumn()
 */
-double counter(double *theValue, double theStep = 0.5, const char *theFormat = "%.2f", double theFontScale = DEFAULT_FONT_SCALE);
+double counter(double *theValue, double theStep = 0.5, const char *theFormat = "%.2f", double theFontScale = DEFAULT_FONT_SCALE, unsigned int theInsideColor = DEFAULT_BUTTON_COLOR);
 
 /**
  Display a trackbar for numeric values that the user can increase/decrease
@@ -1236,8 +1246,8 @@ namespace internal
 	void end(int theType);
 	cvui_label_t createLabel(const std::string &theLabel);
 	int iarea(int theX, int theY, int theWidth, int theHeight);
-	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout, double theFontScale);
-	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, double theFontScale);
+	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout, double theFontScale, unsigned int theInsideColor);
+	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, double theFontScale, unsigned int theInsideColor);
 	bool button(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, bool theUpdateLayout);
 	void image(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theImage);
 	bool checkbox(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor, double theFontScale);
@@ -1306,7 +1316,7 @@ namespace internal
 // Internal namespace that contains all rendering functions.
 namespace render {
 	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor);
-	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
+	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, unsigned int theInsideColor);
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize, double theFontScale);
 	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage);
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue, double theFontScale);
@@ -1361,6 +1371,7 @@ bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax
 namespace cvui
 {
 double DEFAULT_FONT_SCALE = 0.4;
+unsigned int DEFAULT_BUTTON_COLOR = 0x424242;
 
 // This is an internal namespace with all code
 // that is shared among components/functions
@@ -1653,7 +1664,7 @@ namespace internal
 		return aRet;
 	}
 
-	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout, double theFontScale) {
+	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout, double theFontScale, unsigned int theInsideColor) {
 		// Calculate the space that the label will fill
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
 
@@ -1662,7 +1673,7 @@ namespace internal
 
 		// Render the button according to mouse interaction, e.g. OVER, DOWN, OUT.
 		int aStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
-		render::button(theBlock, aStatus, aRect);
+		render::button(theBlock, aStatus, aRect, theInsideColor);
 		render::buttonLabel(theBlock, aStatus, aRect, theLabel, aTextSize, theFontScale);
 
 		// Update the layout flow according to button size
@@ -1687,12 +1698,12 @@ namespace internal
 		return aStatus == cvui::CLICK || aWasShortcutPressed;
 	}
 
-	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, double theFontScale) {
+	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, double theFontScale, unsigned int theInsideColor) {
 		// Calculate the space that the label will fill
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
 
 		// Create a button based on the size of the text
-		return internal::button(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, true, theFontScale);
+		return internal::button(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, true, theFontScale, theInsideColor);
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, bool theUpdateLayout) {
@@ -1771,18 +1782,18 @@ namespace internal
 		}
 	}
 
-	int counter(cvui_block_t& theBlock, int theX, int theY, int *theValue, int theStep, const char *theFormat, double theFontScale) {
+	int counter(cvui_block_t& theBlock, int theX, int theY, int *theValue, int theStep, const char *theFormat, double theFontScale, unsigned int theInsideColor) {
 		const double scale = theFontScale / DEFAULT_FONT_SCALE;
 		cv::Rect aContentArea(std::lround(theX + 22* scale), theY, std::lround(48*scale), std::lround(22*scale));
 
-		if (internal::button(theBlock, theX, theY, std::lround(22 * scale), std::lround(22 * scale), "-", false, theFontScale)) {
+		if (internal::button(theBlock, theX, theY, std::lround(22 * scale), std::lround(22 * scale), "-", false, theFontScale, theInsideColor)) {
 			*theValue -= theStep;
 		}
 
 		sprintf_s(internal::gBuffer, theFormat, *theValue);
 		render::counter(theBlock, aContentArea, internal::gBuffer, theFontScale);
 
-		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, std::lround(22 * scale), std::lround(22 * scale), "+", false, theFontScale)) {
+		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, std::lround(22 * scale), std::lround(22 * scale), "+", false, theFontScale, theInsideColor)) {
 			*theValue += theStep;
 		}
 
@@ -1793,18 +1804,18 @@ namespace internal
 		return *theValue;
 	}
 
-	double counter(cvui_block_t& theBlock, int theX, int theY, double *theValue, double theStep, const char *theFormat, double theFontScale) {
+	double counter(cvui_block_t& theBlock, int theX, int theY, double *theValue, double theStep, const char *theFormat, double theFontScale, unsigned int theInsideColor) {
 		const double scale = theFontScale / DEFAULT_FONT_SCALE;
 		cv::Rect aContentArea(std::lround(theX + 22 * scale), theY, 48, std::lround(22 * scale));
 
-		if (internal::button(theBlock, theX, theY, std::lround(22 * scale), std::lround(22 * scale), "-", false, theFontScale)) {
+		if (internal::button(theBlock, theX, theY, std::lround(22 * scale), std::lround(22 * scale), "-", false, theFontScale, theInsideColor)) {
 			*theValue -= theStep;
 		}
 
 		sprintf_s(internal::gBuffer, theFormat, *theValue);
 		render::counter(theBlock, aContentArea, internal::gBuffer, theFontScale);
 
-		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, std::lround(22 * scale), std::lround(22 * scale), "+", false, theFontScale)) {
+		if (internal::button(theBlock, aContentArea.x + aContentArea.width, theY, std::lround(22 * scale), std::lround(22 * scale), "+", false, theFontScale, theInsideColor)) {
 			*theValue += theStep;
 		}
 
@@ -1892,17 +1903,23 @@ namespace render
 		cv::putText(theBlock.where, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, internal::hexToScalar(theColor), 1, CVUI_ANTIALISED);
 	}
 
-	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape) {
-		// Outline
-		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x29, 0x29, 0x29));
+	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, unsigned int theInsideColor) {
+        // we cast theInsideColor to int so negative values can be mapped to 0
+		unsigned int outlineColor     = std::max(0x000000,(int)theInsideColor-0x191919); // particularly this is 0x292929 for DEFAULT_BUTTON_COLOR 0x424242
+		unsigned int borderColor      = std::min(0xffffff,(int)theInsideColor+0x080808); // particularly this is 0x4A4A4A for DEFAULT_BUTTON_COLOR 0x424242
+		unsigned int insideOverColor  = std::min(0xffffff,(int)theInsideColor+0x101010); // particularly this is 0x525252 for DEFAULT_BUTTON_COLOR 0x424242
+		unsigned int insideOtherColor = std::max(0x000000,(int)theInsideColor-0x101010); // particularly this is 0x323232 for DEFAULT_BUTTON_COLOR 0x424242
+        
+        // Outline
+		cv::rectangle(theBlock.where, theShape, internal::hexToScalar(outlineColor));
 
 		// Border
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, cv::Scalar(0x4A, 0x4A, 0x4A));
+		cv::rectangle(theBlock.where, theShape, internal::hexToScalar(borderColor));
 
 		// Inside
 		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, theState == OUT ? cv::Scalar(0x42, 0x42, 0x42) : (theState == OVER ? cv::Scalar(0x52, 0x52, 0x52) : cv::Scalar(0x32, 0x32, 0x32)), CVUI_FILLED);
+		cv::rectangle(theBlock.where, theShape, theState == OUT ? internal::hexToScalar(theInsideColor) : (theState == OVER ? internal::hexToScalar(insideOverColor) : internal::hexToScalar(insideOtherColor)), CVUI_FILLED);
 	}
 
 	int putText(cvui_block_t& theBlock, int theState, cv::Scalar aColor, const std::string& theText, const cv::Point& thePosition, double theFontScale) {
@@ -2258,14 +2275,14 @@ bool mouse(const cv::String& theWindowName, int theButton, int theQuery) {
 	return aRet;
 }
 
-bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, double theFontScale) {
+bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, double theFontScale, unsigned int theInsideColor) {
 	internal::gScreen.where = theWhere;
-	return internal::button(internal::gScreen, theX, theY, theLabel, theFontScale);
+	return internal::button(internal::gScreen, theX, theY, theLabel, theFontScale, theInsideColor);
 }
 
-bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, double theFontScale) {
+bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, double theFontScale, unsigned int theInsideColor) {
 	internal::gScreen.where = theWhere;
-	return internal::button(internal::gScreen, theX, theY, theWidth, theHeight, theLabel, true, theFontScale);
+	return internal::button(internal::gScreen, theX, theY, theWidth, theHeight, theLabel, true, theFontScale, theInsideColor);
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown) {
@@ -2310,14 +2327,14 @@ void printf(cv::Mat& theWhere, int theX, int theY, const char *theFmt, ...) {
 	internal::text(internal::gScreen, theX, theY, internal::gBuffer, DEFAULT_FONT_SCALE, 0xCECECE, true);
 }
 
-int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep, const char *theFormat, double theFontScale) {
+int counter(cv::Mat& theWhere, int theX, int theY, int *theValue, int theStep, const char *theFormat, double theFontScale, unsigned int theInsideColor) {
 	internal::gScreen.where = theWhere;
-	return internal::counter(internal::gScreen, theX, theY, theValue, theStep, theFormat, theFontScale);
+	return internal::counter(internal::gScreen, theX, theY, theValue, theStep, theFormat, theFontScale, theInsideColor);
 }
 
-double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep, const char *theFormat, double theFontScale) {
+double counter(cv::Mat& theWhere, int theX, int theY, double *theValue, double theStep, const char *theFormat, double theFontScale, unsigned int theInsideColor) {
 	internal::gScreen.where = theWhere;
-	return internal::counter(internal::gScreen, theX, theY, theValue, theStep, theFormat, theFontScale);
+	return internal::counter(internal::gScreen, theX, theY, theValue, theStep, theFormat, theFontScale, theInsideColor);
 }
 
 void window(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, const cv::String& theTitle, double theFontScale) {
@@ -2372,14 +2389,14 @@ void space(int theValue) {
 	internal::updateLayoutFlow(aBlock, aSize);
 }
 
-bool button(const cv::String& theLabel, double theFontScale) {
+bool button(const cv::String& theLabel, double theFontScale, unsigned int theInsideColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theLabel, theFontScale);
+	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theLabel, theFontScale, theInsideColor);
 }
 
-bool button(int theWidth, int theHeight, const cv::String& theLabel, double theFontScale) {
+bool button(int theWidth, int theHeight, const cv::String& theLabel, double theFontScale, unsigned int theInsideColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theLabel, true, theFontScale);
+	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theLabel, true, theFontScale, theInsideColor);
 }
 
 bool button(cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown) {
@@ -2424,14 +2441,14 @@ void printf(const char *theFmt, ...) {
 	internal::text(aBlock, aBlock.anchor.x, aBlock.anchor.y, internal::gBuffer, DEFAULT_FONT_SCALE, 0xCECECE, true);
 }
 
-int counter(int *theValue, int theStep, const char *theFormat, double theFontScale) {
+int counter(int *theValue, int theStep, const char *theFormat, double theFontScale, unsigned int theInsideColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat, theFontScale);
+	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat, theFontScale, theInsideColor);
 }
 
-double counter(double *theValue, double theStep, const char *theFormat, double theFontScale) {
+double counter(double *theValue, double theStep, const char *theFormat, double theFontScale, unsigned int theInsideColor) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat, theFontScale);
+	return internal::counter(aBlock, aBlock.anchor.x, aBlock.anchor.y, theValue, theStep, theFormat, theFontScale, theInsideColor);
 }
 
 void window(int theWidth, int theHeight, const cv::String& theTitle, double theFontScale) {

@@ -51,7 +51,7 @@ int main(int argc, const char *argv[])
 
 		// Buttons will return true if they were clicked, which makes
 		// handling clicks a breeze.
-		if (cvui::button(frame, std::lround(scaling * 50), std::lround(scaling * 60), "Button", scaling*cvui::DEFAULT_FONT_SCALE)) {
+		if (cvui::button(frame, std::lround(scaling * 50), std::lround(scaling * 60), "Colored Button", scaling*cvui::DEFAULT_FONT_SCALE, 0xa05050)) {
 			std::cout << "Button clicked" << std::endl;
 		}
 
@@ -76,7 +76,7 @@ int main(int argc, const char *argv[])
 		// the counter's step (how much it should change
 		// its value after each button press), as well as the format
 		// used to print the value.
-		cvui::counter(frame, std::lround(scaling * 320), std::lround(scaling * 120), &scaling, 0.1, "%.1f", scaling*cvui::DEFAULT_FONT_SCALE);
+		cvui::counter(frame, std::lround(scaling * 320), std::lround(scaling * 120), &scaling, 0.1, "%.1f", scaling*cvui::DEFAULT_FONT_SCALE, 0x50a050);
 
         cvui::printf(frame, std::lround(scaling * 340), std::lround(scaling * 150), scaling*cvui::DEFAULT_FONT_SCALE, 0xCECECE, "Scaling");
 
