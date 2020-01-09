@@ -1264,6 +1264,7 @@ namespace internal
 	inline double clamp01(double value);
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
+    uint8_t brightnessOfColor(unsigned int theColor);
 	void resetRenderingBuffer(cvui_block_t& theScreen);
 
 	template <typename T> // T can be any floating point type (float, double, long double)
@@ -1317,7 +1318,7 @@ namespace internal
 namespace render {
 	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor);
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, unsigned int theInsideColor);
-	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize, double theFontScale);
+	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize, double theFontScale, unsigned int theInsideColor);
 	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage);
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue, double theFontScale);
 	void trackbarHandle(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
@@ -1589,6 +1590,13 @@ namespace internal
 
 		return cv::Scalar(aBlue, aGreen, aRed, aAlpha);
 	}
+	
+	uint8_t brightnessOfColor(unsigned int theColor) {
+        cv::Mat gray;
+        cv::Mat rgb(1, 1, CV_8UC3, internal::hexToScalar(theColor));
+        cv::cvtColor(rgb, gray, CV_BGR2GRAY);
+        return gray.at<cv::Vec3b>(0, 0)[0];
+    }
 
 	void resetRenderingBuffer(cvui_block_t& theScreen) {
 		theScreen.rect.x = 0;
@@ -1674,7 +1682,7 @@ namespace internal
 		// Render the button according to mouse interaction, e.g. OVER, DOWN, OUT.
 		int aStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
 		render::button(theBlock, aStatus, aRect, theInsideColor);
-		render::buttonLabel(theBlock, aStatus, aRect, theLabel, aTextSize, theFontScale);
+		render::buttonLabel(theBlock, aStatus, aRect, theLabel, aTextSize, theFontScale, theInsideColor);
 
 		// Update the layout flow according to button size
 		// if we were told to update.
@@ -1942,9 +1950,10 @@ namespace render
 		return size.width;
 	}
 
-	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize, double theFontScale) {
+	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize, double theFontScale, unsigned int theInsideColor) {
 		cv::Point aPos(theRect.x + theRect.width / 2 - theTextSize.width / 2, theRect.y + theRect.height / 2 + theTextSize.height / 2);
-		cv::Scalar aColor = cv::Scalar(0xCE, 0xCE, 0xCE);
+        const bool buttonIsDark = internal::brightnessOfColor(theInsideColor) < 0x80; 
+		cv::Scalar aColor = buttonIsDark ? cv::Scalar(0xCE, 0xCE, 0xCE) : cv::Scalar(0x32, 0x32, 0x32);
 
 		auto aLabel = internal::createLabel(theLabel);
 
