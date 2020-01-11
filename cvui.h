@@ -1264,7 +1264,7 @@ namespace internal
 	inline long double clamp01(long double value);
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
-    uint8_t brightnessOfColor(unsigned int theColor);
+	uint8_t brightnessOfColor(unsigned int theColor);
 	void resetRenderingBuffer(cvui_block_t& theScreen);
 
 	template <typename T> // T can be any floating point type (float, double, long double)
@@ -1592,11 +1592,11 @@ namespace internal
 	}
 	
 	uint8_t brightnessOfColor(unsigned int theColor) {
-        cv::Mat gray;
-        cv::Mat rgb(1, 1, CV_8UC3, internal::hexToScalar(theColor));
-        cv::cvtColor(rgb, gray, CV_BGR2GRAY);
-        return gray.at<cv::Vec3b>(0, 0)[0];
-    }
+		cv::Mat gray;
+		cv::Mat rgb(1, 1, CV_8UC3, internal::hexToScalar(theColor));
+		cv::cvtColor(rgb, gray, CV_BGR2GRAY);
+		return gray.at<cv::Vec3b>(0, 0)[0];
+	}
 
 	void resetRenderingBuffer(cvui_block_t& theScreen) {
 		theScreen.rect.x = 0;
@@ -1912,13 +1912,13 @@ namespace render
 	}
 
 	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, unsigned int theInsideColor) {
-        // we cast theInsideColor to int so negative values can be mapped to 0
+		// we cast theInsideColor to int so negative values can be mapped to 0
 		unsigned int outlineColor     = std::max(0x000000,(int)theInsideColor-0x191919); // particularly this is 0x292929 for DEFAULT_BUTTON_COLOR 0x424242
 		unsigned int borderColor      = std::min(0xffffff,(int)theInsideColor+0x080808); // particularly this is 0x4A4A4A for DEFAULT_BUTTON_COLOR 0x424242
 		unsigned int insideOverColor  = std::min(0xffffff,(int)theInsideColor+0x101010); // particularly this is 0x525252 for DEFAULT_BUTTON_COLOR 0x424242
 		unsigned int insideOtherColor = std::max(0x000000,(int)theInsideColor-0x101010); // particularly this is 0x323232 for DEFAULT_BUTTON_COLOR 0x424242
-        
-        // Outline
+
+		// Outline
 		cv::rectangle(theBlock.where, theShape, internal::hexToScalar(outlineColor));
 
 		// Border
@@ -1952,7 +1952,7 @@ namespace render
 
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize, double theFontScale, unsigned int theInsideColor) {
 		cv::Point aPos(theRect.x + theRect.width / 2 - theTextSize.width / 2, theRect.y + theRect.height / 2 + theTextSize.height / 2);
-        const bool buttonIsDark = internal::brightnessOfColor(theInsideColor) < 0x80; 
+		const bool buttonIsDark = internal::brightnessOfColor(theInsideColor) < 0x80; 
 		cv::Scalar aColor = buttonIsDark ? cv::Scalar(0xCE, 0xCE, 0xCE) : cv::Scalar(0x32, 0x32, 0x32);
 
 		auto aLabel = internal::createLabel(theLabel);
@@ -1992,7 +1992,7 @@ namespace render
 	}
 
 	void trackbarHandle(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
-        const double scale = theParams.fontScale/DEFAULT_FONT_SCALE;
+		const double scale = theParams.fontScale/DEFAULT_FONT_SCALE;
 		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 		int aBarHeight = 7;
 
