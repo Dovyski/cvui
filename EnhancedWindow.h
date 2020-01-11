@@ -27,7 +27,7 @@ private:
 	bool mIsMoving;
 	bool mMinimized;
 	bool mMinimizable;
-    double mFontScale;
+	double mFontScale;
 
 public:
 	EnhancedWindow(int x, int y, int width, int height, const cv::String& title, bool minimizable = true, double theFontScale = cvui::DEFAULT_FONT_SCALE):
@@ -46,7 +46,7 @@ public:
 	}
 
 	void begin(cv::Mat &frame) {
-        int scaledTitleHeight = std::lround(20*mFontScale/cvui::DEFAULT_FONT_SCALE);
+		int scaledTitleHeight = std::lround(20*mFontScale/cvui::DEFAULT_FONT_SCALE);
 		bool mouseInsideTitleArea = cvui::mouse().inside(cv::Rect(mX, mY, mWidth, scaledTitleHeight));
 		mHeight = mMinimized ? scaledTitleHeight : mHeightNotMinimized;
 
@@ -75,27 +75,45 @@ public:
 		cvui::beginColumn(mWidth - std::lround(10*mFontScale/cvui::DEFAULT_FONT_SCALE), mHeight - scaledTitleHeight);
 	}
 
+/**
+	Use this function to get the maximum width of a child widget of EnhancedWindow.
+
+	\return the width of the EnhancedWindow without the inner borders that are automatically added
+*/
+	int widthWithoutBorders() {
+		return mWidth - std::lround(20*mFontScale/cvui::DEFAULT_FONT_SCALE);
+	}
+	
+/**
+	Use this function to get the maximum height of a child widget of EnhancedWindow.
+
+	\return the height of the EnhancedWindow without title and inner borders that are automatically added
+*/
+	int heightWithoutBorders() {
+		return mHeight - std::lround(40*mFontScale/cvui::DEFAULT_FONT_SCALE);
+	}
+	
 	void end() {
 		cvui::endColumn();
 		cvui::endRow();
 	}
 
 	int posX() const {
-        return mX;
-    }
+		return mX;
+	}
 
 	int posY() const {
-        return mY;
-    }
+		return mY;
+	}
 	
-    void setPosX(int posX) {
-        mX = posX;
-    }
+	void setPosX(int posX) {
+		mX = posX;
+	}
 
-    void setPosY(int posY) {
-        mY = posY;
-    }
-    
+	void setPosY(int posY) {
+		mY = posY;
+	}
+
 	int width() const {
 		return mWidth;
 	}
@@ -113,12 +131,12 @@ public:
 	}
 
 	double fontScale() const {
-        return mFontScale;
-    }
+		return mFontScale;
+	}
 	
 	void setFontScale(double fontScale) {
-        mFontScale = fontScale;
-    }
+		mFontScale = fontScale;
+	}
 
 	bool isMinimized() const {
 		return mMinimized;
