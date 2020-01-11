@@ -1261,7 +1261,7 @@ namespace internal
 	inline void trackbarForceValuesAsMultiplesOfSmallStep(const TrackbarParams & theParams, long double *theValue);
 	inline long double trackbarXPixelToValue(const TrackbarParams & theParams, cv::Rect & theBounding, int thePixelX);
 	inline int trackbarValueToXPixel(const TrackbarParams & theParams, cv::Rect & theBounding, long double theValue);
-	inline double clamp01(double value);
+	inline long double clamp01(long double value);
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
 	void resetRenderingBuffer(cvui_block_t& theScreen);
@@ -1321,10 +1321,10 @@ namespace render {
 	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage);
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue, double theFontScale);
 	void trackbarHandle(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
-	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
-	void trackbarSteps(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
+	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theWorkingArea);
+	void trackbarSteps(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
 	void trackbarSegmentLabel(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, long double theValue, cv::Rect& theWorkingArea, bool theShowLabel);
-	void trackbarSegments(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
+	void trackbarSegments(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea);
 	void trackbar(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams);
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor, double theFontScale);
@@ -1607,7 +1607,7 @@ namespace internal
 	}
 
 
-	inline double clamp01(double value)
+	inline long double clamp01(long double value)
 	{
 		value = value > 1. ? 1. : value;
 		value = value < 0. ? 0. : value;
@@ -1832,7 +1832,7 @@ namespace internal
 		long double aValue = *theValue;
 		bool aMouseIsOver = aContentArea.contains(aMouse.position);
 
-		render::trackbar(theBlock, aMouseIsOver ? OVER : OUT, aContentArea, *theValue, theParams);
+		render::trackbar(theBlock, aMouseIsOver ? OVER : OUT, aContentArea, (double)*theValue, theParams);
 
 		if (aMouse.anyButton.pressed && aMouseIsOver) {
 			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, aMouse.position.x);
@@ -2011,7 +2011,7 @@ namespace render
 		}
 	}
 
-	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theWorkingArea) {
 		int aBarHeight = 7;
 		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 		cv::Rect aRect(aBarTopLeft, cv::Size(theWorkingArea.width, aBarHeight));
@@ -2022,7 +2022,7 @@ namespace render
 		cv::line(theBlock.where, cv::Point(aRect.x + 1, aRect.y + aBarHeight - 2), cv::Point(aRect.x + aRect.width - 2, aRect.y + aBarHeight - 2), cv::Scalar(0x0e, 0x0e, 0x0e));
 	}
 
-	void trackbarSteps(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+	void trackbarSteps(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
 		cv::Point aBarTopLeft(theWorkingArea.x, theWorkingArea.y + theWorkingArea.height / 2);
 		cv::Scalar aColor(0x51, 0x51, 0x51);
 
@@ -2056,7 +2056,7 @@ namespace render
 		}
   }
 
-	void trackbarSegments(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
+	void trackbarSegments(cvui_block_t& theBlock, cv::Rect& theShape, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
 		int aSegments = theParams.segments < 1 ? 1 : theParams.segments;
 		long double aSegmentLength = (long double)(theParams.max - theParams.min) / (long double)aSegments;
 
@@ -2079,17 +2079,17 @@ namespace render
 	void trackbar(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams) {
 		cv::Rect aWorkingArea(theShape.x + internal::gTrackbarMarginX, theShape.y, theShape.width - 2 * internal::gTrackbarMarginX, theShape.height);
 
-		trackbarPath(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
+		trackbarPath(theBlock, theState, aWorkingArea);
 
 		bool aHideAllLabels = internal::bitsetHas(theParams.options, cvui::TRACKBAR_HIDE_LABELS);
 		bool aShowSteps = internal::bitsetHas(theParams.options, cvui::TRACKBAR_HIDE_STEP_SCALE) == false;
 
 		if (aShowSteps && !aHideAllLabels) {
-			trackbarSteps(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
+			trackbarSteps(theBlock, theShape, theParams, aWorkingArea);
 		}
 
 		if (!aHideAllLabels) {
-			trackbarSegments(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
+			trackbarSegments(theBlock, theShape, theParams, aWorkingArea);
 		}
 
 		trackbarHandle(theBlock, theState, theShape, theValue, theParams, aWorkingArea);
@@ -2490,7 +2490,7 @@ void update(const cv::String& theWindowName) {
 	}
 }
 
-void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
+void handleMouse(int theEvent, int theX, int theY, int /*theFlags*/, void* theData) {
 	int aButtons[3] = { cvui::LEFT_BUTTON, cvui::MIDDLE_BUTTON, cvui::RIGHT_BUTTON };
 	int aEventsDown[3] = { cv::EVENT_LBUTTONDOWN, cv::EVENT_MBUTTONDOWN, cv::EVENT_RBUTTONDOWN };
 	int aEventsUp[3] = { cv::EVENT_LBUTTONUP, cv::EVENT_MBUTTONUP, cv::EVENT_RBUTTONUP };
