@@ -1264,6 +1264,8 @@ namespace internal
 	inline long double clamp01(long double value);
 	void findMinMax(std::vector<double>& theValues, double *theMin, double *theMax);
 	cv::Scalar hexToScalar(unsigned int theColor);
+	unsigned int brightenColor(unsigned int theColor, unsigned int theDelta);
+	unsigned int darkenColor(unsigned int theColor, unsigned int theDelta);
 	uint8_t brightnessOfColor(unsigned int theColor);
 	void resetRenderingBuffer(cvui_block_t& theScreen);
 
@@ -1317,7 +1319,7 @@ namespace internal
 // Internal namespace that contains all rendering functions.
 namespace render {
 	void text(cvui_block_t& theBlock, const cv::String& theText, cv::Point& thePos, double theFontScale, unsigned int theColor);
-	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, unsigned int theInsideColor);
+	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theFontScale, unsigned int theInsideColor);
 	void buttonLabel(cvui_block_t& theBlock, int theState, cv::Rect theRect, const cv::String& theLabel, cv::Size& theTextSize, double theFontScale, unsigned int theInsideColor);
 	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage);
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue, double theFontScale);
@@ -1591,6 +1593,28 @@ namespace internal
 		return cv::Scalar(aBlue, aGreen, aRed, aAlpha);
 	}
 	
+	unsigned int brightenColor(unsigned int theColor, unsigned int theDelta)
+	{
+		cv::Scalar color = hexToScalar(theColor);
+		cv::Scalar delta = hexToScalar(theDelta);
+		int aBlue  = std::min(0xFF, (int)(color[0] + delta[0]));
+		int aGreen = std::min(0xFF, (int)(color[1] + delta[1]));
+		int aRed   = std::min(0xFF, (int)(color[2] + delta[2]));
+		int aAlpha = std::min(0xFF, (int)(color[3] + delta[3]));
+		return (aAlpha << 24) | (aRed << 16) | (aGreen << 8) | aBlue;
+	}
+	
+	unsigned int darkenColor(unsigned int theColor, unsigned int theDelta)
+	{
+		cv::Scalar color = hexToScalar(theColor);
+		cv::Scalar delta = hexToScalar(theDelta);
+		int aBlue  = std::max(0, (int)(color[0] - delta[0]));
+		int aGreen = std::max(0, (int)(color[1] - delta[1]));
+		int aRed   = std::max(0, (int)(color[2] - delta[2]));
+		int aAlpha = std::max(0, (int)(color[3] - delta[3]));
+		return (aAlpha << 24) | (aRed << 16) | (aGreen << 8) | aBlue;
+	}
+
 	uint8_t brightnessOfColor(unsigned int theColor) {
 		cv::Mat gray;
 		cv::Mat rgb(1, 1, CV_8UC3, internal::hexToScalar(theColor));
@@ -1681,7 +1705,7 @@ namespace internal
 
 		// Render the button according to mouse interaction, e.g. OVER, DOWN, OUT.
 		int aStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
-		render::button(theBlock, aStatus, aRect, theInsideColor);
+		render::button(theBlock, aStatus, aRect, theFontScale, theInsideColor);
 		render::buttonLabel(theBlock, aStatus, aRect, theLabel, aTextSize, theFontScale, theInsideColor);
 
 		// Update the layout flow according to button size
@@ -1911,22 +1935,36 @@ namespace render
 		cv::putText(theBlock.where, theText, thePos, cv::FONT_HERSHEY_SIMPLEX, theFontScale, internal::hexToScalar(theColor), 1, CVUI_ANTIALISED);
 	}
 
-	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, unsigned int theInsideColor) {
-		// we cast theInsideColor to int so negative values can be mapped to 0
-		unsigned int outlineColor     = std::max(0x000000,(int)theInsideColor-0x191919); // particularly this is 0x292929 for DEFAULT_BUTTON_COLOR 0x424242
-		unsigned int borderColor      = std::min(0xffffff,(int)theInsideColor+0x080808); // particularly this is 0x4A4A4A for DEFAULT_BUTTON_COLOR 0x424242
-		unsigned int insideOverColor  = std::min(0xffffff,(int)theInsideColor+0x101010); // particularly this is 0x525252 for DEFAULT_BUTTON_COLOR 0x424242
-		unsigned int insideOtherColor = std::max(0x000000,(int)theInsideColor-0x101010); // particularly this is 0x323232 for DEFAULT_BUTTON_COLOR 0x424242
+	void button(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theFontScale, unsigned int theInsideColor) {
+		unsigned int brightColor = internal::brightenColor(theInsideColor, 0x505050);
+		unsigned int darkColor = internal::darkenColor(theInsideColor, 0x505050);
+		unsigned int topLeftColor, bottomRightColor;
+		// 3D effect depending on if the button is down or up. Light comes from top left.
+		if (theState == OVER || theState == OUT) // button is up
+		{
+			topLeftColor = brightColor;
+			bottomRightColor = darkColor;
+		}
+		else // button is down
+		{
+			bottomRightColor = brightColor;
+			topLeftColor = darkColor;
+		}
 
-		// Outline
-		cv::rectangle(theBlock.where, theShape, internal::hexToScalar(outlineColor));
+		unsigned int insideOverColor  = internal::brightenColor(theInsideColor, 0x101010); // particularly this is 0x525252 for DEFAULT_BUTTON_COLOR 0x424242
+		unsigned int insideOtherColor = internal::darkenColor(theInsideColor, 0x101010); // particularly this is 0x323232 for DEFAULT_BUTTON_COLOR 0x424242
 
-		// Border
-		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
-		cv::rectangle(theBlock.where, theShape, internal::hexToScalar(borderColor));
+		// 3D Outline. Note that cv::rectangle exludes theShape.br(), so we have to also exclude this point when drawing lines with cv::line
+		unsigned int thicknessOf3DOutline = (int)(theFontScale / 0.6); // On high DPI displayed we need to make the border thicker. We scale it together with the font size the user chose.
+		do
+		{
+			cv::line(theBlock.where, theShape.br() - cv::Point(1, 1), cv::Point(theShape.tl().x, theShape.br().y - 1), internal::hexToScalar(bottomRightColor));
+			cv::line(theBlock.where, theShape.br() - cv::Point(1, 1), cv::Point(theShape.br().x - 1, theShape.tl().y), internal::hexToScalar(bottomRightColor));
+			cv::line(theBlock.where, theShape.tl(), cv::Point(theShape.tl().x, theShape.br().y - 1), internal::hexToScalar(topLeftColor));
+			cv::line(theBlock.where, theShape.tl(), cv::Point(theShape.br().x - 1, theShape.tl().y), internal::hexToScalar(topLeftColor));
+			theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
+		} while (thicknessOf3DOutline--); // we want at least 1 pixel 3D outline, even for very small fonts
 
-		// Inside
-		theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
 		cv::rectangle(theBlock.where, theShape, theState == OUT ? internal::hexToScalar(theInsideColor) : (theState == OVER ? internal::hexToScalar(insideOverColor) : internal::hexToScalar(insideOtherColor)), CVUI_FILLED);
 	}
 
