@@ -1594,7 +1594,7 @@ namespace internal
 	uint8_t brightnessOfColor(unsigned int theColor) {
 		cv::Mat gray;
 		cv::Mat rgb(1, 1, CV_8UC3, internal::hexToScalar(theColor));
-		cv::cvtColor(rgb, gray, CV_BGR2GRAY);
+		cv::cvtColor(rgb, gray, cv::COLOR_BGR2GRAY);
 		return gray.at<cv::Vec3b>(0, 0)[0];
 	}
 
