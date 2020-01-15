@@ -1734,8 +1734,8 @@ namespace internal
 		// Calculate the space that the label will fill
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
 
-		// Create a button based on the size of the text
-		return internal::button(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, true, theFontScale, theInsideColor);
+		// Create a button based on the size of the text. The size of the additional area outside the label depends on the font size.
+		return internal::button(theBlock, theX, theY, aTextSize.width + std::lround(30*theFontScale/DEFAULT_FONT_SCALE), aTextSize.height + std::lround(18* theFontScale / DEFAULT_FONT_SCALE), theLabel, true, theFontScale, theInsideColor);
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, bool theUpdateLayout) {
