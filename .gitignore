@@ -32,10 +32,15 @@
 *.opensdf
 *.suo
 example/build/*
+example/.vs/*
 .idea
+*.pyc
+.vs/*
+.vscode/*
 
 #Build paths
 build
+build.release
 install
 bin
 
@@ -56,4 +61,8 @@ html
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
-Makefile
+
+# Files related to the python packaging process
+/python/package/cvui/cvui.py
+/python/package/cvui.egg-info
+/python/package/dist

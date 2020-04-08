@@ -43,9 +43,9 @@ int main(int argc, const char *argv[])
 		// Should we apply Canny edge?
 		if (use_canny) {
 			// Yes, we should apply it.
-			cv::cvtColor(fruits, frame, CV_BGR2GRAY);
+			cv::cvtColor(fruits, frame, cv::COLOR_BGR2GRAY);
 			cv::Canny(frame, frame, low_threshold, high_threshold, 3);
-			cv::cvtColor(frame, frame, CV_GRAY2BGR);
+			cv::cvtColor(frame, frame, cv::COLOR_GRAY2BGR);
 		} else {
 			// No, so just copy the original image to the displaying frame.
 			fruits.copyTo(frame);

@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.7.0-BETA](https://github.com/Dovyski/cvui/releases/tag/v.2.7.0-BETA) - 2018-06-26
+## [2.7.0](https://github.com/Dovyski/cvui/releases/tag/v2.7.0) - 2018-10-08
 ### Added
 - Python implementation of cvui, i.e. `cvui.py` ([read more](https://dovyski.github.io/cvui/usage/))
 - [Python examples](https://github.com/Dovyski/cvui/tree/master/example/) ported from the already existing C++ ones.
@@ -12,13 +12,13 @@ All notable changes to this project are documented in this file. The format is b
 - [Documentation](https://dovyski.github.io/cvui/) tweaks (help from [ShengYu](https://github.com/shengyu7697) and [Akash Kumar Singh](https://github.com/ksakash)).
 - Cmake version `3.1` or higher is now required to build the examples.
 - Cmake files were improved.
-- `rect()` color filling now supports alpha values, e.g. `0x7700ff00` (blue with 50% transparency) ([#39](https://github.com/Dovyski/cvui/pull/39), help from [Justin Muncaster](https://github.com/jmuncaster)).
+- `rect()` color filling now supports alpha values, e.g. `0x7700ff00` (green with 50% transparency) ([#39](https://github.com/Dovyski/cvui/pull/39), help from [Justin Muncaster](https://github.com/jmuncaster)).
 
 ### Fixed
 - `rect()` issue related to opacity ([#42](https://github.com/Dovyski/cvui/pull/42), help from [Justin Muncaster](https://github.com/jmuncaster)).
 - Conflict with `dirent.h` and `min()/max()` macros on Windows ([#38](https://github.com/Dovyski/cvui/issues/38), help from [Ali Zarei](https://github.com/AliZ-ee)).
 
-## [2.5.0](https://github.com/Dovyski/cvui/releases/tag/v.2.5.0) - 2018-04-04
+## [2.5.0](https://github.com/Dovyski/cvui/releases/tag/v2.5.0) - 2018-04-04
 ### Added
 - Support for [multiple windows](https://dovyski.github.io/cvui/advanced-multiple-windows/) (help from [Justin Muncaster](https://github.com/jmuncaster), [4xle](https://github.com/4xle) and Luca Del Tongo).
 - [Mouse API](https://dovyski.github.io/cvui/advanced-mouse/) (help from [Pascal Thomet](https://github.com/pthom)).
@@ -38,7 +38,7 @@ All notable changes to this project are documented in this file. The format is b
 ### Fixed
 - `sparkline()` crashes with empty vector ([#23](https://github.com/Dovyski/cvui/issues/23)).
 
-## [2.0.0](https://github.com/Dovyski/cvui/releases/tag/v.2.0.0) - 2017-05-24
+## [2.0.0](https://github.com/Dovyski/cvui/releases/tag/v2.0.0) - 2017-05-24
 ### Added
 - `image()`
 - `iarea()`
@@ -55,7 +55,7 @@ All notable changes to this project are documented in this file. The format is b
 - Labels in the `button()` component can have keyboard shortcuts with `&`, e.g. `&Quit` (thanks to [Pascal Thomet](https://github.com/pthom)).
 - Fixes to README file (thanks to [Mateo Hrastnik](https://github.com/hrastnik)).
 
-## [1.1.0](https://github.com/Dovyski/cvui/releases/tag/v.1.1.0) - 2016-08-19
+## [1.1.0](https://github.com/Dovyski/cvui/releases/tag/v1.1.0) - 2016-08-19
 ### Added
 - `printf()`
 - `rect()`

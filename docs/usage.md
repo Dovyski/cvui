@@ -103,7 +103,7 @@ int main() {
 }
 ```
 
-### 3. Show (window) content
+### 4. Show (window) content
 
 After rendering your components, show the final result using `cvui::imshow()`, which is cvui's improved version of OpenCV's `cv::imshow()`:
 
@@ -167,7 +167,7 @@ int main() {
 }
 ```
 
-### (Optional) 4. Disable cvui compilation messages
+### (Optional) 5. Disable cvui compilation messages
 
 The compilation process of cvui will produce a few console messages to help developers debug possible problems, e.g. inclusion of `cvui.h` using `#define CVUI_IMPLEMENTATION`. The two possible messages are:
 
@@ -188,7 +188,7 @@ You can disable such compilation messages by defining `CVUI_DISABLE_COMPILATION_
 
 ### 1. Add `cvui.py` and import `cvui`
 
-Download the [latest release](https://github.com/Dovyski/cvui/releases/latest) and place `cvui.py` along with the files of your project. Import cvui in any of your Python files as follows:
+Download the [latest release](https://github.com/Dovyski/cvui/releases/latest) and place `cvui.py` along with the files of your project, or install it using `pip install cvui`. Import cvui in any of your Python files as follows:
 
 ```python
 import cvui
