@@ -1206,6 +1206,9 @@ namespace internal
 	static int gStackCount = -1;
 	static const int gTrackbarMarginX = 14;
 
+	static cv::String gActivatedInput = "";
+	static int gLastInputKeyPressed = -1;
+
 	bool isMouseButton(cvui_mouse_btn_t& theButton, int theQuery);
 	void resetMouseButton(cvui_mouse_btn_t& theButton);
 	void init(const cv::String& theWindowName, int theDelayWaitKey);
@@ -1634,6 +1637,50 @@ namespace internal
 		}
 
 		return aRet;
+	}
+
+	void input(cvui_block_t& theBlock, int theX, int theY, int theWidth, const cv::String& theName, cv::String& theValue, double theFontScale, bool theUpdateLayout) {
+
+		// Draw input text area and text
+		bool selfActivated = (gActivatedInput == theName);
+		cv::Size aTextSize = cv::getTextSize(theValue, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
+		int padding = aTextSize.height / 3;
+		cv::Rect aRect(theX, theY, theWidth, aTextSize.height + 1 + padding * 2);
+		render::rect(theBlock, aRect, (selfActivated?0x777777:0xaaaaaa), 0xffffff);
+		cv::Point aPos(theX+padding, theY + aTextSize.height + padding);
+		render::text(theBlock, theValue, aPos, theFontScale, 0x000000);
+
+		// Update the activate status of the input control.
+		int inputStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
+		if (inputStatus == cvui::CLICK) { // click inside
+			gActivatedInput = theName;
+			selfActivated = true;
+		}else if(selfActivated) { // click outside while self activated
+			int backgroundStatus = cvui::iarea(0, 0, 10000000, 10000000);
+			if (backgroundStatus == cvui::CLICK) {
+				gActivatedInput = "";
+				selfActivated = false;
+			}
+		}
+		
+		// Manipulate the string
+		if (selfActivated && internal::gLastInputKeyPressed != -1) {
+			int key = internal::gLastInputKeyPressed;
+			internal::gLastInputKeyPressed = -1;
+			if (key >= 32) {
+				theValue += (char)key;
+			}else if (key == 0x08 && theValue.length()) {
+				theValue = theValue.substr(0, theValue.length() - 1);
+			}
+		}
+
+		// Update the layout flow according to button size
+		// if we were told to update.
+		if (theUpdateLayout) {
+			cv::Size aSize(theWidth, aTextSize.height + padding * 2);
+			updateLayoutFlow(theBlock, aTextSize);
+		}
+		
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {
@@ -2254,6 +2301,11 @@ bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& th
 	return internal::button(internal::gScreen, theX, theY, theIdle, theOver, theDown, true);
 }
 
+void input(cv::Mat& theWhere, int theX, int theY, int theWidth, const cv::String& theName, cv::String& theValue, double theFontScale = 0.5) {
+	internal::gScreen.where = theWhere;
+	return internal::input(internal::gScreen, theX, theY, theWidth, theName, theValue, theFontScale, true);
+}
+
 void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage) {
 	internal::gScreen.where = theWhere;
 	return internal::image(internal::gScreen, theX, theY, theImage);
@@ -2446,7 +2498,11 @@ void update(const cv::String& theWindowName) {
 	// If we were told to keep track of the keyboard shortcuts, we
 	// proceed to handle opencv event queue.
 	if (internal::gDelayWaitKey > 0) {
-		internal::gLastKeyPressed = cv::waitKey(internal::gDelayWaitKey);
+		if (internal::gActivatedInput != ""){
+			internal::gLastInputKeyPressed = cv::waitKey(internal::gDelayWaitKey);
+		}else{
+			internal::gLastKeyPressed = cv::waitKey(internal::gDelayWaitKey);
+		}
 	}
 
 	if (!internal::blockStackEmpty()) {
