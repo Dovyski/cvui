@@ -20,7 +20,7 @@ WARNING: It can't tell the differece between one textBox and another, they will 
 */
 std::string inputField(cv::Mat &theWhere, int theX, int theY, int millisecondDelay = 10, double theFontScale = DEFAULT_FONT_SCALE, unsigned int textColor = 0xCECECE) {
 
-	char key, keyChar;
+	char keyChar;
 	std::string keyString;
 	static std::string totalString;
 
