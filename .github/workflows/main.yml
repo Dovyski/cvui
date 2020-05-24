@@ -30,20 +30,33 @@ jobs:
     - name: Install OpenCV (${{ matrix.opencv }} ${{ matrix.compiler }})
       run: |
 
-        # OpenCV install code (modified from orignal source: https://github.com/jayrambhia/Install-OpenCV)
+        # OpenCV install code. Modified from 
+        # - https://github.com/jayrambhia/Install-OpenCV
+        # - https://github.com/florianblume/install-opencv-action
 
-        #######################################################
-        # Install everything according to the configuration
-        # variables above.
-        #######################################################
+        # Install everything according to the configuration variables
 
-        sudo apt-get update -qq
-        sudo apt-get install -y build-essential
-        sudo apt-get install -y git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
-        sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+        sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
+        sudo apt-get update
+        sudo apt-get remove x264 libx264-dev -y
+        sudo apt-get install build-essential checkinstall cmake pkg-config yasm -y
+        sudo apt-get install git gfortran libjpeg8-dev libjasper1 libjasper-dev libpng-dev -y
+        sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev -y
+        sudo apt-get install libxine2-dev libv4l-dev -y
+        sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev -y
+        sudo apt-get install qt5-default libgtk2.0-dev libtbb-dev -y
+        sudo apt-get install libatlas-base-dev -y
+        sudo apt-get install libfaac-dev libmp3lame-dev libtheora-dev -y
+        sudo apt-get install libvorbis-dev libxvidcore-dev -y
+        sudo apt-get install libopencore-amrnb-dev libopencore-amrwb-dev -y
+        sudo apt-get install libtbb2 libtiff-dev -y
+        sudo apt-get install python-dev python-numpy -y
+        sudo apt-get install x264 v4l-utils -y
 
-        curl -sL https://github.com/Itseez/opencv/archive/${{ matrix.opencv }}.zip > opencv.zip
+        curl -sL https://github.com/opencv/opencv/archive/${{ matrix.opencv }}.zip > opencv.zip
+        curl -sL https://github.com/opencv/opencv_contrib/archive/${{ matrix.opencv }}.zip > opencv_contrib.zip
         unzip -q opencv.zip
+        unzip -q opencv_contrib.zip
 
         cd opencv-${{ matrix.opencv }}
 
@@ -52,10 +65,21 @@ jobs:
         cd build
 
         # Set build instructions for Ubuntu distro.
-        cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=${{ env.OPENCV_WITH_TBB }} -D WITH_IPP=${{ env.OPENCV_WITH_IPP }} -D BUILD_NEW_PYTHON_SUPPORT=OFF -D WITH_V4L=OFF -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_EXAMPLES=OFF -D WITH_QT=OFF -D WITH_OPENGL=OFF ..
+        cmake -D CMAKE_BUILD_TYPE=RELEASE \
+              -D CMAKE_INSTALL_PREFIX=/usr/local \
+              -D WITH_TBB=${{ env.OPENCV_WITH_TBB }} \
+              -D WITH_IPP=${{ env.OPENCV_WITH_IPP }} \
+              -D BUILD_NEW_PYTHON_SUPPORT=OFF \
+              -D WITH_V4L=OFF \
+              -D INSTALL_C_EXAMPLES=OFF \
+              -D INSTALL_PYTHON_EXAMPLES=OFF \
+              -D BUILD_EXAMPLES=OFF \
+              -D WITH_QT=OFF \
+              -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${{ matrix.opencv }}/modules \
+              -D WITH_OPENGL=OFF ..
 
         # Run 'make' with four threads.
-        make -j4
+        make -j10
 
         # Install to OS.
         sudo make install
@@ -81,4 +105,4 @@ jobs:
         mkdir build.debug
         cd build.debug
         cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=$COMPILER -DADD_PYTHON_EXAMPLES=${{ env.ADD_PYTHON_EXAMPLES }}
-        make -j4
+        make -j10
