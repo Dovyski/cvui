@@ -23,9 +23,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-
     - name: Adjust env vars
+    - uses: actions/checkout@v1
       if: ${env.OPENCV_VERSION == '3.0.0'}
       env: 
         OPENCV_WITH_TBB: OFF
@@ -68,6 +67,9 @@ jobs:
 
         sudo ldconfig
         echo "OpenCV installed."
+        
+        # We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
+        cd ..
 
     - name: Build cvui ${{ matrix.opencv }} ${{ matrix.os }}
       env:
