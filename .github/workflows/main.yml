@@ -13,15 +13,13 @@ env:
   OPENCV_WITH_IPP: ON
   OPENCV_WITH_TBB: ON
   ADD_PYTHON_EXAMPLES: ON
-strategy:
-  matrix:
-    opencv: [2.4.13.6, 2.4.13.5, 2.4.13.4, 2.4.13, 2.4.12, 3.0.0, 3.1.0, 3.3.0, 3.3.1, 3.4.0, 3.4.1, 3.4.2, 3.4.3, 3.4.4, 4.0.0]
-    os: [ubuntu-latest]
-    compiler: [g++-4.9]
 jobs:
   build:
-    name: build (${{ matrix.opencv }}, ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        opencv: [2.4.13.6, 2.4.13.5, 2.4.13.4, 2.4.13, 2.4.12, 3.0.0, 3.1.0, 3.3.0, 3.3.1, 3.4.0, 3.4.1, 3.4.2, 3.4.3, 3.4.4, 4.0.0]
+        compiler: [g++-4.9]
     steps:
     - name: Checkout and set env vars
       uses: actions/checkout@v1
@@ -29,7 +27,7 @@ jobs:
       env: 
         OPENCV_WITH_TBB: OFF
 
-    - name: Install OpenCV ${{ matrix.opencv }} ${{ matrix.os }}
+    - name: Install OpenCV (${{ matrix.opencv }} ${{ matrix.compiler }})
       run: |
 
         # OpenCV install code (modified from orignal source: https://github.com/jayrambhia/Install-OpenCV)
@@ -71,7 +69,7 @@ jobs:
         # We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
         cd ..
 
-    - name: Build cvui ${{ matrix.opencv }} ${{ matrix.os }}
+    - name: Build cvui (${{ matrix.opencv }} ${{ matrix.compiler }})
       env:
         COMPILER: ${{ matrix.compiler }}
       run: |
