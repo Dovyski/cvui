@@ -1,0 +1,84 @@
+name: main
+on:
+  push:
+    branches:
+    - master
+    - dev
+  pull_request:
+    branches:
+    - master
+    - dev
+env:
+  # Decide if some OpenCV extensions should be enabled or not for
+  OPENCV_WITH_IPP: ON
+  OPENCV_WITH_TBB: ON
+  ADD_PYTHON_EXAMPLES: ON
+strategy:
+  matrix:
+    opencv: [2.4.13.6, 2.4.13.5, 2.4.13.4, 2.4.13, 2.4.12, 3.0.0, 3.1.0, 3.3.0, 3.3.1, 3.4.0, 3.4.1, 3.4.2, 3.4.3, 3.4.4, 4.0.0]
+    os: [ubuntu-latest]
+    compiler: [g++-4.9]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Adjust env vars
+      if: ${env.OPENCV_VERSION == '3.0.0'}
+      env: 
+        OPENCV_WITH_TBB: OFF
+
+    - name: Install OpenCV ${{ matrix.opencv }} ${{ matrix.os }}
+      run: |
+
+        # OpenCV install code (modified from orignal source: https://github.com/jayrambhia/Install-OpenCV)
+
+        #######################################################
+        # Install everything according to the configuration
+        # variables above.
+        #######################################################
+
+        sudo apt-get update -qq
+        sudo apt-get install -y build-essential
+        sudo apt-get install -y git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+        sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+
+        curl -sL https://github.com/Itseez/opencv/archive/${{ matrix.opencv }}.zip > opencv.zip
+        unzip -q opencv.zip
+
+        cd opencv-${{ matrix.opencv }}
+
+        # Create a new 'build' folder.
+        mkdir build
+        cd build
+
+        # Set build instructions for Ubuntu distro.
+        cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=${{ env.OPENCV_WITH_TBB }} -D WITH_IPP=${{ env.OPENCV_WITH_IPP }} -D BUILD_NEW_PYTHON_SUPPORT=OFF -D WITH_V4L=OFF -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_EXAMPLES=OFF -D WITH_QT=OFF -D WITH_OPENGL=OFF ..
+
+        # Run 'make' with four threads.
+        make -j4
+
+        # Install to OS.
+        sudo make install
+
+        # Add configuration to OpenCV to tell it where the library files are located on the file system (/usr/local/lib)
+        sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
+
+        sudo ldconfig
+        echo "OpenCV installed."
+
+    - name: Build cvui ${{ matrix.opencv }} ${{ matrix.os }}
+      env:
+        COMPILER: ${{ matrix.compiler }}
+      run: |
+        mkdir build.release
+        cd build.release
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ env.COMPILER }} -DADD_PYTHON_EXAMPLES=ON
+        make -j4
+        cd ..
+        mkdir build.debug
+        cd build.debug
+        cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=$COMPILER -DADD_PYTHON_EXAMPLES=${{ env.ADD_PYTHON_EXAMPLES }}
+        make -j4
