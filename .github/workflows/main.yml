@@ -1,4 +1,4 @@
-name: main
+name: Run test matrix
 on:
   push:
     branches:
@@ -20,12 +20,12 @@ strategy:
     compiler: [g++-4.9]
 jobs:
   build:
-    name: Build
-    runs-on: ubuntu-latest
+    name: build (${{ matrix.opencv }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     steps:
-    - name: Adjust env vars
-    - uses: actions/checkout@v1
-      if: ${env.OPENCV_VERSION == '3.0.0'}
+    - name: Checkout and set env vars
+      uses: actions/checkout@v1
+      if: ${{ matrix.opencv == '3.0.0' }}
       env: 
         OPENCV_WITH_TBB: OFF
 
@@ -67,7 +67,7 @@ jobs:
 
         sudo ldconfig
         echo "OpenCV installed."
-        
+
         # We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
         cd ..
 
