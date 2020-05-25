@@ -14,7 +14,7 @@ env:
   OPENCV_WITH_TBB: ON
   ADD_PYTHON_EXAMPLES: ON
   OPENCV_EXTRA_MODULES_NAME: OPENCV_EXTRA_MODULES_PATH
-  USE_OPENCV_EXTRA_MODULES: true
+  USE_OPENCV_EXTRA_MODULES: ON
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,18 +30,17 @@ jobs:
     steps:
     - name: Adjust TBB settings
       if: ${{ matrix.opencv == '3.0.0' }}
-      env: 
-        OPENCV_WITH_TBB: OFF
       run: |
-        echo 'OPENCV_WITH_TBB set to OFF'
+        echo '::set-env name=OPENCV_WITH_TBB::OFF'
+        echo 'OPENCV_WITH_TBB: ' $OPENCV_WITH_TBB
 
     - name: Adjust extra modules settings
       if: ${{ startsWith(matrix.opencv, '2.') }}
-      env: 
-        OPENCV_EXTRA_MODULES_NAME: NOT_OPENCV_EXTRA_MODULES_PATH
-        USE_OPENCV_EXTRA_MODULES: false
       run: |
-        echo 'OPENCV_EXTRA_MODULES will not be used'
+        echo '::set-env name=USE_OPENCV_EXTRA_MODULES::OFF'
+        echo '::set-env name=OPENCV_EXTRA_MODULES_NAME::NOT_OPENCV_EXTRA_MODULES_PATH'
+        echo 'USE_OPENCV_EXTRA_MODULES: ' $USE_OPENCV_EXTRA_MODULES
+        echo 'OPENCV_EXTRA_MODULES_NAME: ' $OPENCV_EXTRA_MODULES_NAME
 
     - name: Checkout code
       uses: actions/checkout@v1
@@ -77,7 +76,7 @@ jobs:
         unzip -q opencv.zip
 
     - name: Download OpenCV-contrib ${{ matrix.opencv }}
-      if: ${{ env.USE_OPENCV_EXTRA_MODULES == 'true' }}
+      if: ${{ env.USE_OPENCV_EXTRA_MODULES == 'ON' }}
       run: |
         curl -sL https://github.com/opencv/opencv_contrib/archive/${{ matrix.opencv }}.zip > opencv_contrib.zip
         unzip -q opencv_contrib.zip
