@@ -18,8 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Versions: [2.4.13.6, 2.4.13.5, 2.4.13.4, 2.4.13, 2.4.12, 3.0.0, 3.1.0, 3.3.0, 3.3.1, 3.4.0, 3.4.1, 3.4.2, 3.4.3, 3.4.4, 4.0.0]
-        opencv: [3.4.4, 4.0.0]
+        # Supported versions from the past 2 years
+        opencv: [
+          2.4.13.6,
+          3.0.0, 3.1.0, 3.2.0, 3.3.0, 3.4.0, 3.4.10,
+          4.0.0, 4.1.0, 4.1.2, 4.2.0, 4.3.0
+        ]
         compiler: [g++]
     steps:
     - name: Adjust env vars
