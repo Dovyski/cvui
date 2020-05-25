@@ -13,6 +13,8 @@ env:
   OPENCV_WITH_IPP: ON
   OPENCV_WITH_TBB: ON
   ADD_PYTHON_EXAMPLES: ON
+  OPENCV_EXTRA_MODULES_NAME: OPENCV_EXTRA_MODULES_PATH
+  USE_OPENCV_EXTRA_MODULES: true
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,24 +28,30 @@ jobs:
         ]
         compiler: [g++]
     steps:
-    - name: Adjust env vars
+    - name: Adjust TBB settings
       if: ${{ matrix.opencv == '3.0.0' }}
       env: 
         OPENCV_WITH_TBB: OFF
       run: |
         echo 'OPENCV_WITH_TBB set to OFF'
 
+    - name: Adjust extra modules settings
+      if: ${{ startsWith(matrix.opencv, '2.') }}
+      env: 
+        OPENCV_EXTRA_MODULES_NAME: NOT_OPENCV_EXTRA_MODULES_PATH
+        USE_OPENCV_EXTRA_MODULES: false
+      run: |
+        echo 'OPENCV_EXTRA_MODULES will not be used'
+
     - name: Checkout code
       uses: actions/checkout@v1
 
-    - name: Install OpenCV (${{ matrix.opencv }} ${{ matrix.compiler }})
+    - name: Install dev dependencies
       run: |
 
-        # OpenCV install code. Modified from 
+        # OpenCV dependencies. Modified from 
         # - https://github.com/jayrambhia/Install-OpenCV
         # - https://github.com/florianblume/install-opencv-action
-
-        # Install everything according to the configuration variables
 
         sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
         sudo apt-get update
@@ -63,10 +71,25 @@ jobs:
                 python-dev python-numpy \
                 x264 v4l-utils
 
+    - name: Download OpenCV ${{ matrix.opencv }}
+      run: |
         curl -sL https://github.com/opencv/opencv/archive/${{ matrix.opencv }}.zip > opencv.zip
-        curl -sL https://github.com/opencv/opencv_contrib/archive/${{ matrix.opencv }}.zip > opencv_contrib.zip
         unzip -q opencv.zip
+
+    - name: Download OpenCV-contrib ${{ matrix.opencv }}
+      if: ${{ env.USE_OPENCV_EXTRA_MODULES }}
+      run: |
+        curl -sL https://github.com/opencv/opencv_contrib/archive/${{ matrix.opencv }}.zip > opencv_contrib.zip
         unzip -q opencv_contrib.zip
+
+    - name: Install OpenCV (${{ matrix.opencv }} ${{ matrix.compiler }})
+      run: |
+
+        # OpenCV install code. Modified from 
+        # - https://github.com/jayrambhia/Install-OpenCV
+        # - https://github.com/florianblume/install-opencv-action
+
+        # Install everything according to the configuration variables
 
         cd opencv-${{ matrix.opencv }}
 
@@ -85,7 +108,7 @@ jobs:
               -D INSTALL_PYTHON_EXAMPLES=OFF \
               -D BUILD_EXAMPLES=OFF \
               -D WITH_QT=OFF \
-              -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${{ matrix.opencv }}/modules \
+              -D ${{ OPENCV_EXTRA_MODULES_NAME }}=../../opencv_contrib-${{ matrix.opencv }}/modules \
               -D WITH_OPENGL=OFF ..
 
         # Run 'make' with four threads.
