@@ -108,7 +108,7 @@ jobs:
               -D INSTALL_PYTHON_EXAMPLES=OFF \
               -D BUILD_EXAMPLES=OFF \
               -D WITH_QT=OFF \
-              -D ${{ OPENCV_EXTRA_MODULES_NAME }}=../../opencv_contrib-${{ matrix.opencv }}/modules \
+              -D ${{ env.OPENCV_EXTRA_MODULES_NAME }}=../../opencv_contrib-${{ matrix.opencv }}/modules \
               -D WITH_OPENGL=OFF ..
 
         # Run 'make' with four threads.
