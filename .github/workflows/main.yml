@@ -1,4 +1,4 @@
-name: Run test matrix
+name: Test matrix
 on:
   push:
     branches:
@@ -44,19 +44,20 @@ jobs:
         sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
         sudo apt-get update
         sudo apt-get remove x264 libx264-dev -y
-        sudo apt-get install build-essential checkinstall cmake pkg-config yasm -y
-        sudo apt-get install git gfortran libjpeg8-dev libjasper1 libjasper-dev libpng-dev -y
-        sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev -y
-        sudo apt-get install libxine2-dev libv4l-dev -y
-        sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev -y
-        sudo apt-get install qt5-default libgtk2.0-dev libtbb-dev -y
-        sudo apt-get install libatlas-base-dev -y
-        sudo apt-get install libfaac-dev libmp3lame-dev libtheora-dev -y
-        sudo apt-get install libvorbis-dev libxvidcore-dev -y
-        sudo apt-get install libopencore-amrnb-dev libopencore-amrwb-dev -y
-        sudo apt-get install libtbb2 libtiff-dev -y
-        sudo apt-get install python-dev python-numpy -y
-        sudo apt-get install x264 v4l-utils -y
+        sudo apt-get install -y \
+                build-essential checkinstall cmake pkg-config yasm \
+                git gfortran libjpeg8-dev libjasper1 libjasper-dev libpng-dev \
+                libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev \
+                libxine2-dev libv4l-dev \
+                libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+                qt5-default libgtk2.0-dev libtbb-dev \
+                libatlas-base-dev \
+                libfaac-dev libmp3lame-dev libtheora-dev \
+                libvorbis-dev libxvidcore-dev \
+                libopencore-amrnb-dev libopencore-amrwb-dev \
+                libtbb2 libtiff-dev \
+                python-dev python-numpy \
+                x264 v4l-utils
 
         curl -sL https://github.com/opencv/opencv/archive/${{ matrix.opencv }}.zip > opencv.zip
         curl -sL https://github.com/opencv/opencv_contrib/archive/${{ matrix.opencv }}.zip > opencv_contrib.zip
