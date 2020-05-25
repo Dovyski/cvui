@@ -22,11 +22,12 @@ jobs:
         opencv: [3.4.4, 4.0.0]
         compiler: [g++-4.9]
     steps:
-    - name: Checkout and set env vars
-      uses: actions/checkout@v1
+    - name: Adjust env vars
       if: ${{ matrix.opencv == '3.0.0' }}
       env: 
         OPENCV_WITH_TBB: OFF
+      run: |
+        echo 'OPENCV_WITH_TBB set to OFF'
 
     - name: Install OpenCV (${{ matrix.opencv }} ${{ matrix.compiler }})
       run: |
@@ -95,6 +96,7 @@ jobs:
         cd ..
 
     - name: Build cvui (${{ matrix.opencv }} ${{ matrix.compiler }})
+      uses: actions/checkout@v1
       env:
         COMPILER: ${{ matrix.compiler }}
       run: |
