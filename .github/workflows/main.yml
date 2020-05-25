@@ -15,6 +15,7 @@ env:
   ADD_PYTHON_EXAMPLES: ON
   OPENCV_EXTRA_MODULES_NAME: OPENCV_EXTRA_MODULES_PATH
   USE_OPENCV_EXTRA_MODULES: ON
+  ENABLE_PRECOMPILED_HEADERS: ON
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,7 +33,9 @@ jobs:
       if: ${{ matrix.opencv == '3.0.0' }}
       run: |
         echo '::set-env name=OPENCV_WITH_TBB::OFF'
+        echo '::set-env name=ENABLE_PRECOMPILED_HEADERS::OFF'
         echo 'OPENCV_WITH_TBB: ' $OPENCV_WITH_TBB
+        echo 'ENABLE_PRECOMPILED_HEADERS: ' $ENABLE_PRECOMPILED_HEADERS
 
     - name: Adjust extra modules settings
       if: ${{ startsWith(matrix.opencv, '2.') }}
@@ -104,6 +107,7 @@ jobs:
               -D WITH_IPP=${{ env.OPENCV_WITH_IPP }} \
               -D BUILD_NEW_PYTHON_SUPPORT=OFF \
               -D WITH_V4L=OFF \
+              -D ENABLE_PRECOMPILED_HEADERS=${{ env.ENABLE_PRECOMPILED_HEADERS }} \
               -D INSTALL_C_EXAMPLES=OFF \
               -D INSTALL_PYTHON_EXAMPLES=OFF \
               -D BUILD_EXAMPLES=OFF \
