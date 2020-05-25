@@ -81,7 +81,7 @@ jobs:
         curl -sL https://github.com/opencv/opencv_contrib/archive/${{ matrix.opencv }}.zip > opencv_contrib.zip
         unzip -q opencv_contrib.zip
 
-    - name: Install OpenCV (${{ matrix.opencv }} ${{ matrix.compiler }})
+    - name: Install OpenCV (${{ matrix.opencv }}, ${{ matrix.compiler }})
       run: |
 
         # OpenCV install code. Modified from 
@@ -98,6 +98,7 @@ jobs:
 
         # Set build instructions for Ubuntu distro.
         cmake -D CMAKE_BUILD_TYPE=RELEASE \
+              -D CMAKE_CXX_COMPILER=${{ matrix.COMPILER }} \
               -D CMAKE_INSTALL_PREFIX=/usr/local \
               -D WITH_TBB=${{ env.OPENCV_WITH_TBB }} \
               -D WITH_IPP=${{ env.OPENCV_WITH_IPP }} \
@@ -125,16 +126,14 @@ jobs:
         # We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
         cd ..
 
-    - name: Build cvui (${{ matrix.opencv }} ${{ matrix.compiler }})
-      env:
-        COMPILER: ${{ matrix.compiler }}
+    - name: Build cvui (${{ matrix.opencv }}, ${{ matrix.compiler }})
       run: |
         mkdir build.release
         cd build.release
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ env.COMPILER }} -DADD_PYTHON_EXAMPLES=ON
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ matrix.COMPILER }} -DADD_PYTHON_EXAMPLES=ON
         make -j4
         cd ..
         mkdir build.debug
         cd build.debug
-        cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=$COMPILER -DADD_PYTHON_EXAMPLES=${{ env.ADD_PYTHON_EXAMPLES }}
+        cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=${{ matrix.COMPILER }} -DADD_PYTHON_EXAMPLES=${{ env.ADD_PYTHON_EXAMPLES }}
         make -j10
