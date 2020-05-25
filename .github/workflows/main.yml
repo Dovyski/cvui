@@ -77,7 +77,7 @@ jobs:
         unzip -q opencv.zip
 
     - name: Download OpenCV-contrib ${{ matrix.opencv }}
-      if: ${{ env.USE_OPENCV_EXTRA_MODULES }}
+      if: ${{ env.USE_OPENCV_EXTRA_MODULES == 'true' }}
       run: |
         curl -sL https://github.com/opencv/opencv_contrib/archive/${{ matrix.opencv }}.zip > opencv_contrib.zip
         unzip -q opencv_contrib.zip
