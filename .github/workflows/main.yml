@@ -29,6 +29,9 @@ jobs:
       run: |
         echo 'OPENCV_WITH_TBB set to OFF'
 
+    - name: Checkout code
+      uses: actions/checkout@v1
+      
     - name: Install OpenCV (${{ matrix.opencv }} ${{ matrix.compiler }})
       run: |
 
@@ -96,7 +99,6 @@ jobs:
         cd ..
 
     - name: Build cvui (${{ matrix.opencv }} ${{ matrix.compiler }})
-      uses: actions/checkout@v1
       env:
         COMPILER: ${{ matrix.compiler }}
       run: |
