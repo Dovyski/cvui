@@ -59,6 +59,8 @@ OVER = 4
 OUT = 5
 UP = 6
 IS_DOWN = 7
+WHEEL_DOWN = 8
+WHEEL_UP = 9
 
 # Constants regarding mouse buttons
 LEFT_BUTTON = 0
@@ -156,11 +158,12 @@ class MouseButton:
 		self.justReleased = False           # if the mouse button was released, i.e. click event.
 		self.justPressed = False            # if the mouse button was just pressed, i.e. true for a frame when a button is down.
 		self.pressed = False                # if the mouse button is pressed or not.
-
+		self.wheel = 0
 	def reset(self):
 		self.justPressed = False
 		self.justReleased = False
 		self.pressed = False
+		self.wheel = 0
 
 # Describe the information of the mouse cursor
 class Mouse:
@@ -216,6 +219,10 @@ class Internal:
 			aRet = theButton.justPressed
 		elif theQuery == IS_DOWN:
 			aRet = theButton.pressed
+		elif theQuery == WHEEL_DOWN:
+			aRet = True if theButton.wheel < 0 else False
+		elif theQuery == WHEEL_UP:
+			aRet = True if theButton.wheel > 0 else False
 
 		return aRet
 
@@ -1034,6 +1041,13 @@ def _handleMouse(theEvent, theX, theY, theFlags, theContext):
 
 	theContext.mouse.position.x = theX
 	theContext.mouse.position.y = theY
+	#add wheel info
+	if theEvent == cv2.EVENT_MOUSEWHEEL:
+		if theFlags < 0:
+			theContext.mouse.buttons[MIDDLE_BUTTON].wheel = -1
+		elif theFlags > 0 :
+			theContext.mouse.buttons[MIDDLE_BUTTON].wheel = 1
+
 
 def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
 	"""
@@ -2412,6 +2426,7 @@ def update(theWindowName = ''):
 	for i in range(LEFT_BUTTON, RIGHT_BUTTON + 1):
 		aContext.mouse.buttons[i].justReleased = False
 		aContext.mouse.buttons[i].justPressed  = False
+		aContext.mouse.buttons[i].wheel = 0
 
 	__internal.screen.reset()
 

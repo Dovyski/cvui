@@ -1138,6 +1138,8 @@ const int OVER = 4;
 const int OUT = 5;
 const int UP = 6;
 const int IS_DOWN = 7;
+const int WHEEL_DOWN = 8;
+const int WHEEL_UP = 9;
 
 // Constants regarding mouse buttons
 const int LEFT_BUTTON = 0;
@@ -1180,6 +1182,7 @@ typedef struct {
 	bool justReleased;          // if the mouse button was released, i.e. click event.
 	bool justPressed;           // if the mouse button was just pressed, i.e. true for a frame when a button is down.
 	bool pressed;               // if the mouse button is pressed or not.
+	int wheel;					// if < 0 wheel down, if > 0 wheel up
 } cvui_mouse_btn_t;
 
 // Describe the information of the mouse cursor
@@ -1391,6 +1394,10 @@ namespace internal
 				aRet = theButton.justPressed; break;
 			case cvui::IS_DOWN:
 				aRet = theButton.pressed; break;
+			case cvui::WHEEL_DOWN:
+				aRet = (theButton.wheel < 0) ? true : false; break;
+			case cvui::WHEEL_UP:
+				aRet = (theButton.wheel > 0) ? true : false; break;
 		}
 
 		return aRet;
@@ -1400,6 +1407,7 @@ namespace internal
 		theButton.justPressed = false;
 		theButton.justReleased = false;
 		theButton.pressed = false;
+		theButton.wheel = 0;
 	}
 
 	void init(const cv::String& theWindowName, int theDelayWaitKey) {
@@ -1763,6 +1771,9 @@ namespace internal
 		cv::Rect aRect(theX, theY, theImage.cols, theImage.rows);
 
 		// TODO: check for render outside the frame area
+		//resize before placing
+
+
 		render::image(theBlock, aRect, theImage);
 
 		// Update the layout flow according to image size
@@ -2016,6 +2027,8 @@ namespace render
 	}
 
 	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage) {
+		if (theRect.x < 0 || theRect.y <0 ||theRect.x + theRect.width > theBlock.where.cols || theRect.y  + theRect.height > theBlock.where.rows)
+			return;
 		theImage.copyTo(theBlock.where(theRect));
 	}
 
@@ -2522,6 +2535,7 @@ void update(const cv::String& theWindowName) {
 	for (int i = cvui::LEFT_BUTTON; i <= cvui::RIGHT_BUTTON; i++) {
 		aContext.mouse.buttons[i].justReleased = false;
 		aContext.mouse.buttons[i].justPressed = false;
+		aContext.mouse.buttons[i].wheel = 0;
 	}
 	
 	internal::resetRenderingBuffer(internal::gScreen);
@@ -2537,7 +2551,7 @@ void update(const cv::String& theWindowName) {
 	}
 }
 
-void handleMouse(int theEvent, int theX, int theY, int /*theFlags*/, void* theData) {
+void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
 	int aButtons[3] = { cvui::LEFT_BUTTON, cvui::MIDDLE_BUTTON, cvui::RIGHT_BUTTON };
 	int aEventsDown[3] = { cv::EVENT_LBUTTONDOWN, cv::EVENT_MBUTTONDOWN, cv::EVENT_RBUTTONDOWN };
 	int aEventsUp[3] = { cv::EVENT_LBUTTONUP, cv::EVENT_MBUTTONUP, cv::EVENT_RBUTTONUP };
@@ -2563,6 +2577,22 @@ void handleMouse(int theEvent, int theX, int theY, int /*theFlags*/, void* theDa
 	
 	aContext->mouse.position.x = theX;
 	aContext->mouse.position.y = theY;
+
+	//add wheel info
+	if (theEvent == cv::EVENT_MOUSEWHEEL)
+	{
+		if (theFlags < 0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = -1;
+		//	std::cout << "wheel down " << std::endl;
+		}
+		else if (theFlags > 0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = 1;
+			//		std::cout << "wheel  up " << std::endl;
+		}
+	
+	}
 }
 
 } // namespace cvui

@@ -71,7 +71,8 @@ public:
 		if (mMinimizable && cvui::button(frame, mX + mWidth - scaledTitleHeight, mY + 1, scaledTitleHeight-1, scaledTitleHeight-1, mMinimized ? "+" : "-", mFontScale)) {
 			mMinimized = !mMinimized;
 		}
-		cvui::beginRow(frame, mX + std::lround(10*mFontScale/cvui::DEFAULT_FONT_SCALE), mY + std::lround(30*mFontScale/cvui::DEFAULT_FONT_SCALE), mWidth - scaledTitleHeight, mHeight - scaledTitleHeight);
+		//cvui::beginRow(frame, mX + std::lround(10*mFontScale/cvui::DEFAULT_FONT_SCALE), mY + std::lround(30*mFontScale/cvui::DEFAULT_FONT_SCALE), mWidth - scaledTitleHeight, mHeight - scaledTitleHeight);
+		cvui::beginRow(frame, mX,mY+ scaledTitleHeight, mWidth - scaledTitleHeight, mHeight - scaledTitleHeight);
 		cvui::beginColumn(mWidth - std::lround(10*mFontScale/cvui::DEFAULT_FONT_SCALE), mHeight - scaledTitleHeight);
 	}
 
