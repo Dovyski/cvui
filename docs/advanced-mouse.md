@@ -92,7 +92,7 @@ if (cvui::mouse(cvui::LEFT_BUTTON, cvui::CLICK)) {
 ```
 ## mouse wheel 
 Test if mouse wheel was tured up or down(for example zoom in or out of image):
-
+```cpp
 if (cvui::mouse(cvui::MIDDLE_BUTTON, cvui::WHEEL_UP)) //zoom out
 {
 	std::cout<< "Wheel tured up"<<std::endl;
@@ -101,7 +101,7 @@ if (cvui::mouse(cvui::MIDDLE_BUTTON, cvui::WHEEL_DOWN)) // zoom out
 {
 	std::cout<< "Wheel tured down"<<std::endl;
 }
-
+```
 ## Learn more
 
 Check out the [mouse](https://github.com/Dovyski/cvui/tree/master/example/src/mouse), [mouse-complex](https://github.com/Dovyski/cvui/tree/master/example/src/mouse-complex) and [mouse-complex-buttons](https://github.com/Dovyski/cvui/tree/master/example/src/mouse-complex-buttons) examples for more information about cvui's mouse API.
