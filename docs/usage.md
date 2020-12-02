@@ -125,7 +125,7 @@ int main() {
     // Show window content
     cvui::imshow(WINDOW1_NAME, frame);
 
-    if (cv::waitKey(20) == 27) {
+    if (cv::waitKey(20) == 27 || cv::getWindowProperty(WINDOW_NAME, cv::WND_PROP_ASPECT_RATIO) < 0)  {
       break;
     }
   }
