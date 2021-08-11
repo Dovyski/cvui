@@ -1119,7 +1119,9 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #undef LEFT_BUTTON
 #undef MIDDLE_BUTTON
 #undef RIGHT_BUTTON
-
+#undef WHEEL_DOWN 
+#undef WHEEL_UP 
+#undef DOUBLE_CLICK
 // Check for Unix stuff
 #ifdef __GNUC__
 	// just to remove the warning under gcc that is introduced by the VERSION variable below
@@ -1128,7 +1130,7 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #endif
 
 // Lib version
-static const char *VERSION = "2.7.0";
+static const char *VERSION = "2.7.1";
 
 const int ROW = 0;
 const int COLUMN = 1;
@@ -1140,6 +1142,7 @@ const int UP = 6;
 const int IS_DOWN = 7;
 const int WHEEL_DOWN = 8;
 const int WHEEL_UP = 9;
+const int DOUBLE_CLICK = 10;
 
 // Constants regarding mouse buttons
 const int LEFT_BUTTON = 0;
@@ -1182,6 +1185,7 @@ typedef struct {
 	bool justReleased;          // if the mouse button was released, i.e. click event.
 	bool justPressed;           // if the mouse button was just pressed, i.e. true for a frame when a button is down.
 	bool pressed;               // if the mouse button is pressed or not.
+	bool doubleClick;           //if the mosue button is double clicked
 	int wheel;					// if < 0 wheel down, if > 0 wheel up
 } cvui_mouse_btn_t;
 
@@ -1269,7 +1273,7 @@ namespace internal
 	cv::Scalar hexToScalar(unsigned int theColor);
 	unsigned int brightenColor(unsigned int theColor, unsigned int theDelta);
 	unsigned int darkenColor(unsigned int theColor, unsigned int theDelta);
-	uint8_t brightnessOfColor(unsigned int theColor);
+	unsigned int brightnessOfColor(unsigned int theColor);
 	void resetRenderingBuffer(cvui_block_t& theScreen);
 
 	template <typename T> // T can be any floating point type (float, double, long double)
@@ -1398,6 +1402,8 @@ namespace internal
 				aRet = (theButton.wheel < 0) ? true : false; break;
 			case cvui::WHEEL_UP:
 				aRet = (theButton.wheel > 0) ? true : false; break;
+			case cvui::DOUBLE_CLICK:
+				aRet = theButton.doubleClick;
 		}
 
 		return aRet;
@@ -1408,6 +1414,7 @@ namespace internal
 		theButton.justReleased = false;
 		theButton.pressed = false;
 		theButton.wheel = 0;
+		theButton.doubleClick = false;
 	}
 
 	void init(const cv::String& theWindowName, int theDelayWaitKey) {
@@ -1623,7 +1630,7 @@ namespace internal
 		return (aAlpha << 24) | (aRed << 16) | (aGreen << 8) | aBlue;
 	}
 
-	uint8_t brightnessOfColor(unsigned int theColor) {
+	unsigned int brightnessOfColor(unsigned int theColor) {
 		cv::Mat gray;
 		cv::Mat rgb(1, 1, CV_8UC3, internal::hexToScalar(theColor));
 		cv::cvtColor(rgb, gray, cv::COLOR_BGR2GRAY);
@@ -2029,7 +2036,21 @@ namespace render
 	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage) {
 		if (theRect.x < 0 || theRect.y <0 ||theRect.x + theRect.width > theBlock.where.cols || theRect.y  + theRect.height > theBlock.where.rows)
 			return;
-		theImage.copyTo(theBlock.where(theRect));
+		if (theImage.channels() != theBlock.where.channels())
+		{
+			auto src_ch = theImage.channels();
+			auto dst_ch = theBlock.where.channels();
+			if (src_ch == 3 && dst_ch == 4)
+				cv::cvtColor(theImage, theBlock.where(theRect), cv::COLOR_BGR2BGRA);
+			else if (src_ch == 1 && dst_ch == 4)
+				cv::cvtColor(theImage, theBlock.where(theRect), cv::COLOR_GRAY2BGRA);
+			else if (src_ch == 4 && dst_ch == 3)
+				cv::cvtColor(theImage, theBlock.where(theRect), cv::COLOR_BGRA2BGR);
+			else if (src_ch == 1 && dst_ch ==3)
+				cv::cvtColor(theImage, theBlock.where(theRect), cv::COLOR_GRAY2BGR);
+		}
+		else
+			theImage.copyTo(theBlock.where(theRect));
 	}
 
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue, double theFontScale) {
@@ -2536,6 +2557,7 @@ void update(const cv::String& theWindowName) {
 		aContext.mouse.buttons[i].justReleased = false;
 		aContext.mouse.buttons[i].justPressed = false;
 		aContext.mouse.buttons[i].wheel = 0;
+		aContext.mouse.buttons[i].doubleClick = false;
 	}
 	
 	internal::resetRenderingBuffer(internal::gScreen);
@@ -2572,13 +2594,24 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 			aContext->mouse.anyButton.pressed = false;
 			aContext->mouse.buttons[aBtn].justReleased = true;
 			aContext->mouse.buttons[aBtn].pressed = false;
+			aContext->mouse.buttons[aBtn].doubleClick = false;
 		}
 	}
 	
 	aContext->mouse.position.x = theX;
 	aContext->mouse.position.y = theY;
 
-	//add wheel info
+	//double click support
+	if (theEvent == cv::EVENT_LBUTTONDBLCLK)
+	{
+		aContext->mouse.buttons[cvui::LEFT_BUTTON].doubleClick = true;
+	}
+	if (theEvent == cv::EVENT_RBUTTONDBLCLK)
+	{
+		aContext->mouse.buttons[cvui::RIGHT_BUTTON].doubleClick = true;
+	}
+	//wheel info for ver 3.x and above
+#if (CV_MAJOR_VERSION >= 3)
 	if (theEvent == cv::EVENT_MOUSEWHEEL)
 	{
 		if (theFlags < 0)
@@ -2593,6 +2626,29 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) 
 		}
 	
 	}
+
+	if (theEvent == cv::EVENT_MOUSEWHEEL)
+	{
+		if (theFlags < 0 || cv::getMouseWheelDelta(theFlags)<0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = -1;
+		//	std::cout << "wheel down " << std::endl;
+		}
+		else if (theFlags > 0 || cv::getMouseWheelDelta(theFlags) > 0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = 1;
+
+
+		//	std::cout << "wheel  up " << std::endl;
+		}
+		else if (theFlags == 0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = 0;
+			//std::cout << "wheel not turned " << std::endl;
+		}
+	}
+#endif
+
 }
 
 } // namespace cvui
