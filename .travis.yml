@@ -108,8 +108,7 @@ matrix:
             - g++-4.9
       env: COMPILER=g++-4.9 OPENCV=3.4.1
 
-before_install:
-    - sudo sudo apt-get upgrade
+before_install:    
     - sudo apt-get update -qq
 
 install:
