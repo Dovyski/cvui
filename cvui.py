@@ -557,7 +557,7 @@ class Internal:
 		# Create a button based on the size of the text
 		return self.buttonWH(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, True)
 
-	def buttonI(self, theBlock, theX, theY, theIdle, theOver, theDown, theUpdateLayout):
+	def buttonI(self, theBlock, theX, theY, theIdle, theOver, theDown, theUpdateLayout,tooltip):
 		aIdleRows = theIdle.shape[0]
 		aIdleCols = theIdle.shape[1]
 
@@ -573,7 +573,14 @@ class Internal:
 		if theUpdateLayout:
 			aSize = Size(aRect.width, aRect.height)
 			self.updateLayoutFlow(theBlock, aSize)
-
+		#draw tooltip
+		if aStatus == OVER and tooltip!='':
+			baseline = 0;
+			txt_size = cv2.getTextSize(tooltip, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1,&baseline);			
+			int margin = 6;
+			aMouse = self.getContext().mouse
+			self.rect(theBlock.where, max(0, aMouse.position.x - txt_size.width), aMouse.position.y + margin, txt_size.width+margin, txt_size.height*2, 0x323235, 0xf1f4f7);
+			self.text(theBlock.where, std::max(0, aMouse.position.x - txt_size.width) + margin/2, aMouse.position.y + margin + 5, tooltip, 0.4, 0x110000);
 		# Return true if the button was clicked
 		return aStatus == CLICK
 
@@ -1401,7 +1408,7 @@ def button(theWhere, theX, theY, theWidth, theHeight, theLabel):
 	"""
 	print('This is wrapper function to help code autocompletion.')
 
-def button(theWhere, theX, theY, theIdle, theOver, theDown):
+def button(theWhere, theX, theY, theIdle, theOver, theDown,tooltip):
 	"""
 	Display a button whose graphics are images (np.ndarray). The button accepts three images to describe its states,
 	which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
@@ -1421,7 +1428,8 @@ def button(theWhere, theX, theY, theIdle, theOver, theDown):
 		an image that will be rendered when the mouse cursor is over the button.
 	theDown: np.ndarray
 		an image that will be rendered when the mouse cursor clicked the button (or is clicking).
-
+	tooltip: string
+		tooltip string display when mouse hovers over button
 	Returns
 	----------
 	`true` everytime the user clicks the button.
