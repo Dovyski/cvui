@@ -575,12 +575,13 @@ class Internal:
 			self.updateLayoutFlow(theBlock, aSize)
 		#draw tooltip
 		if aStatus == OVER and tooltip!='':
-			baseline = 0;
-			txt_size = cv2.getTextSize(tooltip, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1,&baseline);			
-			int margin = 6;
+			# baseline = 0;
+			((txt_w, txt_h), _) = cv2.getTextSize(tooltip, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)		
+			margin = 8
 			aMouse = self.getContext().mouse
-			self.rect(theBlock.where, max(0, aMouse.position.x - txt_size.width), aMouse.position.y + margin, txt_size.width+margin, txt_size.height*2, 0x323235, 0xf1f4f7);
-			self.text(theBlock.where, std::max(0, aMouse.position.x - txt_size.width) + margin/2, aMouse.position.y + margin + 5, tooltip, 0.4, 0x110000);
+			aRect = Rect(max(0, aMouse.position.x - txt_w), aMouse.position.y + margin, txt_w +margin, txt_h*2)
+			self._render.rect (theBlock,aRect , 0x323235, 0xf1f4f7)
+			self._render.text(theBlock,tooltip,Point(max(0, aMouse.position.x - txt_w) + margin/2, aMouse.position.y + margin + 13), 0.4, 0x110000)
 		# Return true if the button was clicked
 		return aStatus == CLICK
 
@@ -629,7 +630,7 @@ class Internal:
 
 	def rect(self, theBlock, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor):
 		aAnchor = Point(theX, theY);
-		aRect = Rect(theX, theY, theWidth, theHeight);
+		aRect = Rect(theX, theY, theWidth, theHeight)
 
 		aRect.x = aAnchor.x + aRect.width if aRect.width < 0 else aAnchor.x
 		aRect.y = aAnchor.y + aRect.height if aRect.height < 0 else aAnchor.y
@@ -2632,12 +2633,13 @@ def button(*theArgs):
 			aHeight = aArgs[1]
 			aLabel = aArgs[2]
 			return __internal.buttonWH(aBlock, aX, aY, aWidth, aHeight, aLabel, True)
-		else:
+	elif len(aArgs) == 4:
 			# Signature: button(theIdle, theOver, theDown)
 			aIdle = aArgs[0]
 			aOver = aArgs[1]
 			aDown= aArgs[2]
-			return __internal.buttonI(aBlock, aX, aY, aIdle, aOver, aDown, True)
+			tooltip = aArgs[3]			
+			return __internal.buttonI(aBlock, aX, aY, aIdle, aOver, aDown, True,tooltip)
 	else:
 		# TODO: check this case here
 		print('Problem?')
