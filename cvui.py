@@ -2485,6 +2485,7 @@ def text(*theArgs):
 		aText = theArgs[0]
 		aFontScale = theArgs[1] if len(theArgs) >= 2 else 0.4
 		aColor = theArgs[2] if len(theArgs) >= 3 else 0xCECECE
+		aFont = theArgs[3] if len(theArgs) >= 4 else None
 
 	__internal.text(aBlock, aX, aY, aText, aFontScale, aColor, True, font=aFont)
 
