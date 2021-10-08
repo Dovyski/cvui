@@ -39,6 +39,8 @@ Licensed under the MIT license.
 import cv2
 import numpy as np
 import sys
+from PIL import Image, ImageDraw, ImageFont
+
 
 def main():
 	# TODO: make something here?
@@ -409,13 +411,13 @@ class Internal:
 
 		return aLabel
 
-	def text(self, theBlock, theX, theY, theText, theFontScale, theColor, theUpdateLayout):
+	def text(self, theBlock, theX, theY, theText, theFontScale, theColor, theUpdateLayout, font):
 		aSizeInfo, aBaseline = cv2.getTextSize(theText, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
 
 		aTextSize = Size(aSizeInfo[0], aSizeInfo[1])
 		aPos = Point(theX, theY + aTextSize.height)
 
-		self._render.text(theBlock, theText, aPos, theFontScale, theColor)
+		self._render.text(theBlock, theText, aPos, theFontScale, theColor, font)
 
 		if theUpdateLayout:
 			# Add an extra pixel to the height to overcome OpenCV font size problems.
@@ -716,6 +718,7 @@ class Internal:
 # Class that contains all rendering methods.
 class Render:
 	_internal = None
+	_font = None
 
 	def rectangle(self, theWhere, theShape, theColor, theThickness = 1, theLineType = CVUI_ANTIALISED):
 		aStartPoint = (int(theShape.x), int(theShape.y))
@@ -723,9 +726,26 @@ class Render:
 
 		cv2.rectangle(theWhere, aStartPoint, aEndPoint, theColor, theThickness, theLineType)
 
-	def text(self, theBlock, theText, thePos, theFontScale, theColor):
+	def text(self, theBlock, theText, thePos, theFontScale, theColor, font:str=None):
 		aPosition = (int(thePos.x), int(thePos.y))
-		cv2.putText(theBlock.where, theText, aPosition, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, self._internal.hexToScalar(theColor), 1, cv2.LINE_AA)
+
+		if not font:
+			cv2.putText(theBlock.where, theText, aPosition, cv2.FONT_HERSHEY_SIMPLEX,
+			            theFontScale, self._internal.hexToScalar(theColor), 1, cv2.LINE_AA)
+			return
+
+		# Font The storage path of font *.ttc is generally: /usr/share/fonts/opentype/noto/ ;Find command: locate *.ttc
+		if self._font is None:
+			self._font = ImageFont.truetype(font, int(theFontScale*32))
+
+		img_PIL = Image.fromarray(theBlock.where)
+
+		draw = ImageDraw.Draw(img_PIL)
+		color = np.asarray(self._internal.hexToScalar(theColor)[:3])[::-1]
+		draw.text(aPosition, theText, font=self._font, fill=tuple(color.tolist()))
+
+		theBlock.where[:, :, :] = np.asarray(img_PIL)
+		return
 
 	def counter(self, theBlock, theShape, theValue):
 		self.rectangle(theBlock.where, theShape, (0x29, 0x29, 0x29), CVUI_FILLED) # fill
@@ -2453,6 +2473,7 @@ def text(*theArgs):
 		aText = theArgs[3]
 		aFontScale = theArgs[4] if len(theArgs) >= 5 else 0.4
 		aColor = theArgs[5] if len(theArgs) >= 6 else 0xCECECE
+		aFont = theArgs[6] if len(theArgs) >= 7 else None
 
 		__internal.screen.where = aWhere
 		aBlock = __internal.screen
@@ -2465,7 +2486,7 @@ def text(*theArgs):
 		aFontScale = theArgs[1] if len(theArgs) >= 2 else 0.4
 		aColor = theArgs[2] if len(theArgs) >= 3 else 0xCECECE
 
-	__internal.text(aBlock, aX, aY, aText, aFontScale, aColor, True)
+	__internal.text(aBlock, aX, aY, aText, aFontScale, aColor, True, font=aFont)
 
 def printf(*theArgs):
 	if isinstance(theArgs[0], np.ndarray):
