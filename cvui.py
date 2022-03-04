@@ -991,7 +991,8 @@ class Render:
 	def sparkline(self, theBlock, theValues, theRect, theMin, theMax, theColor):
 		aSize = len(theValues)
 		i = 0
-		aScale = theMax - theMin
+		delta = theMax - theMin
+		aScale = 1 if delta == 0 else delta
 		aGap = float(theRect.width) / aSize
 		aPosX = theRect.x
 
