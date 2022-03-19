@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.7.2](https://github.com/Dovyski/cvui/releases/tag/v2.7.0) - 2021-08-11
+- Button with images - Add tooltip, add 3d effect
+## [2.7.1](https://github.com/Dovyski/cvui/releases/tag/v2.7.0) - 2020-12-20
+- Support mouse wheel
+- Support mosue double click
+- Fix problem when image is not the same color space of background
 ## [2.7.0](https://github.com/Dovyski/cvui/releases/tag/v2.7.0) - 2018-10-08
 ### Added
 - Python implementation of cvui, i.e. `cvui.py` ([read more](https://dovyski.github.io/cvui/usage/))

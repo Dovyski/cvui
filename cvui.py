@@ -59,6 +59,8 @@ OVER = 4
 OUT = 5
 UP = 6
 IS_DOWN = 7
+WHEEL_DOWN = 8
+WHEEL_UP = 9
 
 # Constants regarding mouse buttons
 LEFT_BUTTON = 0
@@ -156,11 +158,12 @@ class MouseButton:
 		self.justReleased = False           # if the mouse button was released, i.e. click event.
 		self.justPressed = False            # if the mouse button was just pressed, i.e. true for a frame when a button is down.
 		self.pressed = False                # if the mouse button is pressed or not.
-
+		self.wheel = 0
 	def reset(self):
 		self.justPressed = False
 		self.justReleased = False
 		self.pressed = False
+		self.wheel = 0
 
 # Describe the information of the mouse cursor
 class Mouse:
@@ -216,6 +219,10 @@ class Internal:
 			aRet = theButton.justPressed
 		elif theQuery == IS_DOWN:
 			aRet = theButton.pressed
+		elif theQuery == WHEEL_DOWN:
+			aRet = True if theButton.wheel < 0 else False
+		elif theQuery == WHEEL_UP:
+			aRet = True if theButton.wheel > 0 else False
 
 		return aRet
 
@@ -550,7 +557,7 @@ class Internal:
 		# Create a button based on the size of the text
 		return self.buttonWH(theBlock, theX, theY, aTextSize.width + 30, aTextSize.height + 18, theLabel, True)
 
-	def buttonI(self, theBlock, theX, theY, theIdle, theOver, theDown, theUpdateLayout):
+	def buttonI(self, theBlock, theX, theY, theIdle, theOver, theDown, theUpdateLayout,tooltip):
 		aIdleRows = theIdle.shape[0]
 		aIdleCols = theIdle.shape[1]
 
@@ -566,7 +573,15 @@ class Internal:
 		if theUpdateLayout:
 			aSize = Size(aRect.width, aRect.height)
 			self.updateLayoutFlow(theBlock, aSize)
-
+		#draw tooltip
+		if aStatus == OVER and tooltip!='':
+			# baseline = 0;
+			((txt_w, txt_h), _) = cv2.getTextSize(tooltip, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)		
+			margin = 8
+			aMouse = self.getContext().mouse
+			aRect = Rect(max(0, aMouse.position.x - txt_w), aMouse.position.y + margin, txt_w +margin, txt_h*2)
+			self._render.rect (theBlock,aRect , 0x323235, 0xf1f4f7)
+			self._render.text(theBlock,tooltip,Point(max(0, aMouse.position.x - txt_w) + margin/2, aMouse.position.y + margin + 13), 0.4, 0x110000)
 		# Return true if the button was clicked
 		return aStatus == CLICK
 
@@ -615,7 +630,7 @@ class Internal:
 
 	def rect(self, theBlock, theX, theY, theWidth, theHeight, theBorderColor, theFillingColor):
 		aAnchor = Point(theX, theY);
-		aRect = Rect(theX, theY, theWidth, theHeight);
+		aRect = Rect(theX, theY, theWidth, theHeight)
 
 		aRect.x = aAnchor.x + aRect.width if aRect.width < 0 else aAnchor.x
 		aRect.y = aAnchor.y + aRect.height if aRect.height < 0 else aAnchor.y
@@ -1035,6 +1050,13 @@ def _handleMouse(theEvent, theX, theY, theFlags, theContext):
 
 	theContext.mouse.position.x = theX
 	theContext.mouse.position.y = theY
+	#add wheel info
+	if theEvent == cv2.EVENT_MOUSEWHEEL:
+		if theFlags < 0:
+			theContext.mouse.buttons[MIDDLE_BUTTON].wheel = -1
+		elif theFlags > 0 :
+			theContext.mouse.buttons[MIDDLE_BUTTON].wheel = 1
+
 
 def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
 	"""
@@ -1388,7 +1410,7 @@ def button(theWhere, theX, theY, theWidth, theHeight, theLabel):
 	"""
 	print('This is wrapper function to help code autocompletion.')
 
-def button(theWhere, theX, theY, theIdle, theOver, theDown):
+def button(theWhere, theX, theY, theIdle, theOver, theDown,tooltip):
 	"""
 	Display a button whose graphics are images (np.ndarray). The button accepts three images to describe its states,
 	which are idle (no mouse interaction), over (mouse is over the button) and down (mouse clicked the button).
@@ -1408,7 +1430,8 @@ def button(theWhere, theX, theY, theIdle, theOver, theDown):
 		an image that will be rendered when the mouse cursor is over the button.
 	theDown: np.ndarray
 		an image that will be rendered when the mouse cursor clicked the button (or is clicking).
-
+	tooltip: string
+		tooltip string display when mouse hovers over button
 	Returns
 	----------
 	`true` everytime the user clicks the button.
@@ -2413,6 +2436,7 @@ def update(theWindowName = ''):
 	for i in range(LEFT_BUTTON, RIGHT_BUTTON + 1):
 		aContext.mouse.buttons[i].justReleased = False
 		aContext.mouse.buttons[i].justPressed  = False
+		aContext.mouse.buttons[i].wheel = 0
 
 	__internal.screen.reset()
 
@@ -2610,12 +2634,13 @@ def button(*theArgs):
 			aHeight = aArgs[1]
 			aLabel = aArgs[2]
 			return __internal.buttonWH(aBlock, aX, aY, aWidth, aHeight, aLabel, True)
-		else:
+	elif len(aArgs) == 4:
 			# Signature: button(theIdle, theOver, theDown)
 			aIdle = aArgs[0]
 			aOver = aArgs[1]
 			aDown= aArgs[2]
-			return __internal.buttonI(aBlock, aX, aY, aIdle, aOver, aDown, True)
+			tooltip = aArgs[3]			
+			return __internal.buttonI(aBlock, aX, aY, aIdle, aOver, aDown, True,tooltip)
 	else:
 		# TODO: check this case here
 		print('Problem?')

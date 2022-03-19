@@ -1,6 +1,6 @@
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
- Version: 2.7.0
+ Version: 2.7.2
 
  Usage:
 
@@ -328,13 +328,15 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
  \param theIdle an image that will be rendered when the button is not interacting with the mouse cursor.
  \param theOver an image that will be rendered when the mouse cursor is over the button.
  \param theDown an image that will be rendered when the mouse cursor clicked the button (or is clicking).
+ \param tooltip - string to display in tooltip window 
+ \param draw3d (defualt = true) add 3d effect drawing lines on edge of button, makes it raised , looks like default button with text on it. works best if background color of button is gray
  \return `true` everytime the user clicks the button.
 
  \sa button()
  \sa image()
  \sa iarea()
 */
-bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown);
+bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, std::string tooltip = "", bool draw3d = true);
 
 /**
  Display an image (cv::Mat). 
@@ -1119,6 +1121,9 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #undef LEFT_BUTTON
 #undef MIDDLE_BUTTON
 #undef RIGHT_BUTTON
+#undef WHEEL_DOWN
+#undef WHEEL_UP
+#undef DOUBLE_CLICK
 
 // Check for Unix stuff
 #ifdef __GNUC__
@@ -1128,7 +1133,7 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #endif
 
 // Lib version
-static const char *VERSION = "2.7.0";
+static const char *VERSION = "2.7.2";
 
 const int ROW = 0;
 const int COLUMN = 1;
@@ -1138,6 +1143,9 @@ const int OVER = 4;
 const int OUT = 5;
 const int UP = 6;
 const int IS_DOWN = 7;
+const int WHEEL_DOWN = 8;
+const int WHEEL_UP = 9;
+const int DOUBLE_CLICK = 10;
 
 // Constants regarding mouse buttons
 const int LEFT_BUTTON = 0;
@@ -1180,6 +1188,8 @@ typedef struct {
 	bool justReleased;          // if the mouse button was released, i.e. click event.
 	bool justPressed;           // if the mouse button was just pressed, i.e. true for a frame when a button is down.
 	bool pressed;               // if the mouse button is pressed or not.
+	bool doubleClick;           //if the mosue button is double clicked
+	int wheel;					// if < 0 wheel down, if > 0 wheel up
 } cvui_mouse_btn_t;
 
 // Describe the information of the mouse cursor
@@ -1248,7 +1258,7 @@ namespace internal
 	int iarea(int theX, int theY, int theWidth, int theHeight);
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout, double theFontScale, unsigned int theInsideColor);
 	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, double theFontScale, unsigned int theInsideColor);
-	bool button(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, bool theUpdateLayout);
+	bool button(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, bool theUpdateLayout,std::string tooltip,bool draw3d);
 	void image(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theImage);
 	bool checkbox(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor, double theFontScale);
 	void text(cvui_block_t& theBlock, int theX, int theY, const cv::String& theText, double theFontScale, unsigned int theColor, bool theUpdateLayout);
@@ -1266,7 +1276,7 @@ namespace internal
 	cv::Scalar hexToScalar(unsigned int theColor);
 	unsigned int brightenColor(unsigned int theColor, unsigned int theDelta);
 	unsigned int darkenColor(unsigned int theColor, unsigned int theDelta);
-	uint8_t brightnessOfColor(unsigned int theColor);
+	unsigned int brightnessOfColor(unsigned int theColor);
 	void resetRenderingBuffer(cvui_block_t& theScreen);
 
 	template <typename T> // T can be any floating point type (float, double, long double)
@@ -1391,6 +1401,12 @@ namespace internal
 				aRet = theButton.justPressed; break;
 			case cvui::IS_DOWN:
 				aRet = theButton.pressed; break;
+			case cvui::WHEEL_DOWN:
+				aRet = (theButton.wheel < 0) ? true : false; break;
+			case cvui::WHEEL_UP:
+				aRet = (theButton.wheel > 0) ? true : false; break;
+			case cvui::DOUBLE_CLICK:
+				aRet = theButton.doubleClick;
 		}
 
 		return aRet;
@@ -1400,6 +1416,8 @@ namespace internal
 		theButton.justPressed = false;
 		theButton.justReleased = false;
 		theButton.pressed = false;
+		theButton.wheel = 0;
+		theButton.doubleClick = false;
 	}
 
 	void init(const cv::String& theWindowName, int theDelayWaitKey) {
@@ -1615,7 +1633,7 @@ namespace internal
 		return (aAlpha << 24) | (aRed << 16) | (aGreen << 8) | aBlue;
 	}
 
-	uint8_t brightnessOfColor(unsigned int theColor) {
+	unsigned int brightnessOfColor(unsigned int theColor) {
 		cv::Mat gray;
 		cv::Mat rgb(1, 1, CV_8UC3, internal::hexToScalar(theColor));
 		cv::cvtColor(rgb, gray, cv::COLOR_BGR2GRAY);
@@ -1738,7 +1756,7 @@ namespace internal
 		return internal::button(theBlock, theX, theY, aTextSize.width + std::lround(30*theFontScale/DEFAULT_FONT_SCALE), aTextSize.height + std::lround(18* theFontScale / DEFAULT_FONT_SCALE), theLabel, true, theFontScale, theInsideColor);
 	}
 
-	bool button(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, bool theUpdateLayout) {
+	bool button(cvui_block_t& theBlock, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown, bool theUpdateLayout, std::string tooltip,bool draw3d) {
 		cv::Rect aRect(theX, theY, theIdle.cols, theIdle.rows);
 		int aStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
 
@@ -1747,14 +1765,52 @@ namespace internal
 			case cvui::OVER: render::image(theBlock, aRect, theOver); break;
 			case cvui::DOWN: render::image(theBlock, aRect, theDown); break;
 		}
+		if (draw3d)
+		{
+			auto theShape = aRect;
+			unsigned int brightColor = internal::brightenColor(DEFAULT_BUTTON_COLOR, 0x505050);
+			unsigned int darkColor = internal::darkenColor(DEFAULT_BUTTON_COLOR, 0x505050);
+			unsigned int topLeftColor, bottomRightColor;
+			// 3D effect depending on if the button is down or up. Light comes from top left.
+			if (aStatus == OVER || aStatus == OUT) // button is up
+			{
+				topLeftColor = brightColor;
+				bottomRightColor = darkColor;
+			}
+			else // button is down
+			{
+				bottomRightColor = brightColor;
+				topLeftColor = darkColor;
+			}
 
+			// 3D Outline. Note that cv::rectangle exludes theShape.br(), so we have to also exclude this point when drawing lines with cv::line
+			unsigned int thicknessOf3DOutline = (int)(DEFAULT_FONT_SCALE / 0.6); // On high DPI displayed we need to make the border thicker. We scale it together with the font size the user chose.
+			do
+			{
+				cv::line(theBlock.where, theShape.br() - cv::Point(1, 1), cv::Point(theShape.tl().x, theShape.br().y - 1), internal::hexToScalar(bottomRightColor));
+				cv::line(theBlock.where, theShape.br() - cv::Point(1, 1), cv::Point(theShape.br().x - 1, theShape.tl().y), internal::hexToScalar(bottomRightColor));
+				cv::line(theBlock.where, theShape.tl(), cv::Point(theShape.tl().x, theShape.br().y - 1), internal::hexToScalar(topLeftColor));
+				cv::line(theBlock.where, theShape.tl(), cv::Point(theShape.br().x - 1, theShape.tl().y), internal::hexToScalar(topLeftColor));
+				theShape.x++; theShape.y++; theShape.width -= 2; theShape.height -= 2;
+			} while (thicknessOf3DOutline--); // we want at least 1 pixel 3D outline, even for very small fonts
+
+		}
 		// Update the layout flow according to button size
 		// if we were told to update.
 		if (theUpdateLayout) {
 			cv::Size aSize(aRect.width, aRect.height);
 			updateLayoutFlow(theBlock, aSize);
 		}
+		if (aStatus == cvui::OVER && !tooltip.empty())
+		{
+			int baseline = 0;
+			auto txt_size = cv::getTextSize(tooltip, cv::FONT_HERSHEY_SIMPLEX, cvui::DEFAULT_FONT_SCALE, 1,&baseline);			
+			int margin = 6;
+			cvui_mouse_t& aMouse = internal::getContext().mouse;
+			cvui::rect(theBlock.where, std::max(0, aMouse.position.x - txt_size.width), aMouse.position.y + margin, txt_size.width+margin, txt_size.height*2, 0x323235, 0xf1f4f7);
+			cvui::text(theBlock.where, std::max(0, aMouse.position.x - txt_size.width) + margin/2, aMouse.position.y + margin + 5, tooltip, cvui::DEFAULT_FONT_SCALE, 0x110000);
 
+		}
 		// Return true if the button was clicked
 		return aStatus == cvui::CLICK;
 	}
@@ -1763,6 +1819,9 @@ namespace internal
 		cv::Rect aRect(theX, theY, theImage.cols, theImage.rows);
 
 		// TODO: check for render outside the frame area
+		//resize before placing
+
+
 		render::image(theBlock, aRect, theImage);
 
 		// Update the layout flow according to image size
@@ -2016,7 +2075,23 @@ namespace render
 	}
 
 	void image(cvui_block_t& theBlock, cv::Rect& theRect, cv::Mat& theImage) {
-		theImage.copyTo(theBlock.where(theRect));
+		if (theRect.x < 0 || theRect.y <0 ||theRect.x + theRect.width > theBlock.where.cols || theRect.y  + theRect.height > theBlock.where.rows)
+			return;
+		if (theImage.channels() != theBlock.where.channels())
+		{
+			auto src_ch = theImage.channels();
+			auto dst_ch = theBlock.where.channels();
+			if (src_ch == 3 && dst_ch == 4)
+				cv::cvtColor(theImage, theBlock.where(theRect), cv::COLOR_BGR2BGRA);
+			else if (src_ch == 1 && dst_ch == 4)
+				cv::cvtColor(theImage, theBlock.where(theRect), cv::COLOR_GRAY2BGRA);
+			else if (src_ch == 4 && dst_ch == 3)
+				cv::cvtColor(theImage, theBlock.where(theRect), cv::COLOR_BGRA2BGR);
+			else if (src_ch == 1 && dst_ch ==3)
+				cv::cvtColor(theImage, theBlock.where(theRect), cv::COLOR_GRAY2BGR);
+		}
+		else
+			theImage.copyTo(theBlock.where(theRect));
 	}
 
 	void counter(cvui_block_t& theBlock, cv::Rect& theShape, const cv::String& theValue, double theFontScale) {
@@ -2332,9 +2407,9 @@ bool button(cv::Mat& theWhere, int theX, int theY, int theWidth, int theHeight, 
 	return internal::button(internal::gScreen, theX, theY, theWidth, theHeight, theLabel, true, theFontScale, theInsideColor);
 }
 
-bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown) {
+bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown,std::string tooltip,bool draw3d) {
 	internal::gScreen.where = theWhere;
-	return internal::button(internal::gScreen, theX, theY, theIdle, theOver, theDown, true);
+	return internal::button(internal::gScreen, theX, theY, theIdle, theOver, theDown, true, tooltip,draw3d);
 }
 
 void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage) {
@@ -2448,7 +2523,7 @@ bool button(int theWidth, int theHeight, const cv::String& theLabel, double theF
 
 bool button(cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown) {
 	cvui_block_t& aBlock = internal::topBlock();
-	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theIdle, theOver, theDown, true);
+	return internal::button(aBlock, aBlock.anchor.x, aBlock.anchor.y, theIdle, theOver, theDown, true,"",true);
 }
 
 void image(cv::Mat& theImage) {
@@ -2522,6 +2597,8 @@ void update(const cv::String& theWindowName) {
 	for (int i = cvui::LEFT_BUTTON; i <= cvui::RIGHT_BUTTON; i++) {
 		aContext.mouse.buttons[i].justReleased = false;
 		aContext.mouse.buttons[i].justPressed = false;
+		aContext.mouse.buttons[i].wheel = 0;
+		aContext.mouse.buttons[i].doubleClick = false;
 	}
 	
 	internal::resetRenderingBuffer(internal::gScreen);
@@ -2537,7 +2614,7 @@ void update(const cv::String& theWindowName) {
 	}
 }
 
-void handleMouse(int theEvent, int theX, int theY, int /*theFlags*/, void* theData) {
+void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
 	int aButtons[3] = { cvui::LEFT_BUTTON, cvui::MIDDLE_BUTTON, cvui::RIGHT_BUTTON };
 	int aEventsDown[3] = { cv::EVENT_LBUTTONDOWN, cv::EVENT_MBUTTONDOWN, cv::EVENT_RBUTTONDOWN };
 	int aEventsUp[3] = { cv::EVENT_LBUTTONUP, cv::EVENT_MBUTTONUP, cv::EVENT_RBUTTONUP };
@@ -2558,11 +2635,61 @@ void handleMouse(int theEvent, int theX, int theY, int /*theFlags*/, void* theDa
 			aContext->mouse.anyButton.pressed = false;
 			aContext->mouse.buttons[aBtn].justReleased = true;
 			aContext->mouse.buttons[aBtn].pressed = false;
+			aContext->mouse.buttons[aBtn].doubleClick = false;
 		}
 	}
 	
 	aContext->mouse.position.x = theX;
 	aContext->mouse.position.y = theY;
+
+	//double click support
+	if (theEvent == cv::EVENT_LBUTTONDBLCLK)
+	{
+		aContext->mouse.buttons[cvui::LEFT_BUTTON].doubleClick = true;
+	}
+	if (theEvent == cv::EVENT_RBUTTONDBLCLK)
+	{
+		aContext->mouse.buttons[cvui::RIGHT_BUTTON].doubleClick = true;
+	}
+	//wheel info for ver 3.x and above
+#if (CV_MAJOR_VERSION >= 3)
+	if (theEvent == cv::EVENT_MOUSEWHEEL)
+	{
+		if (theFlags < 0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = -1;
+		//	std::cout << "wheel down " << std::endl;
+		}
+		else if (theFlags > 0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = 1;
+			//		std::cout << "wheel  up " << std::endl;
+		}
+	
+	}
+
+	if (theEvent == cv::EVENT_MOUSEWHEEL)
+	{
+		if (theFlags < 0 || cv::getMouseWheelDelta(theFlags)<0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = -1;
+		//	std::cout << "wheel down " << std::endl;
+		}
+		else if (theFlags > 0 || cv::getMouseWheelDelta(theFlags) > 0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = 1;
+
+
+		//	std::cout << "wheel  up " << std::endl;
+		}
+		else if (theFlags == 0)
+		{
+			aContext->mouse.buttons[MIDDLE_BUTTON].wheel = 0;
+			//std::cout << "wheel not turned " << std::endl;
+		}
+	}
+#endif
+
 }
 
 } // namespace cvui
