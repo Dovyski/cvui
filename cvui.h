@@ -1166,6 +1166,15 @@ typedef struct {
 	cv::Point position;          // x and y coordinates of the mouse at the moment.
 } cvui_mouse_t;
 
+// Descrive the information of an input text
+typedef struct {
+	cv::String *content;         // content of an input field
+    int contentStartIndex;       // related to the content string, where we should start drawing
+	bool focused;                // is the input field is focused
+	int cursorLastBlink;         // last time the cursor blinked
+    int cursorIndex;             // where the cursor is in the string
+} cvui_input_t;
+
 // Describes a (window) context.
 typedef struct {
 	cv::String windowName;       // name of the window related to this context.
@@ -1184,6 +1193,7 @@ namespace internal
 	static int gDelayWaitKey;
 	static bool gHeadlessMode;
 	static cvui_block_t gScreen;
+    static cvui_input_t gInput;
 
 	struct TrackbarParams {
 		long double min;
@@ -1643,35 +1653,43 @@ namespace internal
 
 	void input(cvui_block_t& theBlock, int theX, int theY, int theWidth, const cv::String& theName, cv::String& theValue, double theFontScale, bool theUpdateLayout) {
 
+		bool aSelfActivated = gActivatedInput == theName;
+
 		// Draw input text area and text
-		bool selfActivated = (gActivatedInput == theName);
 		cv::Size aTextSize = cv::getTextSize(theValue, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
-		int padding = aTextSize.height / 3;
-		cv::Rect aRect(theX, theY, theWidth, aTextSize.height + 1 + padding * 2);
-		render::rect(theBlock, aRect, (selfActivated?0x777777:0xaaaaaa), 0xffffff);
-		cv::Point aPos(theX+padding, theY + aTextSize.height + padding);
-		render::text(theBlock, theValue, aPos, theFontScale, 0x000000);
+		int aPadding = aTextSize.height / 3;
+		
+        cv::Rect aRect(theX, theY, theWidth, aTextSize.height + 1 + aPadding * 2);
+		render::rect(theBlock, aRect, aSelfActivated ? 0x777777 : 0xaaaaaa, 0xffffff);
+		
+        cv::Point aPos(theX + aPadding, theY + aTextSize.height + aPadding);
+        render::text(theBlock, theValue, aPos, theFontScale, 0x000000);
 
 		// Update the activate status of the input control.
 		int inputStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
-		if (inputStatus == cvui::CLICK) { // click inside
+        bool aIsClickWithinInputArea = inputStatus == cvui::CLICK;
+
+		if (aIsClickWithinInputArea) { // click inside
 			gActivatedInput = theName;
-			selfActivated = true;
-		}else if(selfActivated) { // click outside while self activated
-			int backgroundStatus = cvui::iarea(0, 0, 10000000, 10000000);
-			if (backgroundStatus == cvui::CLICK) {
+			aSelfActivated = true;
+
+		} else if (aSelfActivated) { // click outside while self activated
+			int aOutsideClick = cvui::iarea(0, 0, 10000000, 10000000);
+            bool aIsClickOutsideInputArea = aOutsideClick == cvui::CLICK;
+
+			if (aOutsideClick) {
 				gActivatedInput = "";
-				selfActivated = false;
+				aSelfActivated = false;
 			}
 		}
 		
 		// Manipulate the string
-		if (selfActivated && internal::gLastInputKeyPressed != -1) {
+		if (aSelfActivated && internal::gLastInputKeyPressed != -1) {
 			int key = internal::gLastInputKeyPressed;
 			internal::gLastInputKeyPressed = -1;
 			if (key >= 32) {
 				theValue += (char)key;
-			}else if (key == 0x08 && theValue.length()) {
+			} else if (key == 0x08 && theValue.length()) {
 				theValue = theValue.substr(0, theValue.length() - 1);
 			}
 		}
@@ -1679,10 +1697,9 @@ namespace internal
 		// Update the layout flow according to button size
 		// if we were told to update.
 		if (theUpdateLayout) {
-			cv::Size aSize(theWidth, aTextSize.height + padding * 2);
+			cv::Size aSize(theWidth, aTextSize.height + aPadding * 2);
 			updateLayoutFlow(theBlock, aTextSize);
 		}
-		
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {

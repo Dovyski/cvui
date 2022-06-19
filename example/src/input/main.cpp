@@ -23,8 +23,9 @@ int main(int argc, const char *argv[])
 	// If cvui has a value for waitKey, it will call
 	// waitKey() automatically for us within cvui::update().
 	cvui::init(WINDOW_NAME, 20);
-  cv::String input1_value = "text1";
-  cv::String input2_value = "text2";
+    
+    cv::String input1_value = "text1";
+    cv::String input2_value = "text2";
 
 	while (true) {
 		frame = cv::Scalar(49, 52, 49);
