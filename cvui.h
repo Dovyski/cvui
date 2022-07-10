@@ -1128,6 +1128,7 @@ const unsigned int TRACKBAR_DISCRETE = 4;
 const unsigned int TRACKBAR_HIDE_MIN_MAX_LABELS = 8;
 const unsigned int TRACKBAR_HIDE_VALUE_LABEL = 16;
 const unsigned int TRACKBAR_HIDE_LABELS = 32;
+const unsigned int INTPUT_CURSOR_BLINK_SLOWNESS = 10;
 
 // Describes the block structure used by the lib to handle `begin*()` and `end*()` calls.
 typedef struct {
@@ -1168,11 +1169,12 @@ typedef struct {
 
 // Descrive the information of an input text
 typedef struct {
-	cv::String *content;         // content of an input field
+	cv::String name;             // name of the text input
     int contentStartIndex;       // related to the content string, where we should start drawing
-	bool focused;                // is the input field is focused
 	int cursorLastBlink;         // last time the cursor blinked
     int cursorIndex;             // where the cursor is in the string
+    int cursorBlinkCounter;      // where the cursor is in the string
+    double fontScale;            // font scale of the text
 } cvui_input_t;
 
 // Describes a (window) context.
@@ -1217,7 +1219,6 @@ namespace internal
 	static int gStackCount = -1;
 	static const int gTrackbarMarginX = 14;
 
-	static cv::String gActivatedInput = "";
 	static int gLastInputKeyPressed = -1;
 
 	bool isMouseButton(cvui_mouse_btn_t& theButton, int theQuery);
@@ -1317,6 +1318,7 @@ namespace render {
 	void checkbox(cvui_block_t& theBlock, int theState, cv::Rect& theShape);
 	void checkboxLabel(cvui_block_t& theBlock, cv::Rect& theRect, const cv::String& theLabel, cv::Size& theTextSize, unsigned int theColor);
 	void checkboxCheck(cvui_block_t& theBlock, cv::Rect& theShape);
+	void input(cvui_block_t& theBlock, cv::Rect& theShape, cv::String& theContent, double theFontScale, int theIArea, bool theFocused);
 	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle);
 	void rect(cvui_block_t& theBlock, cv::Rect& thePos, unsigned int theBorderColor, unsigned int theFillingColor);
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, cv::Rect &theRect, double theMin, double theMax, unsigned int theColor);
@@ -1651,55 +1653,49 @@ namespace internal
 		return aRet;
 	}
 
-	void input(cvui_block_t& theBlock, int theX, int theY, int theWidth, const cv::String& theName, cv::String& theValue, double theFontScale, bool theUpdateLayout) {
+	void input(cvui_block_t& theBlock, int theX, int theY, int theWidth, const cv::String& theName, cv::String& theContent, double theFontScale, bool theUpdateLayout) {
+		bool aFocused = gInput.name == theName;
 
-		bool aSelfActivated = gActivatedInput == theName;
-
-		// Draw input text area and text
-		cv::Size aTextSize = cv::getTextSize(theValue, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
-		int aPadding = aTextSize.height / 3;
-		
-        cv::Rect aRect(theX, theY, theWidth, aTextSize.height + 1 + aPadding * 2);
-		render::rect(theBlock, aRect, aSelfActivated ? 0x777777 : 0xaaaaaa, 0xffffff);
-		
-        cv::Point aPos(theX + aPadding, theY + aTextSize.height + aPadding);
-        render::text(theBlock, theValue, aPos, theFontScale, 0x000000);
+		cv::Size aTextSize = cv::getTextSize(theContent, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
+		int aPadding = aTextSize.height / 2;
+        cv::Rect aRect(theX, theY, theWidth, aTextSize.height + 2 + aPadding * 2);
 
 		// Update the activate status of the input control.
-		int inputStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
-        bool aIsClickWithinInputArea = inputStatus == cvui::CLICK;
+		int aInputAreaInteraction = cvui::iarea(theX, theY, aRect.width, aRect.height);
+		int aOutsideAreaInteraction = cvui::iarea(0, 0, 10000000, 10000000);
+        bool aIsGainFocusInteraction = aInputAreaInteraction == cvui::CLICK;
+        bool aIsLoseFocusInteraction = aOutsideAreaInteraction == cvui::CLICK;
 
-		if (aIsClickWithinInputArea) { // click inside
-			gActivatedInput = theName;
-			aSelfActivated = true;
-
-		} else if (aSelfActivated) { // click outside while self activated
-			int aOutsideClick = cvui::iarea(0, 0, 10000000, 10000000);
-            bool aIsClickOutsideInputArea = aOutsideClick == cvui::CLICK;
-
-			if (aOutsideClick) {
-				gActivatedInput = "";
-				aSelfActivated = false;
-			}
+		if (!aFocused && aIsGainFocusInteraction) {
+            gInput.name = theName;
+			aFocused = true;
+		} else if (aFocused && aIsLoseFocusInteraction && !aIsGainFocusInteraction) {
+            gInput.name = "";
+			aFocused = false;
 		}
+
+        render::input(theBlock, aRect, theContent, theFontScale, aInputAreaInteraction, aFocused);
 		
 		// Manipulate the string
-		if (aSelfActivated && internal::gLastInputKeyPressed != -1) {
+		if (aFocused && internal::gLastInputKeyPressed != -1) {
 			int key = internal::gLastInputKeyPressed;
 			internal::gLastInputKeyPressed = -1;
 			if (key >= 32) {
-				theValue += (char)key;
-			} else if (key == 0x08 && theValue.length()) {
-				theValue = theValue.substr(0, theValue.length() - 1);
+				theContent += (char)key;
+			} else if (key == 0x08 && theContent.length()) {
+				theContent = theContent.substr(0, theContent.length() - 1);
 			}
 		}
 
-		// Update the layout flow according to button size
-		// if we were told to update.
+		// Update the layout flow according to input size if we were told to update.
 		if (theUpdateLayout) {
 			cv::Size aSize(theWidth, aTextSize.height + aPadding * 2);
 			updateLayoutFlow(theBlock, aTextSize);
 		}
+
+        if (gInput.cursorBlinkCounter++ >= INTPUT_CURSOR_BLINK_SLOWNESS * 2) {
+            gInput.cursorBlinkCounter = 0;
+        }
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, const cv::String& theLabel, bool theUpdateLayout) {
@@ -2149,6 +2145,37 @@ namespace render
 		cv::rectangle(theBlock.where, theShape, cv::Scalar(0xFF, 0xBF, 0x75), CVUI_FILLED);
 	}
 
+	void input(cvui_block_t& theBlock, cv::Rect& theRect, cv::String& theContent, double theFontScale, int theIArea, bool theFocused) {
+		// Outline
+		cv::rectangle(theBlock.where, theRect, theIArea == OVER && !theFocused ? cv::Scalar(0x90, 0x90, 0x90) : cv::Scalar(0x63, 0x63, 0x63));
+
+		// Border
+		theRect.x++; theRect.y++; theRect.width -= 2; theRect.height -= 2;
+		cv::rectangle(theBlock.where, theRect, theFocused ? cv::Scalar(0xFF, 0xBF, 0x75) : cv::Scalar(0x17, 0x17, 0x17));
+
+		// Inside
+		theRect.x++; theRect.y++; theRect.width -= 2; theRect.height -= 2;
+		cv::rectangle(theBlock.where, theRect, cv::Scalar(0x29, 0x29, 0x29), CVUI_FILLED);
+
+		// Draw input text area and text
+		cv::Size aTextSize = cv::getTextSize(theContent, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
+		int aPadding = aTextSize.height / 2;
+		
+        //cv::Rect aRect(theX, theY, theWidth, aTextSize.height + 1 + aPadding * 2);
+		//render::rect(theBlock, aRect, aFocused ? 0x770000 : 0xaaaaaa, 0xffffff);
+		
+        cv::Point aPos(theRect.x + 2, theRect.y + aTextSize.height + aPadding - 1);
+        render::text(theBlock, theContent, aPos, theFontScale, theIArea == OVER || theFocused ? 0xC1C1C1 : 0xA1A1A1);
+
+        bool aShouldRenderCursor = internal::gInput.cursorBlinkCounter < INTPUT_CURSOR_BLINK_SLOWNESS;
+
+        // Draw cursor
+        if (theFocused && aShouldRenderCursor) {
+            cv::Point aCursorPos(aPos.x + aTextSize.width, aPos.y + 1);
+            cv::line(theBlock.where, aCursorPos, aCursorPos + cv::Point(5, 0), cv::Scalar(0xFF, 0xBF, 0x75));
+        }
+	}
+
 	void window(cvui_block_t& theBlock, cv::Rect& theTitleBar, cv::Rect& theContent, const cv::String& theTitle) {
 		bool aTransparecy = false;
 		double aAlpha = 0.3;
@@ -2521,7 +2548,7 @@ void update(const cv::String& theWindowName) {
 	// If we were told to keep track of the keyboard shortcuts, we
 	// proceed to handle opencv event queue.
 	if (internal::gDelayWaitKey > 0) {
-		if (internal::gActivatedInput != ""){
+		if (internal::gInput.name != ""){
 			internal::gLastInputKeyPressed = cv::waitKey(internal::gDelayWaitKey);
 		}else{
 			internal::gLastKeyPressed = cv::waitKey(internal::gDelayWaitKey);

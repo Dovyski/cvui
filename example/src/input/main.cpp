@@ -11,7 +11,7 @@ Author: Pascal Thomet
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME	"Button shortcut"
+#define WINDOW_NAME	"Simple input"
 
 int main(int argc, const char *argv[])
 {
@@ -24,14 +24,14 @@ int main(int argc, const char *argv[])
 	// waitKey() automatically for us within cvui::update().
 	cvui::init(WINDOW_NAME, 20);
     
-    cv::String input1_value = "text1";
-    cv::String input2_value = "text2";
+    cv::String input1 = "text1";
+    cv::String input2 = "text2";
 
 	while (true) {
 		frame = cv::Scalar(49, 52, 49);
 
-		cvui::input(frame, 40, 40, 100, "input1", input1_value);
-		cvui::input(frame, 40, 80, 100, "input2", input2_value);
+		cvui::input(frame, 40, 40, 100, "input1", input1);
+		cvui::input(frame, 40, 80, 100, "input2", input2);
 
 		// Exit the application if the quit button was pressed.
 		// It can be pressed because of a mouse click or because 
