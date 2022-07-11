@@ -1130,6 +1130,19 @@ const unsigned int TRACKBAR_HIDE_VALUE_LABEL = 16;
 const unsigned int TRACKBAR_HIDE_LABELS = 32;
 const unsigned int INTPUT_CURSOR_BLINK_SLOWNESS = 10;
 
+// Constants regarding keyboard codes
+const unsigned int KEY_ARROW_LEFT = 2424832;
+const unsigned int KEY_ARROW_RIGHT = 2555904;
+const unsigned int KEY_ARROW_UP = 2490368;
+const unsigned int KEY_ARROW_DOWN = 2621440;
+const unsigned int KEY_ENTER = 13;
+const unsigned int KEY_BACKSPACE = 8;
+const unsigned int KEY_TAB = 9;
+const unsigned int KEY_DELETE = 3014656;
+const unsigned int KEY_END = 2293760;
+const unsigned int KEY_HOME = 2359296;
+
+
 // Describes the block structure used by the lib to handle `begin*()` and `end*()` calls.
 typedef struct {
 	cv::Mat where;			// where the block should be rendered to.
@@ -1656,9 +1669,9 @@ namespace internal
 	void input(cvui_block_t& theBlock, int theX, int theY, int theWidth, const cv::String& theName, cv::String& theContent, double theFontScale, bool theUpdateLayout) {
 		bool aFocused = gInput.name == theName;
 
-		cv::Size aTextSize = cv::getTextSize(theContent, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
-		int aPadding = aTextSize.height / 2;
-        cv::Rect aRect(theX, theY, theWidth, aTextSize.height + 2 + aPadding * 2);
+		cv::Size aContentSize = cv::getTextSize(theContent, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
+		int aPadding = aContentSize.height / 2;
+        cv::Rect aRect(theX, theY, theWidth, aContentSize.height + 2 + aPadding * 2);
 
 		// Update the activate status of the input control.
 		int aInputAreaInteraction = cvui::iarea(theX, theY, aRect.width, aRect.height);
@@ -1674,21 +1687,70 @@ namespace internal
 			aFocused = false;
 		}
 
-        render::input(theBlock, aRect, theContent, theFontScale, aInputAreaInteraction, aFocused);
-		
+        render::input(theBlock, aRect, theContent, theFontScale, aInputAreaInteraction, aFocused);        
+
 		// Manipulate the string
 		if (aFocused && internal::gLastInputKeyPressed != -1) {
 			int key = internal::gLastInputKeyPressed;
-			internal::gLastInputKeyPressed = -1;
-			if (key >= 32) {
-				theContent += (char)key;
-			} else if (key == 0x08 && theContent.length()) {
+
+            int aScreenCharSize = (int)(16 * theFontScale);
+            int aCharsFitWidth = (int)(theWidth / aScreenCharSize);
+
+            internal::gLastInputKeyPressed = -1;
+
+			if (key >= 32 && key <= 126) {
+                theContent.insert(std::min(gInput.contentStartIndex + gInput.cursorIndex, (int)theContent.length()), 1, (char)key);
+
+                if (gInput.cursorIndex < aCharsFitWidth) {
+                    gInput.cursorIndex++;
+                } else {
+                    gInput.contentStartIndex++;
+                }
+            }
+
+			if (key == KEY_BACKSPACE && theContent.length()) {
 				theContent = theContent.substr(0, theContent.length() - 1);
-			}
+
+			} else if (key == KEY_ARROW_RIGHT) {
+                if (gInput.cursorIndex < theContent.length()) {
+                    gInput.cursorIndex++;
+                }
+
+                int aRemainingContentChars = theContent.length() - gInput.contentStartIndex - 1;
+
+                if (gInput.cursorIndex > aCharsFitWidth) {
+                    gInput.cursorIndex = aCharsFitWidth;
+                }
+
+                if (gInput.cursorIndex == aCharsFitWidth && aRemainingContentChars >= aCharsFitWidth) {
+                    gInput.contentStartIndex++;
+                    gInput.cursorIndex--;
+                }
+            } else if (key == KEY_ARROW_LEFT) {
+                gInput.cursorIndex--;
+
+                if (gInput.cursorIndex < 0) {
+                    gInput.cursorIndex = 0;
+                    gInput.contentStartIndex--;
+                    gInput.contentStartIndex = std::max(gInput.contentStartIndex, 0);
+                }
+            } else if (key == KEY_DELETE) {
+                if (gInput.cursorIndex < theContent.length()) {
+                    theContent.erase(gInput.cursorIndex, 1);
+                }
+            } else if (key == KEY_HOME) {
+                gInput.cursorIndex = 0;
+                gInput.contentStartIndex = 0;
+            } else if (key == KEY_END) {
+                gInput.cursorIndex = theContent.length();
+                gInput.contentStartIndex = theContent.length() - aCharsFitWidth;
+                gInput.contentStartIndex = std::max(gInput.contentStartIndex, 0);
+            }
 		}
 
 		// Update the layout flow according to input size if we were told to update.
 		if (theUpdateLayout) {
+            cv::Size aTextSize = cv::getTextSize(theContent, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
 			cv::Size aSize(theWidth, aTextSize.height + aPadding * 2);
 			updateLayoutFlow(theBlock, aTextSize);
 		}
@@ -2146,6 +2208,11 @@ namespace render
 	}
 
 	void input(cvui_block_t& theBlock, cv::Rect& theRect, cv::String& theContent, double theFontScale, int theIArea, bool theFocused) {
+        int aContentStartIndex = theFocused ? internal::gInput.contentStartIndex : 0;
+        int aContentSubstrCount = theRect.width / (theFontScale * 18) + 1;
+
+        cv::String aText = theContent.substr(aContentStartIndex > theContent.length() ? theContent.length() - 1 : aContentStartIndex, aContentSubstrCount);
+
 		// Outline
 		cv::rectangle(theBlock.where, theRect, theIArea == OVER && !theFocused ? cv::Scalar(0x90, 0x90, 0x90) : cv::Scalar(0x63, 0x63, 0x63));
 
@@ -2161,17 +2228,15 @@ namespace render
 		cv::Size aTextSize = cv::getTextSize(theContent, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
 		int aPadding = aTextSize.height / 2;
 		
-        //cv::Rect aRect(theX, theY, theWidth, aTextSize.height + 1 + aPadding * 2);
-		//render::rect(theBlock, aRect, aFocused ? 0x770000 : 0xaaaaaa, 0xffffff);
-		
         cv::Point aPos(theRect.x + 2, theRect.y + aTextSize.height + aPadding - 1);
-        render::text(theBlock, theContent, aPos, theFontScale, theIArea == OVER || theFocused ? 0xC1C1C1 : 0xA1A1A1);
+        render::text(theBlock, aText, aPos, theFontScale, theIArea == OVER || theFocused ? 0xC1C1C1 : 0xA1A1A1);
 
         bool aShouldRenderCursor = internal::gInput.cursorBlinkCounter < INTPUT_CURSOR_BLINK_SLOWNESS;
 
         // Draw cursor
         if (theFocused && aShouldRenderCursor) {
-            cv::Point aCursorPos(aPos.x + aTextSize.width, aPos.y + 1);
+            int aScreenCharSize = (int)(16 * theFontScale);            
+            cv::Point aCursorPos(aPos.x + internal::gInput.cursorIndex * aScreenCharSize, aPos.y + 1);
             cv::line(theBlock.where, aCursorPos, aCursorPos + cv::Point(5, 0), cv::Scalar(0xFF, 0xBF, 0x75));
         }
 	}
@@ -2549,10 +2614,9 @@ void update(const cv::String& theWindowName) {
 	// proceed to handle opencv event queue.
 	if (internal::gDelayWaitKey > 0) {
 		if (internal::gInput.name != ""){
-			internal::gLastInputKeyPressed = cv::waitKey(internal::gDelayWaitKey);
-		}else{
-			internal::gLastKeyPressed = cv::waitKey(internal::gDelayWaitKey);
+			internal::gLastInputKeyPressed = cv::waitKeyEx(internal::gDelayWaitKey);
 		}
+		internal::gLastKeyPressed = cv::waitKey(internal::gDelayWaitKey);
 	}
 
 	if (!internal::blockStackEmpty()) {
