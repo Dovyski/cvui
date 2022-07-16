@@ -81,6 +81,7 @@ namespace cvui
  \param theWindowName name of the window where the components will be added.
  \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
  \param theCreateNamedWindow if an OpenCV window named `theWindowName` should be created during the initialization. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you call `cv::namedWindow(WINDOW_NAME)` *before* initializing cvui, otherwise it will not be able to track UI interactions.
+ \param theHeadlessMode if cvui should run in headless more (no rendering or processing of interactions, useful for CI testing).
 
  \sa watch()
  \sa context()
@@ -99,11 +100,30 @@ void init(const cv::String& theWindowName, int theDelayWaitKey = -1, bool theCre
  \param theHowManyWindows how many window names exist in the `theWindowNames` array.
  \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
  \param theCreateNamedWindows if OpenCV windows named according to `theWindowNames` should be created during the initialization. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you call `cv::namedWindow(WINDOW_NAME)` for all windows *before* initializing cvui, otherwise it will not be able to track UI interactions.
+ \param theHeadlessMode if cvui should run in headless more (no rendering or processing of interactions, useful for CI testing). 
 
  \sa watch()
  \sa context()
 */
 void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDelayWaitKey = -1, bool theCreateNamedWindows = true, bool theHeadlessMode = false);
+
+/**
+ Enable/disable headless more. When running in headless mode, cvui will not render anything to the screen and it will not process interactions
+ such as mouse clicks. This mode is useful to test apps in CI/CD.
+
+ \param theValue `true` if cvui should run in headless more, `false` otherwise.
+
+ \sa init()
+*/
+void headless(bool theValue);
+
+/**
+ Inform if cvui is running in headless more.
+
+ \return `true` if running in headless mode, or `false` otherwise.
+ \sa init()
+*/
+bool headless();
 
 /**
  Track UI interactions of a particular window. This function must be invoked
@@ -1255,6 +1275,7 @@ namespace internal
 	bool isMouseButton(cvui_mouse_btn_t& theButton, int theQuery);
 	void resetMouseButton(cvui_mouse_btn_t& theButton);
 	void init(const cv::String& theWindowName, int theDelayWaitKey, bool theHeadlessMode);
+    void headless(bool theValue);
 	cvui_context_t& getContext(const cv::String& theWindowName = "");
 	bool bitsetHas(unsigned int theBitset, unsigned int theValue);
 	void error(int theId, std::string theMessage);
@@ -1425,8 +1446,16 @@ namespace internal
 		internal::gCurrentContext = theWindowName;
 		internal::gDelayWaitKey = theDelayWaitKey;
 		internal::gLastKeyPressed = -1;
-    internal::gHeadlessMode = theHeadlessMode;
+        headless(theHeadlessMode);
 	}
+
+    void headless(bool theValue) {
+        internal::gHeadlessMode = theValue;	
+    }
+
+    bool headless() {
+        return internal::gHeadlessMode;
+    }    
 
 	cvui_context_t& getContext(const cv::String& theWindowName) {
 		if (!theWindowName.empty()) {
@@ -1588,11 +1617,9 @@ namespace internal
 				aLabel.hasShortcut = true;
 				aLabel.shortcut = theLabel[i + 1];
 				++i;
-			}
-			else if (!aLabel.hasShortcut) {
+			} else if (!aLabel.hasShortcut) {
 				aBefore << c;
-			}
-			else {
+			} else {
 				aAfter << c;
 			}
 		}
@@ -2086,8 +2113,8 @@ namespace render
 
 		if (!aLabel.hasShortcut) {
 			putText(theBlock, theState, aColor, theLabel, aPos);
-		}
-		else {
+
+		} else {
 			int aWidth = putText(theBlock, theState, aColor, aLabel.textBeforeShortcut, aPos);
 			int aStart = aPos.x + aWidth;
 			aPos.x += aWidth;
@@ -2139,11 +2166,12 @@ namespace render
 		bool aShowLabel = internal::bitsetHas(theParams.options, cvui::TRACKBAR_HIDE_VALUE_LABEL) == false;
 
 		// Draw the handle label
-		if (aShowLabel) {
-			cv::Point aTextPos(aPixelX, aPoint2.y + 11);
-			sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), static_cast<long double>(theValue));
-			putTextCentered(theBlock, aTextPos, internal::gBuffer);
-		}
+		if (!aShowLabel) {
+            return;
+        }
+		cv::Point aTextPos(aPixelX, aPoint2.y + 11);
+		sprintf_s(internal::gBuffer, theParams.labelFormat.c_str(), static_cast<long double>(theValue));
+		putTextCentered(theBlock, aTextPos, internal::gBuffer);
 	}
 
 	void trackbarPath(cvui_block_t& theBlock, int theState, cv::Rect& theShape, double theValue, const internal::TrackbarParams &theParams, cv::Rect& theWorkingArea) {
@@ -2315,8 +2343,7 @@ namespace render
 			cv::rectangle(aOverlay, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_FILLED);
 			cv::addWeighted(aOverlay, aAlpha, theBlock.where, 1.0 - aAlpha, 0.0, theBlock.where);
 
-		}
-		else {
+		} else {
 			cv::rectangle(theBlock.where, theContent, cv::Scalar(0x31, 0x31, 0x31), CVUI_FILLED);
 		}
 	}
@@ -2331,8 +2358,7 @@ namespace render
 			if (aFilling[3] == 0x00) {
 				// full opacity
 				cv::rectangle(theBlock.where, thePos, aFilling, CVUI_FILLED, CVUI_ANTIALISED);
-			}
-			else {
+			} else {
 				cv::Rect aClippedRect = thePos & cv::Rect(cv::Point(0, 0), theBlock.where.size());
 				double aAlpha = 1.00 - static_cast<double>(aFilling[3]) / 255;
 				cv::Mat aOverlay(aClippedRect.size(), theBlock.where.type(), aFilling);
@@ -2383,7 +2409,7 @@ void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDe
 void watch(const cv::String& theWindowName, bool theCreateNamedWindow) {
 	cvui_context_t aContex;
 
-	if (theCreateNamedWindow && !internal::gHeadlessMode) {
+	if (theCreateNamedWindow && !internal::headless()) {
 		cv::namedWindow(theWindowName);
 	}
 
@@ -2397,9 +2423,10 @@ void watch(const cv::String& theWindowName, bool theCreateNamedWindow) {
 	internal::resetMouseButton(aContex.mouse.buttons[LEFT_BUTTON]);
 
 	internal::gContexts[theWindowName] = aContex;
-  if (!internal::gHeadlessMode) {
-    cv::setMouseCallback(theWindowName, handleMouse, &internal::gContexts[theWindowName]);
-  }
+
+    if (!internal::headless()) {
+        cv::setMouseCallback(theWindowName, handleMouse, &internal::gContexts[theWindowName]);
+    }
 }
 
 void context(const cv::String& theWindowName) {
@@ -2408,9 +2435,10 @@ void context(const cv::String& theWindowName) {
 
 void imshow(const cv::String& theWindowName, cv::InputArray theFrame) {
 	cvui::update(theWindowName);
-  if (!internal::gHeadlessMode) {
-	  cv::imshow(theWindowName, theFrame);
-  }
+
+    if (!internal::headless()) {
+        cv::imshow(theWindowName, theFrame);
+    }
 }
 
 int lastKeyPressed() {
