@@ -1,5 +1,6 @@
 /*
-This is a demo application to showcase the input component. 
+This is a demo application to showcase how to detect/identify keyboard
+keys when they are used in an input component.
 
 Code licensed under the MIT license, check LICENSE file.
 */
@@ -12,7 +13,7 @@ Code licensed under the MIT license, check LICENSE file.
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME	"Simple input"
+#define WINDOW_NAME	"Input detect key"
 
 int main(int argc, const char *argv[])
 {
@@ -30,12 +31,12 @@ int main(int argc, const char *argv[])
 	while (true) {
 		frame = cv::Scalar(49, 52, 49);
 
-		// An input component requires a position (x and y), a width, a unique name
-        // and a value (which will automatically change according to user interaction).
-        // If you use the same name for different inputs, their focus will not work properly.
-        cvui::input(frame, 40, 40, 100, "myInput", input);
+		// The value retorned by cvui::input() is an int that identifies a keyboard key.
+        // The contants defined as cvui::KEY_* can be used to identify those keys.
+        // You can use them to detect special keys as cvui::KEY_HOME and cvui::KEY_END.
+        int key = cvui::input(frame, 40, 40, 100, "myInput", input);
 
-		cvui::text(frame, 160, 50, "Click the input to edit.");
+		cvui::printf(frame, 160, 50, "Click the input to edit. Key pressed: %d", key);
 
 		// Exit the application if the quit button was pressed.
 		// It can be pressed because of a mouse click or because 

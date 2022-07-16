@@ -1,7 +1,6 @@
 /*
-This is a demo application to showcase the input component. 
-
-Code licensed under the MIT license, check LICENSE file.
+This is a demo application to showcase keyboard shortcuts. 
+Author: Pascal Thomet
 */
 
 #include <iostream>
@@ -12,7 +11,7 @@ Code licensed under the MIT license, check LICENSE file.
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME	"Simple input"
+#define WINDOW_NAME	"Input multiple"
 
 int main(int argc, const char *argv[])
 {
@@ -25,17 +24,16 @@ int main(int argc, const char *argv[])
 	// waitKey() automatically for us within cvui::update().
 	cvui::init(WINDOW_NAME, 20);
     
-    cv::String input = "text";
+    cv::String input1 = "text1";
+    cv::String input2 = "text2";
 
 	while (true) {
 		frame = cv::Scalar(49, 52, 49);
 
-		// An input component requires a position (x and y), a width, a unique name
-        // and a value (which will automatically change according to user interaction).
-        // If you use the same name for different inputs, their focus will not work properly.
-        cvui::input(frame, 40, 40, 100, "myInput", input);
+		cvui::input(frame, 40, 40, 100, "input1", input1);
+		cvui::input(frame, 40, 80, 100, "input2", input2);
 
-		cvui::text(frame, 160, 50, "Click the input to edit.");
+		cvui::text(frame, 160, 50, "Click any input to edit.");
 
 		// Exit the application if the quit button was pressed.
 		// It can be pressed because of a mouse click or because 

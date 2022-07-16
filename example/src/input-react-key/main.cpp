@@ -1,7 +1,6 @@
 /*
-This is a demo application to showcase the input component. 
-
-Code licensed under the MIT license, check LICENSE file.
+This is a demo application to showcase how to react to a particular
+key when it is pressed in an input component, e.g. enter.
 */
 
 #include <iostream>
@@ -12,7 +11,7 @@ Code licensed under the MIT license, check LICENSE file.
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
 
-#define WINDOW_NAME	"Simple input"
+#define WINDOW_NAME	"Input react to key"
 
 int main(int argc, const char *argv[])
 {
@@ -26,16 +25,20 @@ int main(int argc, const char *argv[])
 	cvui::init(WINDOW_NAME, 20);
     
     cv::String input = "text";
+    cv::String something = "";    
 
 	while (true) {
 		frame = cv::Scalar(49, 52, 49);
 
-		// An input component requires a position (x and y), a width, a unique name
-        // and a value (which will automatically change according to user interaction).
-        // If you use the same name for different inputs, their focus will not work properly.
-        cvui::input(frame, 40, 40, 100, "myInput", input);
+		int key = cvui::input(frame, 40, 40, 100, "myInput", input);
 
-		cvui::text(frame, 160, 50, "Click the input to edit.");
+		cvui::printf(frame, 160, 50, "Click the input to edit. After press enter");
+
+        // The contants defined as cvui::KEY_* can be used to identify pressed keys.
+        // You can use them to detect special keys as cvui::KEY_HOME and cvui::KEY_END.
+        if (key == cvui::KEY_ENTER) {
+            std::cout << "Enter pressed" << std::endl;
+        }
 
 		// Exit the application if the quit button was pressed.
 		// It can be pressed because of a mouse click or because 
