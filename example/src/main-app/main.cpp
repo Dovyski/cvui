@@ -22,6 +22,7 @@ int main(int argc, const char *argv[])
 	int count = 0;
 	double countFloat = 0.0;
 	double trackbarValue = 0.0;
+    cv::String input = "Textfield";
 
 	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME);
@@ -83,6 +84,9 @@ int main(int argc, const char *argv[])
 		// its appearance.
 		cvui::checkbox(frame, 200, 160, "Checkbox", &checked);
 		cvui::checkbox(frame, 200, 190, "A checked checkbox", &checked2);
+
+        // THe input component can be used to create a textfield.
+        cvui::input(frame, 200, 220, 120, "myInput", input, 0.5);
 
 		// Display the lib version at the bottom of the screen
 		cvui::printf(frame, frame.cols - 80, frame.rows - 20, 0.4, 0xCECECE, "cvui v.%s", cvui::VERSION);
