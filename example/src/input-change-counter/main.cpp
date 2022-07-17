@@ -27,7 +27,6 @@ int main(int argc, const char *argv[])
 	cvui::init(WINDOW_NAME, 20);
     
     cv::String input = "123";
-    cv::String something = "";    
     int count = 0;
 
 	while (true) {

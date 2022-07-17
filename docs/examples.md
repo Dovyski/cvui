@@ -13,11 +13,21 @@ The [examples](https://github.com/Dovyski/cvui/tree/master/example) folder conta
 
 * [complext-layout](https://github.com/Dovyski/cvui/tree/master/example/src/complext-layout): use of several components to create a complex UI.
 
+* [headless](https://github.com/Dovyski/cvui/tree/master/example/src/headless): how to use the headless mode (no window).
+
 * [hello-world](https://github.com/Dovyski/cvui/tree/master/example/src/hello-world): simple demonstration of the basics of cvui.
 
 * [image-button](https://github.com/Dovyski/cvui/tree/master/example/src/image-button): use of buttons with custom rendering based on images.
 
 * [interaction-area](https://github.com/Dovyski/cvui/tree/master/example/src/interaction-area): tracking of mouse status within an area on the screen, e.g. over, clicked, etc.
+
+* [input](https://github.com/Dovyski/cvui/tree/master/example/src/input): how to use the input component.
+
+* [input-multiple](https://github.com/Dovyski/cvui/tree/master/example/src/input-multiple) show how to use several inputs at the same time.
+
+* [input-detect-key](https://github.com/Dovyski/cvui/tree/master/example/src/input-detect-key): show how to detect key presses within an input.
+
+* [input-change-counter](https://github.com/Dovyski/cvui/tree/master/example/src/input-change-counter): show how to detect key presses within an input, demonstrating how to use it to alter the value of a counter.
 
 * [main-app](https://github.com/Dovyski/cvui/tree/master/example/src/main-app): simple application showcasing several components of cvui.
 

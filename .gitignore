@@ -46,6 +46,7 @@ bin
 
 # "Compiled" docs folder
 /docs/_site
+/docs/.jekyll-cache
 
 #Save those, please
 !example/build/README.txt

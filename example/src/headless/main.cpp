@@ -1,6 +1,5 @@
 /*
-This is application shows the mouse API of cvui. It shows a rectangle on the
-screen everytime the user clicks and drags the mouse cursor around.
+This is application shows how to use the headless mode.
 
 Copyright (c) 2017 Fernando Bevilacqua <dovyski@gmail.com>
 Licensed under the MIT license.
@@ -28,13 +27,10 @@ int main(int argc, const char *argv[])
 
 
     while (true) {
-        // Rectangle to be rendered according to mouse interactions.
-        cv::Rect rectangle(0, 0, 0, 0);
-
         // Fill the frame with a nice color
         frame = cv::Scalar(49, 52, 49);
 
-        // Show the coordinates of the mouse pointer on the screen
+        // Show some text on the screen
         cvui::text(frame, 10, 30, "Hello, World!");
 
         // Create a checkbox that will never be clicked. This is still OK in headless mode.
