@@ -2688,15 +2688,15 @@ void update(const cv::String& theWindowName) {
 
 	internal::resetRenderingBuffer(internal::gScreen);
 
+    bool aAnyInputFocused = internal::gInput.name != "";
+
+	if (aAnyInputFocused){
+		internal::gLastInputKeyPressed = cv::waitKeyEx(internal::gDelayWaitKey > 0 ? internal::gDelayWaitKey : 40);
+	}
+
 	// If we were told to keep track of the keyboard shortcuts, we
 	// proceed to handle opencv event queue.
 	if (internal::gDelayWaitKey > 0) {
-        bool aAnyInputFocused = internal::gInput.name != "";
-
-		if (aAnyInputFocused){
-			internal::gLastInputKeyPressed = cv::waitKeyEx(internal::gDelayWaitKey);
-		}
-
 		internal::gLastKeyPressed = cv::waitKey(internal::gDelayWaitKey);
 	}
 
