@@ -199,6 +199,7 @@ class Internal:
 		self.buffer = []
 		self.lastKeyPressed = -1       # TODO: collect it per window
 		self.delayWaitKey = -1
+		self.headlessMode = False
 		self.screen = Block()
 		self.stack = [Block() for i in range(100)] # TODO: make it dynamic
 		self.stackCount = -1
@@ -311,11 +312,25 @@ class Internal:
 
 		return aRet
 
-	def init(self, theWindowName, theDelayWaitKey):
+	def init(self, theWindowName, theDelayWaitKey, theHeadlessMode):
 		self.defaultContext = theWindowName
 		self.currentContext = theWindowName
 		self.delayWaitKey = theDelayWaitKey
 		self.lastKeyPressed = -1
+		self.headless(theHeadlessMode)
+	
+	def headless(self, *theArgs):
+		"""
+		Set or get the headless mode.
+		
+		\param theArgs if no arguments are informed, the function will return the current headless mode. If one or more arguments are informed, the function will set the headless mode to the value of the first argument.
+		\return the current headless mode.
+		"""
+		if len(theArgs) == 0:
+			return self.headlessMode
+		else:
+			self.headlessMode = theArgs[0]
+			return self.headlessMode
 
 	def bitsetHas(self, theBitset, theValue):
 		return (theBitset & theValue) != 0
@@ -1035,7 +1050,7 @@ def _handleMouse(theEvent, theX, theY, theFlags, theContext):
 	theContext.mouse.position.x = theX
 	theContext.mouse.position.y = theY
 
-def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
+def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True, theHeadlessMode = False):
 	"""
 	Initializes cvui. You must provide the name of the window where
 	components will be added. It is also possible to tell cvui to handle
@@ -1053,6 +1068,8 @@ def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
 		delay value passed to `cv2.waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv2.waitKey()` within `cvui.update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
 	theCreateNamedWindow: bool
 		if an OpenCV window named `theWindowName` should be created during the initialization. Windows are created using `cv2.namedWindow()`. If this parameter is `False`, ensure you call `cv2.namedWindow(WINDOW_NAME)` *before* initializing cvui, otherwise it will not be able to track UI interactions.
+	theCreateNamedWindow: bool
+		if cvui should run in headless more (no rendering or processing of interactions, useful for CI testing).	
 
 	See Also
 	----------
@@ -1061,7 +1078,7 @@ def init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True):
 	"""
 	print('This is wrapper function to help code autocompletion.')
 
-def init(theWindowNames, theHowManyWindows, theDelayWaitKey = -1, theCreateNamedWindows = True):
+def init(theWindowNames, theHowManyWindows, theDelayWaitKey = -1, theCreateNamedWindows = True, theHeadlessMode = False):
 	"""
 	Initialize cvui using a list of names of windows where components will be added.
 	It is also possible to tell cvui to handle OpenCV's event queue automatically
@@ -1080,6 +1097,8 @@ def init(theWindowNames, theHowManyWindows, theDelayWaitKey = -1, theCreateNamed
 		delay value passed to `cv2.waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv2.waitKey()` within `cvui.update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
 	theCreateNamedWindows: bool
 		if OpenCV windows named according to `theWindowNames` should be created during the initialization. Windows are created using `cv2.namedWindow()`. If this parameter is `False`, ensure you call `cv2.namedWindow(WINDOW_NAME)` for all windows *before* initializing cvui, otherwise it will not be able to track UI interactions.
+	theCreateNamedWindow: bool
+		if cvui should run in headless more (no rendering or processing of interactions, useful for CI testing).	
 
 	See Also
 	----------
@@ -1087,6 +1106,22 @@ def init(theWindowNames, theHowManyWindows, theDelayWaitKey = -1, theCreateNamed
 	context()
 	"""
 	print('This is wrapper function to help code autocompletion.')
+
+def headless(*theArgs):
+	"""
+	Enable/disable headless more. When running in headless mode, cvui will not render anything to the screen and it will not process interactions
+	such as mouse clicks. This mode is useful to test apps in CI/CD.
+	
+	Parameters
+	----------
+	theValue: bool
+		`true` if cvui should run in headless more, `false` otherwise.
+	"""
+	if len(theArgs) == 0:
+		return __internal.headlessMode
+	else:
+		__internal.headlessMode = theArgs[0]
+		return __internal.headlessMode
 
 def watch(theWindowName, theCreateNamedWindow = True):
 	"""
@@ -1109,7 +1144,7 @@ def watch(theWindowName, theCreateNamedWindow = True):
 	init()
 	context()
 	"""
-	if theCreateNamedWindow:
+	if theCreateNamedWindow and not __internal.headless():
 		cv2.namedWindow(theWindowName)
 
 	aContex = Context()
@@ -1123,7 +1158,9 @@ def watch(theWindowName, theCreateNamedWindow = True):
 	aContex.mouse.buttons[LEFT_BUTTON].reset()
 
 	__internal.contexts[theWindowName] = aContex
-	cv2.setMouseCallback(theWindowName, _handleMouse, __internal.contexts[theWindowName])
+
+	if not __internal.headless():
+		cv2.setMouseCallback(theWindowName, _handleMouse, __internal.contexts[theWindowName])
 
 def context(theWindowName):
 	"""
@@ -1217,7 +1254,8 @@ def imshow(theWindowName, theFrame):
 	watch()
 	"""
 	update(theWindowName)
-	cv2.imshow(theWindowName, theFrame)
+	if not __internal.headless():
+		cv2.imshow(theWindowName, theFrame)
 
 def lastKeyPressed():
 	"""
@@ -2425,21 +2463,23 @@ def update(theWindowName = ''):
 
 def init(*theArgs):
 	if __internal.isString(theArgs[0]):
-		# Signature: init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True)
+		# Signature: init(theWindowName, theDelayWaitKey = -1, theCreateNamedWindow = True, theHeadlessMode = False)
 		aWindowName = theArgs[0]
 		aDelayWaitKey = theArgs[1] if len(theArgs) >= 2 else -1
 		aCreateNamedWindow = theArgs[2] if len(theArgs) >= 3 else True
+		aHeadlessMode = theArgs[3] if len(theArgs) >= 4 else False		
 
-		__internal.init(aWindowName, aDelayWaitKey)
+		__internal.init(aWindowName, aDelayWaitKey, aHeadlessMode)
 		watch(aWindowName, aCreateNamedWindow)
 	else:
-		# Signature: init(theWindowNames[], theHowManyWindows, theDelayWaitKey = -1, theCreateNamedWindows = True)
+		# Signature: init(theWindowNames[], theHowManyWindows, theDelayWaitKey = -1, theCreateNamedWindows = True, theHeadlessMode = False)
 		aWindowNames = theArgs[0]
 		aHowManyWindows = theArgs[1]
 		aDelayWaitKey = theArgs[2] if len(theArgs) >= 3 else -1
 		aCreateNamedWindows = theArgs[3] if len(theArgs) >= 4 else True
+		aHeadlessMode = theArgs[4] if len(theArgs) >= 5 else False
 
-		__internal.init(aWindowNames[0], aDelayWaitKey)
+		__internal.init(aWindowNames[0], aDelayWaitKey, aHeadlessMode)
 
 		for i in range(0, aHowManyWindows):
 			watch(aWindowNames[i], aCreateNamedWindows)
