@@ -1753,9 +1753,13 @@ namespace internal
             }
         }
 
-		if (key == KEY_BACKSPACE && theContent.length()) {
+		if (key == KEY_BACKSPACE && theContent.length() && gInput.cursorIndex >= 0) {
 			theContent = theContent.substr(0, theContent.length() - 1);
+            gInput.cursorIndex--;
 
+            if (gInput.cursorIndex < 0) {
+                gInput.cursorIndex = 0;
+            }
 		} else if (key == KEY_ARROW_RIGHT) {
             if (gInput.cursorIndex < theContent.length()) {
                 gInput.cursorIndex++;
@@ -2311,7 +2315,7 @@ namespace render
         if (theFocused && aShouldRenderCursor) {
             int aScreenCharSize = getScreenCharWidth(theFontScale);
             cv::Point aCursorPos(aPos.x + internal::gInput.cursorIndex * aScreenCharSize, aPos.y + 1);
-            cv::line(theBlock.where, aCursorPos, aCursorPos + cv::Point(5, 0), cv::Scalar(0xFF, 0xBF, 0x75));
+            cv::line(theBlock.where, aCursorPos, aCursorPos + cv::Point(5 + (int)(3 * theFontScale), 0), cv::Scalar(0xFF, 0xBF, 0x75));
         }
 	}
 
