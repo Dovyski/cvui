@@ -229,7 +229,7 @@ class Internal:
 		self.stack = [Block() for i in range(100)] # TODO: make it dynamic
 		self.stackCount = -1
 		self.trackbarMarginX = 14
-		self.lastInputKeyPressed = -1;
+		self.lastInputKeyPressed = -1
 
 		self._render = Render()
 		self._render._internal = self
@@ -555,17 +555,17 @@ class Internal:
 	def inputUpdateFocus(self, theX, theY, theName, theRect):
 		aFocused = self.input.name == theName
 
-		aInputAreaInteraction = cvui.iarea(theX, theY, theRect.width, theRect.height)
-		aOutsideAreaInteraction = cvui.iarea(0, 0, 10000000, 10000000)
-		aIsGainFocusInteraction = aInputAreaInteraction == cvui.CLICK
-		aIsLoseFocusInteraction = aOutsideAreaInteraction == cvui.CLICK
+		aInputAreaInteraction = self.iarea(theX, theY, theRect.width, theRect.height)
+		aOutsideAreaInteraction = self.iarea(0, 0, 10000000, 10000000)
+		aIsGainFocusInteraction = aInputAreaInteraction == CLICK
+		aIsLoseFocusInteraction = aOutsideAreaInteraction == CLICK
 
 		if not aFocused and aIsGainFocusInteraction:
 			self.input.name = theName
-			aFocused = true
+			aFocused = True
 		elif aFocused and aIsLoseFocusInteraction and not aIsGainFocusInteraction:
 			self.input.name = ""
-			aFocused = false
+			aFocused = False
 		
 		return aFocused
 
@@ -580,7 +580,8 @@ class Internal:
 		self.lastInputKeyPressed = -1
 
 		if key >= 32 and key <= 126:
-			theContent.insert(min(self.input.contentStartIndex + self.input.cursorIndex, len(theContent)), 1, key)
+			index = min(self.input.contentStartIndex + self.input.cursorIndex, len(theContent))
+			theContent = theContent[:index] + chr(key) + theContent[index:]
 
 			if self.input.cursorIndex < aCharsFitWidth:
 				self.input.cursorIndex += 1
@@ -588,7 +589,7 @@ class Internal:
 				self.input.contentStartIndex += 1
 
 		if key == KEY_BACKSPACE and len(theContent) and self.input.cursorIndex >= 0:
-			theContent = theContent.substr(0, len(theContent) - 1)
+			theContent = theContent[:len(theContent) - 1]
 			self.input.cursorIndex -= 1
 
 			if self.input.cursorIndex < 0:
@@ -635,21 +636,22 @@ class Internal:
 			self.input.cursorBlinkCounter = 0
 
 	def inputM(self, theBlock, theX, theY, theWidth, theName, theContent, theFontScale, theUpdateLayout):
-		aContentSize = cv2.getTextSize(theContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
+		aContentSize = self._render.cv2GetTextSize(theContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
+
 		aPadding = aContentSize.height / 2
-		aRect = Rect(theX, theY, theWidth - self.render.getScreenCharWidth(theFontScale), aContentSize.height + 2 + aPadding * 2)
+		aRect = Rect(theX, theY, theWidth - self._render.getScreenCharWidth(theFontScale), aContentSize.height + 2 + aPadding * 2)
 
 		aFocused = self.inputUpdateFocus(theX, theY, theName, aRect)
-		aInputAreaInteraction = cvui.iarea(theX, theY, aRect.width, aRect.height)
+		aInputAreaInteraction = self.iarea(theX, theY, aRect.width, aRect.height)
 
 		key = self.inputUpdateCursor(theWidth, theContent, theFontScale, aFocused)
 		self.inputUpdateCursorBlink()
 
 		# Update the layout flow according to input size if we were told to update.
 		if theUpdateLayout:
-			aTextSize = cv2.getTextSize(theContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
+			aTextSize = self._render.cv2GetTextSize(theContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
 			aSize = Size(theWidth, aTextSize.height + aPadding * 2)
-			self.updateLayoutFlow(theBlock, aTextSize)
+			self.updateLayoutFlow(theBlock, aSize)
 
 		self._render.input(theBlock, aRect, theContent, theFontScale, aInputAreaInteraction, aFocused)
 
@@ -861,6 +863,10 @@ class Internal:
 class Render:
 	_internal = None
 
+	def cv2GetTextSize(self, theText, theFont, theScale, theThickness):
+		aSize = cv2.getTextSize(theText, theFont, theScale, theThickness)
+		return Rect(0, 0, aSize[0], aSize[1])
+
 	def rectangle(self, theWhere, theShape, theColor, theThickness = 1, theLineType = CVUI_ANTIALISED):
 		aStartPoint = (int(theShape.x), int(theShape.y))
 		aEndPoint = (int(theShape.x + theShape.width), int(theShape.y + theShape.height))
@@ -901,6 +907,9 @@ class Render:
 
 	def image(self, theBlock, theRect, theImage):
 		theBlock.where[theRect.y: theRect.y + theRect.height, theRect.x: theRect.x + theRect.width] = theImage
+
+	def getScreenCharWidth(self, theFontScale):
+		return int(16 * theFontScale)
 
 	def putText(self, theBlock, theState, theColor, theText, thePosition):
 		aFontScale = 0.39 if theState == DOWN else 0.4
@@ -1085,42 +1094,44 @@ class Render:
 		self.rectangle(theBlock.where, theShape, (0xFF, 0xBF, 0x75), CVUI_FILLED)
 
 	def input(self, theBlock, theRect, theContent, theFontScale, theIArea, theFocused):
-		aContentStartIndex = self._internal.self.input.contentStartIndex if theFocused else 0
+		aContentStartIndex = self._internal.input.contentStartIndex if theFocused else 0
 		aContentSubstrCount = theRect.width / int(theFontScale * 18 + 1)
 
-		aText = theContent.substr(len(theContent) - 1 if aContentStartIndex > len(theContent) else aContentStartIndex, aContentSubstrCount)
+		aStartIndex = int(len(theContent) - 1 if aContentStartIndex > len(theContent) else aContentStartIndex)
+		aEndindex = int(aStartIndex + aContentSubstrCount)
+		aText = theContent[aStartIndex:aEndindex]
 
 		# Outline
-		cv2.rectangle(theBlock.where, theRect, (0x90, 0x90, 0x90) if theIArea == OVER and not theFocused else (0x63, 0x63, 0x63))
+		self.rectangle(theBlock.where, theRect, (0x90, 0x90, 0x90) if theIArea == OVER and not theFocused else (0x63, 0x63, 0x63), CVUI_FILLED)
 
 		# Border
 		theRect.x += 1
 		theRect.y += 1
 		theRect.width -= 2
 		theRect.height -= 2
-		cv2.rectangle(theBlock.where, theRect, (0xFF, 0xBF, 0x75) if theFocused else (0x17, 0x17, 0x17))
+		self.rectangle(theBlock.where, theRect, (0xFF, 0xBF, 0x75) if theFocused else (0x17, 0x17, 0x17), CVUI_FILLED)
 
 		# Inside
 		theRect.x += 1
 		theRect.y += 1
 		theRect.width -= 2
 		theRect.height -= 2
-		cv2.rectangle(theBlock.where, theRect, (0x29, 0x29, 0x29), CVUI_FILLED)
+		self.rectangle(theBlock.where, theRect, (0x29, 0x29, 0x29), CVUI_FILLED)
 
 		# Draw input text area and text
-		aTextSize = cv2.getTextSize(theContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1, Null)
+		aTextSize = self.cv2GetTextSize(theContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
 		aPadding = aTextSize.height / 2
 
 		aPos = Point(theRect.x + 2, theRect.y + aTextSize.height + aPadding - 1)
 		self.text(theBlock, aText, aPos, theFontScale, 0xC1C1C1 if theIArea == OVER or theFocused else 0xA1A1A1)
 
-		aShouldRenderCursor = self._internal.self.input.cursorBlinkCounter < INTPUT_CURSOR_BLINK_SLOWNESS
+		aShouldRenderCursor = self._internal.input.cursorBlinkCounter < INTPUT_CURSOR_BLINK_SLOWNESS
 
 		# Draw cursor
 		if theFocused and aShouldRenderCursor:
-			aScreenCharSize = getScreenCharWidth(theFontScale)
-			aCursorPos = Point(aPos.x + self._internal.self.input.cursorIndex * aScreenCharSize, aPos.y + 1)
-			cv2.line(theBlock.where, aCursorPos, aCursorPos + Point(5 + int(3 * theFontScale), 0), (0xFF, 0xBF, 0x75))
+			aScreenCharSize = self.getScreenCharWidth(theFontScale)
+			aCursorPos = (int(aPos.x + self._internal.input.cursorIndex * aScreenCharSize), int(aPos.y + 1))
+			cv2.line(theBlock.where, aCursorPos, (int(aCursorPos[0] + 5 + int(3 * theFontScale)), aCursorPos[1]), (0xFF, 0xBF, 0x75))
 
 	def window(self, theBlock, theTitleBar, theContent, theTitle):
 		aTransparecy = False
@@ -2648,6 +2659,11 @@ def update(theWindowName = ''):
 		aContext.mouse.buttons[i].justPressed  = False
 
 	__internal.screen.reset()
+
+	aAnyInputFocused = __internal.input.name != ""
+
+	if aAnyInputFocused:
+		__internal.lastInputKeyPressed = cv2.waitKeyEx(__internal.delayWaitKey if __internal.delayWaitKey > 0 else 40)
 
 	# If we were told to keep track of the keyboard shortcuts, we
 	# proceed to handle opencv event queue.

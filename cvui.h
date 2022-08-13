@@ -2690,7 +2690,7 @@ void update(const cv::String& theWindowName) {
 
     bool aAnyInputFocused = internal::gInput.name != "";
 
-	if (aAnyInputFocused){
+	if (aAnyInputFocused) {
 		internal::gLastInputKeyPressed = cv::waitKeyEx(internal::gDelayWaitKey > 0 ? internal::gDelayWaitKey : 40);
 	}
 
