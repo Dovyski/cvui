@@ -569,7 +569,7 @@ class Internal:
 		
 		return aFocused
 
-	def inputUpdateCursor(self, theWidth, theContent, theFontScale, theFocused):
+	def inputUpdateCursor(self, theWidth, theValue, theFontScale, theFocused):
 		if not theFocused or self.lastInputKeyPressed == -1:
 			return -1
 
@@ -580,25 +580,26 @@ class Internal:
 		self.lastInputKeyPressed = -1
 
 		if key >= 32 and key <= 126:
-			index = min(self.input.contentStartIndex + self.input.cursorIndex, len(theContent))
-			theContent = theContent[:index] + chr(key) + theContent[index:]
+			index = min(self.input.contentStartIndex + self.input.cursorIndex, len(theValue[0]))
+			theValue[0] = theValue[0][:index] + chr(key) + theValue[0][index:]
 
 			if self.input.cursorIndex < aCharsFitWidth:
 				self.input.cursorIndex += 1
 			else:
 				self.input.contentStartIndex += 1
 
-		if key == KEY_BACKSPACE and len(theContent) and self.input.cursorIndex >= 0:
-			theContent = theContent[:len(theContent) - 1]
+		if key == KEY_BACKSPACE and len(theValue[0]) and self.input.cursorIndex > 0:
+			indexChatToBeRemoved = self.input.cursorIndex - 1
+			theValue[0] = theValue[0][0:indexChatToBeRemoved] + theValue[0][indexChatToBeRemoved + 1:]
 			self.input.cursorIndex -= 1
 
 			if self.input.cursorIndex < 0:
 				self.input.cursorIndex = 0
 		elif key == KEY_ARROW_RIGHT:
-			if self.input.cursorIndex < len(theContent):
+			if self.input.cursorIndex < len(theValue[0]):
 				self.input.cursorIndex += 1
 
-			aRemainingContentChars = int(len(theContent)) - self.input.contentStartIndex - 1
+			aRemainingContentChars = int(len(theValue[0])) - self.input.contentStartIndex - 1
 
 			if self.input.cursorIndex > aCharsFitWidth:
 				self.input.cursorIndex = aCharsFitWidth
@@ -613,15 +614,15 @@ class Internal:
 				self.input.cursorIndex = 0
 				self.input.contentStartIndex -=1 
 				self.input.contentStartIndex = max(self.input.contentStartIndex, 0)
-		elif key == KEY_DELETE:
-			if self.input.cursorIndex < len(theContent):
-				theContent.erase(self.input.cursorIndex, 1)
+		elif key == KEY_DELETE and self.input.cursorIndex >= 0 and self.input.cursorIndex < len(theValue[0]):
+			theValue[0] = theValue[0][0:self.input.cursorIndex] + theValue[0][self.input.cursorIndex + 1:]
+
 		elif key == KEY_HOME:
 			self.input.cursorIndex = 0
 			self.input.contentStartIndex = 0
 
 		elif key == KEY_END:
-			aContentLength = int(len(theContent))
+			aContentLength = int(len(theValue[0]))
 			self.input.contentStartIndex = aContentLength - aCharsFitWidth
 			self.input.contentStartIndex = max(self.input.contentStartIndex, 0)
 
@@ -635,8 +636,8 @@ class Internal:
 		if self.input.cursorBlinkCounter >= INTPUT_CURSOR_BLINK_SLOWNESS * 2:
 			self.input.cursorBlinkCounter = 0
 
-	def inputM(self, theBlock, theX, theY, theWidth, theName, theContent, theFontScale, theUpdateLayout):
-		aContentSize = self._render.cv2GetTextSize(theContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
+	def inputM(self, theBlock, theX, theY, theWidth, theName, theValue, theFontScale, theUpdateLayout):
+		aContentSize = self._render.cv2GetTextSize(theValue[0], cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
 
 		aPadding = aContentSize.height / 2
 		aRect = Rect(theX, theY, theWidth - self._render.getScreenCharWidth(theFontScale), aContentSize.height + 2 + aPadding * 2)
@@ -644,16 +645,16 @@ class Internal:
 		aFocused = self.inputUpdateFocus(theX, theY, theName, aRect)
 		aInputAreaInteraction = self.iarea(theX, theY, aRect.width, aRect.height)
 
-		key = self.inputUpdateCursor(theWidth, theContent, theFontScale, aFocused)
+		key = self.inputUpdateCursor(theWidth, theValue, theFontScale, aFocused)
 		self.inputUpdateCursorBlink()
 
 		# Update the layout flow according to input size if we were told to update.
 		if theUpdateLayout:
-			aTextSize = self._render.cv2GetTextSize(theContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
+			aTextSize = self._render.cv2GetTextSize(theValue[0], cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
 			aSize = Size(theWidth, aTextSize.height + aPadding * 2)
 			self.updateLayoutFlow(theBlock, aSize)
 
-		self._render.input(theBlock, aRect, theContent, theFontScale, aInputAreaInteraction, aFocused)
+		self._render.input(theBlock, aRect, theValue, theFontScale, aInputAreaInteraction, aFocused)
 
 		return key
 
@@ -864,8 +865,8 @@ class Render:
 	_internal = None
 
 	def cv2GetTextSize(self, theText, theFont, theScale, theThickness):
-		aSize = cv2.getTextSize(theText, theFont, theScale, theThickness)
-		return Rect(0, 0, aSize[0], aSize[1])
+		aSize = cv2.getTextSize(str(theText), theFont, theScale, theThickness)
+		return Rect(0, 0, aSize[0], aSize[1] * 2)
 
 	def rectangle(self, theWhere, theShape, theColor, theThickness = 1, theLineType = CVUI_ANTIALISED):
 		aStartPoint = (int(theShape.x), int(theShape.y))
@@ -1093,13 +1094,14 @@ class Render:
 		theShape.height -= 2
 		self.rectangle(theBlock.where, theShape, (0xFF, 0xBF, 0x75), CVUI_FILLED)
 
-	def input(self, theBlock, theRect, theContent, theFontScale, theIArea, theFocused):
+	def input(self, theBlock, theRect, theValue, theFontScale, theIArea, theFocused):
+		aContent = theValue[0]
 		aContentStartIndex = self._internal.input.contentStartIndex if theFocused else 0
 		aContentSubstrCount = theRect.width / int(theFontScale * 18 + 1)
 
-		aStartIndex = int(len(theContent) - 1 if aContentStartIndex > len(theContent) else aContentStartIndex)
-		aEndindex = int(aStartIndex + aContentSubstrCount)
-		aText = theContent[aStartIndex:aEndindex]
+		aStartIndex = int(len(aContent) - 1 if aContentStartIndex > len(aContent) else aContentStartIndex)
+		aEndIndex = int(aStartIndex + aContentSubstrCount)
+		aText = aContent[aStartIndex:aEndIndex]
 
 		# Outline
 		self.rectangle(theBlock.where, theRect, (0x90, 0x90, 0x90) if theIArea == OVER and not theFocused else (0x63, 0x63, 0x63), CVUI_FILLED)
@@ -1119,7 +1121,7 @@ class Render:
 		self.rectangle(theBlock.where, theRect, (0x29, 0x29, 0x29), CVUI_FILLED)
 
 		# Draw input text area and text
-		aTextSize = self.cv2GetTextSize(theContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
+		aTextSize = self.cv2GetTextSize(aContent, cv2.FONT_HERSHEY_SIMPLEX, theFontScale, 1)
 		aPadding = aTextSize.height / 2
 
 		aPos = Point(theRect.x + 2, theRect.y + aTextSize.height + aPadding - 1)
@@ -1662,6 +1664,10 @@ def input(theWhere, theX, theY, theWidth, theName, theValue, theFontScale = 0.5)
 	button()
 	counter()
 	"""
+	# check if theValue is not an array or a list
+	if not isinstance(theValue, (list, np.ndarray)):
+		raise TypeError('Param theValue of cvui.input() must be an array/list with a single element, i.e. theValue[0], containting a string.')
+
 	__internal.screen.where = theWhere
 	__internal.inputM(__internal.screen, theX, theY, theWidth, theName, theValue, theFontScale, True)
 

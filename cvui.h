@@ -1754,7 +1754,9 @@ namespace internal
         }
 
 		if (key == KEY_BACKSPACE && theContent.length() && gInput.cursorIndex >= 0) {
-			theContent = theContent.substr(0, theContent.length() - 1);
+			int indexChatToBeRemoved = gInput.cursorIndex - 1;
+			theContent = theContent.substr(0, indexChatToBeRemoved) + theContent.substr(indexChatToBeRemoved + 1, theContent.length());
+			
             gInput.cursorIndex--;
 
             if (gInput.cursorIndex < 0) {
@@ -1783,10 +1785,9 @@ namespace internal
                 gInput.contentStartIndex--;
                 gInput.contentStartIndex = std::max(gInput.contentStartIndex, 0);
             }
-        } else if (key == KEY_DELETE) {
-            if (gInput.cursorIndex < theContent.length()) {
-                theContent.erase(gInput.cursorIndex, 1);
-            }
+        } else if (key == KEY_DELETE && gInput.cursorIndex >= 0 && gInput.cursorIndex < theContent.length()) {
+			theContent.erase(gInput.cursorIndex, 1);
+
         } else if (key == KEY_HOME) {
             gInput.cursorIndex = 0;
             gInput.contentStartIndex = 0;

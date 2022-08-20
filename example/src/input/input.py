@@ -20,7 +20,7 @@ def main():
 	# waitKey() automatically for us within cvui.update().
 	cvui.init(WINDOW_NAME, 20)
     
-	input = "text"
+	input = ["text"]
 
 	while (True):
 		frame[:] = (49, 52, 49)
