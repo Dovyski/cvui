@@ -1,6 +1,8 @@
 /*
-This is a demo application to showcase keyboard shortcuts. 
-Author: Pascal Thomet
+This is a demo application to showcase how to use multiple inputs
+at the same time
+
+Code licensed under the MIT license, check LICENSE file.
 */
 
 #include <iostream>
@@ -30,8 +32,11 @@ int main(int argc, const char *argv[])
 	while (true) {
 		frame = cv::Scalar(49, 52, 49);
 
-		cvui::input(frame, 40, 40, 100, "input1", input1);
-		cvui::input(frame, 40, 80, 100, "input2", input2);
+		// Each input must have a unique name to ensure its focus behavior works.
+		// In the inputs below, the first one is uniquely named `myInput1` and the
+		// second one is uniquely named `myInput2`.
+		cvui::input(frame, 40, 40, 100, "myInput1", input1);
+		cvui::input(frame, 40, 80, 100, "myInput2", input2);
 
 		cvui::text(frame, 160, 50, "Click any input to edit.");
 
