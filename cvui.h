@@ -1753,7 +1753,7 @@ namespace internal
             }
         }
 
-		if (key == KEY_BACKSPACE && theContent.length() && gInput.cursorIndex >= 0) {
+		if (key == KEY_BACKSPACE && theContent.length() && gInput.cursorIndex > 0) {
 			int indexChatToBeRemoved = gInput.cursorIndex - 1;
 			theContent = theContent.substr(0, indexChatToBeRemoved) + theContent.substr(indexChatToBeRemoved + 1, theContent.length());
 			

@@ -234,6 +234,10 @@ class Internal:
 		self._render = Render()
 		self._render._internal = self
 
+	def assertParamsIsList(self, theParamValue, theParamName, theParamType, theComponentName):
+		if not isinstance(theParamValue, (list, np.ndarray)):
+			raise TypeError('Param {} of cvui.{}() must be an array/list with a single {} element, e.g. theValue = [{}].'.format(theParamName, theComponentName, theParamType, theParamType))
+	
 	def isMouseButton(self, theButton, theQuery):
 		aRet = False
 
@@ -1664,12 +1668,9 @@ def input(theWhere, theX, theY, theWidth, theName, theValue, theFontScale = 0.5)
 	button()
 	counter()
 	"""
-	# check if theValue is not an array or a list
-	if not isinstance(theValue, (list, np.ndarray)):
-		raise TypeError('Param theValue of cvui.input() must be an array/list with a single element, i.e. theValue[0], containting a string.')
-
+	__internal.assertParamsIsList(theValue, 'theValue', 'string', 'input')
 	__internal.screen.where = theWhere
-	__internal.inputM(__internal.screen, theX, theY, theWidth, theName, theValue, theFontScale, True)
+	return __internal.inputM(__internal.screen, theX, theY, theWidth, theName, theValue, theFontScale, True)
 
 def image(theWhere, theX, theY, theImage):
 	"""
@@ -2783,6 +2784,8 @@ def counter(*theArgs):
 	if not aFormat:
 		aIsInt = isinstance(aValue[0], int) == True and isinstance(aStep, int)
 		aFormat = '%d' if aIsInt else '%.1f'
+
+	__internal.assertParamsIsList(aValue, 'theValue', 'int/float', 'counter')
 
 	return __internal.counter(aBlock, aX, aY, aValue, aStep, aFormat)
 
