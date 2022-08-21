@@ -32,6 +32,8 @@ int main(int argc, const char *argv[])
 	while (true) {
 		frame = cv::Scalar(49, 52, 49);
 
+		// Input component will return an integer value representing
+		// they key that was pressed.
 		int key = cvui::input(frame, 40, 40, 100, "myInput", input);
 
 		cvui::printf(frame, 160, 50, "Click the input, type a number then press enter");
@@ -42,7 +44,7 @@ int main(int argc, const char *argv[])
             count = atoi(input.c_str());
         }
 
-		cvui::counter(frame, 500, 45, &count);        
+		cvui::counter(frame, 500, 45, &count);
 
 		// Exit the application if the quit button was pressed.
 		// It can be pressed because of a mouse click or because 
