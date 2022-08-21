@@ -25,11 +25,13 @@ int main(int argc, const char *argv[])
 	cvui::init(WINDOW_NAME, 20);
     
     cv::String input = "text";
-    cv::String something = "";    
 
 	while (true) {
 		frame = cv::Scalar(49, 52, 49);
 
+		// The value retorned by cvui::input() is an int that identifies a keyboard key.
+        // The contants defined as cvui::KEY_* can be used to identify those keys.
+        // You can use them to detect special keys as cvui::KEY_HOME and cvui::KEY_END.
 		int key = cvui::input(frame, 40, 40, 100, "myInput", input);
 
 		cvui::printf(frame, 160, 50, "Click the input to edit. After press enter");

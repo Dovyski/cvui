@@ -8,10 +8,10 @@ import numpy as np
 import cv2
 import cvui
 
-WINDOW_NAME	= 'Simple input'
+WINDOW_NAME	= 'Input change counter'
 
 def main():
-	frame = np.zeros((300, 600, 3), np.uint8)
+	frame = np.zeros((150, 650, 3), np.uint8)
 
 	# Init cvui and tell it to use a value of 20 for cv2.waitKey()
 	# because we want to enable keyboard shortcut for
