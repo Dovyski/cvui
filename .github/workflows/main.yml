@@ -23,28 +23,11 @@ jobs:
       matrix:
         # Supported versions from the past 2 years
         opencv: [
-          2.4.13.6,
           3.4.10, 3.4.11, 3.4.12, 3.4.13, 3.4.14, 3.4.15, 3.4.16,
           4.0.0, 4.1.0, 4.1.2, 4.2.0, 4.3.0, 4.4.0, 4.5.0, 4.5.5, 4.5.4, 4.6.0
         ]
         compiler: [g++]
     steps:
-    - name: Adjust TBB settings
-      if: ${{ matrix.opencv == '3.0.0' }}
-      run: |
-        echo "OPENCV_WITH_TBB=OFF" >> $GITHUB_ENV
-        echo "ENABLE_PRECOMPILED_HEADERS=OFF" >> $GITHUB_ENV
-        echo 'OPENCV_WITH_TBB: ' $OPENCV_WITH_TBB
-        echo 'ENABLE_PRECOMPILED_HEADERS: ' $ENABLE_PRECOMPILED_HEADERS
-
-    - name: Adjust extra modules settings
-      if: ${{ startsWith(matrix.opencv, '2.') }}
-      run: |
-        echo "USE_OPENCV_EXTRA_MODULES=OFF" >> $GITHUB_ENV
-        echo "OPENCV_EXTRA_MODULES_NAME=NOT_OPENCV_EXTRA_MODULES_PATH" >> $GITHUB_ENV
-        echo 'USE_OPENCV_EXTRA_MODULES: ' $USE_OPENCV_EXTRA_MODULES
-        echo 'OPENCV_EXTRA_MODULES_NAME: ' $OPENCV_EXTRA_MODULES_NAME
-
     - name: Checkout code
       uses: actions/checkout@v1
 

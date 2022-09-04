@@ -7,6 +7,9 @@ All notable changes to this project are documented in this file. The format is b
 - `input()` (based on [tjyuyao](https://github.com/tjyuyao), [#80](https://github.com/Dovyski/cvui/pull/80), [read more](https://dovyski.github.io/cvui/components/input/))
 - Canny example has a moving settings window (thanks to [abreheret](https://github.com/abreheret), [#36](https://github.com/Dovyski/cvui/pull/36)
 
+### Changed
+- Drop support for OpenCV 2.x
+
 ### Fixed
 - Small bugfix for potential divide by zero error during sparkline rendering (thanks [adewinter](https://github.com/adewinter), [#113](https://github.com/Dovyski/cvui/pull/113))
 - Assert fail bug (thanks to [Andyalevy](https://github.com/Andyalevy), issue [#71](https://github.com/Dovyski/cvui/issues/71))
