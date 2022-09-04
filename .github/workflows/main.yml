@@ -32,16 +32,16 @@ jobs:
     - name: Adjust TBB settings
       if: ${{ matrix.opencv == '3.0.0' }}
       run: |
-        echo '::set-env name=OPENCV_WITH_TBB::OFF'
-        echo '::set-env name=ENABLE_PRECOMPILED_HEADERS::OFF'
+        echo "OPENCV_WITH_TBB=OFF" >> $GITHUB_ENV
+        echo "ENABLE_PRECOMPILED_HEADERS=OFF" >> $GITHUB_ENV
         echo 'OPENCV_WITH_TBB: ' $OPENCV_WITH_TBB
         echo 'ENABLE_PRECOMPILED_HEADERS: ' $ENABLE_PRECOMPILED_HEADERS
 
     - name: Adjust extra modules settings
       if: ${{ startsWith(matrix.opencv, '2.') }}
       run: |
-        echo '::set-env name=USE_OPENCV_EXTRA_MODULES::OFF'
-        echo '::set-env name=OPENCV_EXTRA_MODULES_NAME::NOT_OPENCV_EXTRA_MODULES_PATH'
+        echo "USE_OPENCV_EXTRA_MODULES=OFF" >> $GITHUB_ENV
+        echo "OPENCV_EXTRA_MODULES_NAME=NOT_OPENCV_EXTRA_MODULES_PATH" >> $GITHUB_ENV
         echo 'USE_OPENCV_EXTRA_MODULES: ' $USE_OPENCV_EXTRA_MODULES
         echo 'OPENCV_EXTRA_MODULES_NAME: ' $OPENCV_EXTRA_MODULES_NAME
 
