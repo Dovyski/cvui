@@ -1,6 +1,6 @@
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
- Version: 2.7.0
+ Version: 2.9.0-BETA
 
  Usage:
 
@@ -364,7 +364,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& th
  \sa button()
  \sa counter()
 */
-int input(cv::Mat& theWhere, int theX, int theY, int theWidth, const cv::String& theName, cv::String& theValue, double theFontScale = 0.5);
+int input(cv::Mat& theWhere, int theX, int theY, int theWidth, const cv::String theName, cv::String& theValue, double theFontScale = 0.5);
 
 
 /**
@@ -1142,7 +1142,7 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #endif
 
 // Lib version
-static const char *VERSION = "2.7.0";
+static const char *VERSION = "2.9.0-beta";
 
 const int ROW = 0;
 const int COLUMN = 1;
@@ -1809,7 +1809,7 @@ namespace internal
         }
     }
 
-	int input(cvui_block_t& theBlock, int theX, int theY, int theWidth, const cv::String& theName, cv::String& theContent, double theFontScale, bool theUpdateLayout) {
+	int input(cvui_block_t& theBlock, int theX, int theY, int theWidth, const cv::String theName, cv::String& theContent, double theFontScale, bool theUpdateLayout) {
 		cv::Size aContentSize = cv::getTextSize(theContent, cv::FONT_HERSHEY_SIMPLEX, theFontScale, 1, nullptr);
 		int aPadding = aContentSize.height / 2;
         cv::Rect aRect(theX, theY, theWidth - render::getScreenCharWidth(theFontScale), aContentSize.height + 2 + aPadding * 2);
@@ -2495,7 +2495,7 @@ bool button(cv::Mat& theWhere, int theX, int theY, cv::Mat& theIdle, cv::Mat& th
 	return internal::button(internal::gScreen, theX, theY, theIdle, theOver, theDown, true);
 }
 
-int input(cv::Mat& theWhere, int theX, int theY, int theWidth, const cv::String& theName, cv::String& theValue, double theFontScale) {
+int input(cv::Mat& theWhere, int theX, int theY, int theWidth, const cv::String theName, cv::String& theValue, double theFontScale) {
 	internal::gScreen.where = theWhere;
 	return internal::input(internal::gScreen, theX, theY, theWidth, theName, theValue, theFontScale, true);
 }
