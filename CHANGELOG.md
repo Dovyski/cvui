@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.9.0-BETA](https://github.com/Dovyski/cvui/releases/tag/v2.9.0) - 2022-09-04
+### Added
+- Headless mode (thanks to [jmuncaster](https://github.com/jmuncaster), [#46](https://github.com/Dovyski/cvui/pull/46)
+- `input()` (based on [tjyuyao](https://github.com/tjyuyao), [#80](https://github.com/Dovyski/cvui/pull/80), [read more](https://dovyski.github.io/cvui/components/input/))
+- Canny example has a moving settings window (thanks to [abreheret](https://github.com/abreheret), [#36](https://github.com/Dovyski/cvui/pull/36)
+
+### Fixed
+- Small bugfix for potential divide by zero error during sparkline rendering (thanks [adewinter](https://github.com/adewinter), [#113](https://github.com/Dovyski/cvui/pull/113))
+- Assert fail bug (thanks to [Andyalevy](https://github.com/Andyalevy), issue [#71](https://github.com/Dovyski/cvui/issues/71))
+- cpp code highlighting in docs (thanks to [ksakash](https://github.com/ksakash), [#27](https://github.com/Dovyski/cvui/pull/27)
+
 ## [2.7.0](https://github.com/Dovyski/cvui/releases/tag/v2.7.0) - 2018-10-08
 ### Added
 - Python implementation of cvui, i.e. `cvui.py` ([read more](https://dovyski.github.io/cvui/usage/))

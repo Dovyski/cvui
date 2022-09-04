@@ -4,6 +4,9 @@
 # Copyright (c) 2022 Fernando Bevilacqua <dovyski@gmail.com>
 # Licensed under the MIT license.
 # 
+import sys
+sys.path.insert(0, '../../../')
+
 import numpy as np
 import cv2
 import cvui

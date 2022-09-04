@@ -2,7 +2,7 @@ cvui
 =====
 A (very) simple UI lib built on top of OpenCV drawing primitives. Other UI libs, such as [imgui](https://github.com/ocornut/imgui), require a graphical backend (e.g. OpenGL) to work, so if you want to use imgui in a OpenCV app, you must make it OpenGL enabled, for instance. It is not the case with cvui, which uses *only* OpenCV drawing primitives to do all the rendering (no OpenGL or Qt required).
 
-![image](https://raw.githubusercontent.com/Dovyski/depository/master/cvui.png?20180627)
+![image](https://github.com/Dovyski/depository/blob/master/cvui-2.9.0.png?raw=true)
 
 Features
 --------
