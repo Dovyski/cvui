@@ -14,5 +14,6 @@ if(ADD_PYTHON_EXAMPLES)
         TARGET ${ApplicationName}
 		POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/${ApplicationName}.py" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/EnhancedWindow.py ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
 	)
 endif()

@@ -22,7 +22,7 @@ Code licensed under the MIT license.
 #include "cvui.h"
 
 // Include the class that provides an enhanced cvui window component
-#include "../ui-enhanced-window-component/EnhancedWindow.h"
+#include "EnhancedWindow.h"
 
 #define WINDOW_NAME	"CVUI Ehnanced UI Canny Edge"
 
